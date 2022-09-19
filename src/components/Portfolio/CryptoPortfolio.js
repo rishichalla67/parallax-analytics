@@ -21,9 +21,9 @@ import {
 } from "recharts";
 import { Ticker } from "../../Classes/Ticker";
 import Nav from "../Nav.js";
-import { signal } from "@preact/signals";
+// import { signal } from "@preact/signals";
 
-let refreshPricesAvailable = signal(true);
+// let refreshPricesAvailable = signal(true);
 
 export default function CryptoPortfolio() {
   const symbolRef = useRef();
@@ -32,7 +32,8 @@ export default function CryptoPortfolio() {
   const searchRef = useRef();
   const updateQuantityRef = useRef();
   const updateTypeRef = useRef();
-  const timerRef = useRef();
+
+  let timer = 0;
 
   const [portfolioValue, setPortfolioValue] = useState(0);
   const [portfolioValueHistory, setPortfolioValueHistory] = useState([]);
@@ -55,6 +56,8 @@ export default function CryptoPortfolio() {
     refreshOraclePrices,
     searchCoinGeckoAPI,
     searchResults,
+    setRefreshAvailable,
+    refreshAvailable,
   } = useCryptoOracle();
   const {
     activeUser,
@@ -82,7 +85,7 @@ export default function CryptoPortfolio() {
     setLoading(false);
     return () => {
       clearInterval(interval);
-      clearTimeout(timerRef.current);
+      clearTimeout(timer);
     };
   }, []);
 
@@ -232,18 +235,18 @@ export default function CryptoPortfolio() {
     }
   }
 
-  async function refreshAll() {
-    if (refreshPricesAvailable.value) {
-      refreshPricesAvailable.value = false;
-      console.log(refreshPricesAvailable.value);
-      await refreshOraclePrices();
-      await getPortfolioData();
-      timerRef.current = setTimeout(() => {
-        refreshPricesAvailable.value = true;
-        console.log(refreshPricesAvailable.value);
+  const refreshAll = () => {
+    if (refreshAvailable) {
+      setRefreshAvailable(false);
+      console.log(refreshAvailable);
+      refreshOraclePrices().then(getPortfolioData());
+
+      timer = setTimeout(() => {
+        setRefreshAvailable(true);
+        console.log(refreshAvailable);
       }, 10000);
     }
-  }
+  };
 
   function checkToDisable() {
     if (
@@ -466,24 +469,26 @@ export default function CryptoPortfolio() {
               <div className="flex justify-center border-t border-b pb-2 border-gray-200">
                 <h3 className="pt-2 text-xl leading-6 font-medium">{`Portfolio Value: `}</h3>
                 <h3 className="pl-2 pt-2 text-xl leading-6 font-medium text-green-400">{`$${portfolioValue}`}</h3>
-
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className={`w-6 h-6 ml-9 mt-2`}
-                  onClick={() => {
-                    refreshAll();
-                  }}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-                  />
-                </svg>
+                {console.log(refreshAvailable)}
+                {refreshAvailable && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="#0092ff"
+                    className={`w-6 h-6 ml-9 mt-2`}
+                    onClick={() => {
+                      refreshAll();
+                    }}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                    />
+                  </svg>
+                )}
               </div>
               {!editPositions ? (
                 <div className="flex flex-col justify-center px-4 py-5 sm:px-6 pt-10 border-gray-200">

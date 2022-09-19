@@ -1,11 +1,8 @@
 import React from "react";
 import { useEffect, useContext, useState } from "react";
 import { useFirestore } from "../contexts/FirestoreContext";
-import { signal } from "@preact/signals";
 
 const CryptoContext = React.createContext();
-
-export const refreshPricesAvailable = signal(true);
 
 export function useCryptoOracle() {
   return useContext(CryptoContext);
@@ -15,6 +12,7 @@ export function CryptoProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [nomicsTickers, setNomicsTickers] = useState({});
   const [searchResults, setSearchResults] = useState([]);
+  const [refreshAvailable, setRefreshAvailable] = useState(true);
   const { getPortfolioTickerList } = useFirestore();
 
   useEffect(() => {
@@ -52,6 +50,8 @@ export function CryptoProvider({ children }) {
     refreshOraclePrices,
     searchCoinGeckoAPI,
     searchResults,
+    refreshAvailable,
+    setRefreshAvailable,
   };
 
   return (
