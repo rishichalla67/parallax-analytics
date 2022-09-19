@@ -261,16 +261,6 @@ export default function CryptoPortfolio() {
     }
   }
 
-  // if (!activeUser.username) {
-  //   return (
-  //     <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
-  //       <div className="text-white grid place-items-center">
-  //         <div className="bg-black min-w-95% min-h-98vh md:max-w-5xl rounded-lg border border-slate-500 shadow-lg items-center "></div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <>
       <Nav />
@@ -468,26 +458,28 @@ export default function CryptoPortfolio() {
                 </div>
               )}
               <div className="flex justify-center border-t border-b pb-2 border-gray-200">
-                <h3 className="pt-2 text-xl leading-6 font-medium">{`Portfolio Value: `}</h3>
-                <h3 className="pl-2 pt-2 text-xl leading-6 font-medium text-green-400">{`$${portfolioValue}`}</h3>
+                <h3 className="pt-2 text-xl pl-4 leading-6 font-medium">{`Portfolio Value: `}</h3>
+                <h3 className="pl-2 pt-2 flex grow text-xl leading-6 font-medium text-green-400">{`$${portfolioValue}`}</h3>
                 {refreshAvailable && (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="#0092ff"
-                    className={`w-6 h-6 ml-9 mt-2 hover:cursor-pointer`}
-                    onClick={() => {
-                      refreshAll();
-                    }}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-                    />
-                  </svg>
+                  <div className="pl-9 pt-2 ">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="#0092ff"
+                      className={`w-6 h-6 hover:cursor-pointer mr-4`}
+                      onClick={() => {
+                        refreshAll();
+                      }}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                      />
+                    </svg>
+                  </div>
                 )}
               </div>
               {!editPositions ? (
