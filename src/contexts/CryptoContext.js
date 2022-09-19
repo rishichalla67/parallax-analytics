@@ -1,8 +1,11 @@
 import React from "react";
 import { useEffect, useContext, useState } from "react";
 import { useFirestore } from "../contexts/FirestoreContext";
+import { signal } from "@preact/signals";
 
 const CryptoContext = React.createContext();
+
+export const refreshPricesAvailable = signal(true);
 
 export function useCryptoOracle() {
   return useContext(CryptoContext);

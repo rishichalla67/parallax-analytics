@@ -71,7 +71,7 @@ export function FirestoreProvider({ children }) {
   async function getPortfolioTickerList() {
     const tickerList = await getDoc(tickerListDocRef);
     if (tickerList.exists()) {
-      console.log(tickerList.data())
+      console.log(tickerList.data());
       setTickerList(tickerList.data().tickerList);
       return tickerList.data().tickerList;
     }

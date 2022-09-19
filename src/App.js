@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import Login from "./components/Authentication/Login";
+import Profile from "./components/Profile/Profile";
 import Signup from "./components/Authentication/Signup";
 import PrivateRoute from "./components/Authentication/PrivateRoute";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -24,6 +25,15 @@ function App() {
                   element={
                     <PrivateRoute>
                       <CryptoPortfolio />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  exact
+                  path="/profile"
+                  element={
+                    <PrivateRoute>
+                      <Profile />
                     </PrivateRoute>
                   }
                 />

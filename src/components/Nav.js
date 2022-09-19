@@ -19,14 +19,6 @@ export default function Nav() {
 
   useEffect(() => {
     getActiveUser();
-    // const temp = [];
-    // if (activeUser.notifications !== undefined && notifications) {
-    //   activeUser.notifications.forEach((notif) => {
-    //     // console.log("notif: " + notif.requesterID)
-    //     temp.push(notif.requesterID);
-    //   });
-    //   setNotifications(temp);
-    // }
   }, []);
 
   async function handleLogout() {
@@ -37,14 +29,12 @@ export default function Nav() {
   }
 
   // Add here for user specific menu
-  const userNavigation = [
-    { name: "Profile", href: "/profile" },
-    { name: "Sign out", href: "", onClick: handleLogout },
-  ];
 
   // Add here for more nav bar tabs
   const navigation = [
-    { name: "Portfolio", href: "/portfolio", current: true },
+    { name: "Portfolio", href: "/", current: true },
+    { name: "Profile", href: "/profile" },
+    { name: "Sign out", href: "", onClick: handleLogout },
   ];
 
   if (!activeUser.id) {
@@ -105,7 +95,7 @@ export default function Nav() {
       ) : (
         <Disclosure
           as="nav"
-          className="bg-gradient-to-r from-sky-300 via-sky-400 to-sky-500"
+          className="bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900"
         >
           {({ open }) => (
             <>
@@ -119,12 +109,7 @@ export default function Nav() {
                           <a
                             key={item.name}
                             href={item.href}
-                            className={classNames(
-                              item.current
-                                ? "bg-gray-900 text-white"
-                                : "text-slate-900 hover:bg-gray-700 hover:text-white",
-                              "px-3 py-2 rounded-md text-sm font-medium"
-                            )}
+                            className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-transparent	"
                             aria-current={item.current ? "page" : undefined}
                           >
                             {item.name}
@@ -133,61 +118,7 @@ export default function Nav() {
                       </div>
                     </div>
                   </div>
-                  <div className="hidden md:block">
-                    <div className="ml-4 flex items-center md:ml-6">
-                      <button
-                        type="button"
-                        onClick={() => setShowModal(true)}
-                        className="bg-gray-800 p-1 rounded-full text-slate-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-                      >
-                        <span className="sr-only">View notifications</span>
-                        <BellIcon className="h-6 w-6" aria-hidden="true" />
-                      </button>
-
-                      {/* Profile dropdown */}
-                      <Menu as="div" className="ml-3 relative">
-                        <div>
-                          <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                            <span className="sr-only">Open user menu</span>
-                            <img
-                              className="h-8 w-8 rounded-full"
-                              src={activeUser.photo && activeUser.photo}
-                              alt=""
-                            />
-                          </Menu.Button>
-                        </div>
-                        <Transition
-                          as={Fragment}
-                          enter="transition ease-out duration-100"
-                          enterFrom="transform opacity-0 scale-95"
-                          enterTo="transform opacity-100 scale-100"
-                          leave="transition ease-in duration-75"
-                          leaveFrom="transform opacity-100 scale-100"
-                          leaveTo="transform opacity-0 scale-95"
-                        >
-                          <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hover:text-white">
-                            {userNavigation.map((item) => (
-                              <Disclosure.Button
-                                key={item.name}
-                                as="a"
-                                onClick={item.onClick}
-                                href={item.href}
-                                className={classNames(
-                                  item.current
-                                    ? "bg-gray-900 text-white"
-                                    : "text-slate-900 hover:bg-gray-700 hover:text-white",
-                                  "block px-3 py-2 rounded-md text-base font-medium"
-                                )}
-                                aria-current={item.current ? "page" : undefined}
-                              >
-                                {item.name}
-                              </Disclosure.Button>
-                            ))}
-                          </Menu.Items>
-                        </Transition>
-                      </Menu>
-                    </div>
-                  </div>
+                  <div className="hidden md:block"></div>
                   <div className="-mr-2 flex md:hidden">
                     {/* Mobile menu button */}
                     <Disclosure.Button className="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
@@ -212,61 +143,18 @@ export default function Nav() {
                       key={item.name}
                       as="a"
                       href={item.href}
-                      className={classNames(
-                        item.current
-                          ? "bg-gray-900 text-white"
-                          : "text-slate-900 hover:bg-gray-700 hover:text-white",
-                        "block px-3 py-2 rounded-md text-base font-medium"
-                      )}
+                      className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
                       aria-current={item.current ? "page" : undefined}
                     >
                       {item.name}
                     </Disclosure.Button>
                   ))}
                 </div>
-                <div className="pt-4 pb-3 border-t border-gray-700">
-                  <div className="px-2 space-y-1">
-                    <button
-                      type="button"
-                      onClick={() => setShowModal(true)}
-                      className="bg-gray-800 p-1 rounded-full text-slate-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-                    >
-                      <span className="sr-only">View notifications</span>
-                      <BellIcon className="h-6 w-6" aria-hidden="true" />
-                    </button>
-                    {userNavigation.map((item) => (
-                      <Disclosure.Button
-                        key={item.name}
-                        as="a"
-                        onClick={item.onClick}
-                        href={item.href}
-                        className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:text-white hover:bg-gray-700 cursor-pointer"
-                      >
-                        {item.name}
-                      </Disclosure.Button>
-                    ))}
-                  </div>
-                </div>
               </Disclosure.Panel>
             </>
           )}
         </Disclosure>
       )}
-
-      {/* <div role="alert" hidden={activeUser.firstName}>
-        <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
-          <p>Please update your profile to include your first name!</p>
-          <p>This allows you to be added as a friend</p>
-          <div className="pt-2">
-            <a
-              href="/edit-profile"
-              className="inline-flex justify-center w- py-2 px-4 border border-transparent shadow-sm text-med font-medium rounded-md text-white bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            >
-              Edit Profile
-            </a>
-          </div>
-        </div>
-      </div> */}
     </>
   );
 }

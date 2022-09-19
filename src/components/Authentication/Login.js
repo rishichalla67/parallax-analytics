@@ -21,7 +21,6 @@ export default function Login() {
       (err) => setError(err.message)
     );
     setLoading(false);
-    console.log(loading);
     navigate("/");
   }
 
