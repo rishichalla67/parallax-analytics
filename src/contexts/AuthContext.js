@@ -21,6 +21,7 @@ export function AuthProvider({ children }) {
   }
 
   function logout() {
+    console.log("signed out");
     return auth.signOut();
   }
 

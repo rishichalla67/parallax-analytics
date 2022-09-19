@@ -259,10 +259,10 @@ export default function CryptoPortfolio() {
     }
   }
 
-  if (!activeUser.id) {
+  if (!activeUser.username) {
     console.log(activeUser);
     return (
-      <div className="h-full bg-gradient-to-r from-sky-300 via-sky-400 to-sky-500">
+      <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
         <div className="text-white grid place-items-center">
           <div className="bg-black min-w-95% min-h-98vh md:max-w-5xl rounded-lg border border-slate-500 shadow-lg items-center "></div>
         </div>

@@ -25,17 +25,17 @@ export default function Login() {
   }
 
   return (
-    <div className="h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-sky-300 via-sky-400 to-sky-500">
+    <div className="h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
       <div className="max-w-md w-full space-y-8 ">
         <div>
-          <h2 className="mt-6 text-center text-4xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-4xl font-extrabold text-black">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-black">
             Or{" "}
             <a
               href="/signup"
-              className="font-medium text-indigo-600 hover:text-indigo-700"
+              className="font-medium text-indigo-300 hover:text-indigo-700"
             >
               Join For Free Today!
             </a>

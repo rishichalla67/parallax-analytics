@@ -34,7 +34,7 @@ export default function Nav() {
   const navigation = [
     { name: "Portfolio", href: "/", current: true },
     { name: "Profile", href: "/profile" },
-    { name: "Sign out", href: "", onClick: handleLogout },
+    { name: "Sign out", href: "/login", onClick: handleLogout },
   ];
 
   if (!activeUser.id) {
