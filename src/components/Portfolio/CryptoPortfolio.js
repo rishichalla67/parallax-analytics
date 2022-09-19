@@ -35,7 +35,7 @@ export default function CryptoPortfolio() {
 
   let timer = 0;
 
-  const [portfolioValue, setPortfolioValue] = useState(0);
+  const [currentPortfolio, setCurrentPortfolio] = useState();
   const [portfolioValueHistory, setPortfolioValueHistory] = useState([]);
   const [portfolioPositions, setPortfolioPositions] = useState([]);
   const [error, setError] = useState("");
@@ -58,6 +58,8 @@ export default function CryptoPortfolio() {
     searchResults,
     setRefreshAvailable,
     refreshAvailable,
+    portfolioValue,
+    setPortfolioValue,
   } = useCryptoOracle();
   const {
     activeUser,
@@ -91,6 +93,7 @@ export default function CryptoPortfolio() {
 
   async function getPortfolioData() {
     const portfolio = await getPortfolio(activeUser.portfolioID);
+    setCurrentPortfolio(portfolio);
     cleanupDuplicatesInHistorical(activeUser.portfolioID);
     calculatePortfolioValue(portfolio);
     setPortfolioValueHistory(portfolio.portfolioValueHistory);
@@ -238,7 +241,6 @@ export default function CryptoPortfolio() {
   const refreshAll = () => {
     if (refreshAvailable) {
       setRefreshAvailable(false);
-      console.log(refreshAvailable);
       refreshOraclePrices().then(getPortfolioData());
 
       timer = setTimeout(() => {
@@ -259,16 +261,15 @@ export default function CryptoPortfolio() {
     }
   }
 
-  if (!activeUser.username) {
-    console.log(activeUser);
-    return (
-      <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
-        <div className="text-white grid place-items-center">
-          <div className="bg-black min-w-95% min-h-98vh md:max-w-5xl rounded-lg border border-slate-500 shadow-lg items-center "></div>
-        </div>
-      </div>
-    );
-  }
+  // if (!activeUser.username) {
+  //   return (
+  //     <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
+  //       <div className="text-white grid place-items-center">
+  //         <div className="bg-black min-w-95% min-h-98vh md:max-w-5xl rounded-lg border border-slate-500 shadow-lg items-center "></div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <>
@@ -469,7 +470,6 @@ export default function CryptoPortfolio() {
               <div className="flex justify-center border-t border-b pb-2 border-gray-200">
                 <h3 className="pt-2 text-xl leading-6 font-medium">{`Portfolio Value: `}</h3>
                 <h3 className="pl-2 pt-2 text-xl leading-6 font-medium text-green-400">{`$${portfolioValue}`}</h3>
-                {console.log(refreshAvailable)}
                 {refreshAvailable && (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -477,7 +477,7 @@ export default function CryptoPortfolio() {
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="#0092ff"
-                    className={`w-6 h-6 ml-9 mt-2`}
+                    className={`w-6 h-6 ml-9 mt-2 hover:cursor-pointer`}
                     onClick={() => {
                       refreshAll();
                     }}
@@ -541,20 +541,6 @@ export default function CryptoPortfolio() {
                             setSelectedPosition(position);
                           }}
                         >
-                          {/* <button
-                            type="button"
-                            className="pl-3 text-red-500 text-2xl"
-                            onClick={() => {
-                              removePosition(position);
-                              setSuccessMessage(
-                                "Successfully removed " +
-                                  position.symbol +
-                                  " from positions."
-                              );
-                            }}
-                          >
-                            -
-                          </button> */}
                           <h3 className="pl-3 pt-2 text-xl leading-6 font-medium">{`${
                             tickerList[position.symbol]
                           } (${position.type.toLowerCase()})`}</h3>

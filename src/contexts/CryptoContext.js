@@ -9,6 +9,7 @@ export function useCryptoOracle() {
 }
 
 export function CryptoProvider({ children }) {
+  const [portfolioValue, setPortfolioValue] = useState(0);
   const [loading, setLoading] = useState(false);
   const [nomicsTickers, setNomicsTickers] = useState({});
   const [searchResults, setSearchResults] = useState([]);
@@ -52,6 +53,8 @@ export function CryptoProvider({ children }) {
     searchResults,
     refreshAvailable,
     setRefreshAvailable,
+    portfolioValue,
+    setPortfolioValue,
   };
 
   return (
