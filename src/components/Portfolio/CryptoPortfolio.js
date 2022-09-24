@@ -36,6 +36,7 @@ export default function CryptoPortfolio() {
   let timer = 0;
 
   const [currentPortfolio, setCurrentPortfolio] = useState();
+  const [tabIndex, setTabIndex] = useState(1);
   const [portfolioValueHistory, setPortfolioValueHistory] = useState([]);
   const [portfolioPositions, setPortfolioPositions] = useState([]);
   const [error, setError] = useState("");
@@ -259,6 +260,12 @@ export default function CryptoPortfolio() {
     } else {
       setDisable(false);
     }
+  }
+
+  if (!activeUser.username) {
+    return (
+      <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900"></div>
+    );
   }
 
   return (
@@ -512,48 +519,88 @@ export default function CryptoPortfolio() {
                       </ResponsiveContainer>
                     </div>
                   )}
-                  <div className="flex pb-2 border border-gray-200">
-                    {/* <a className="pl-3 text-white-500 text-2xl">-</a> */}
-                    <h3 className="pl-3 pt-2 text-xl leading-6 text-sky-500 font-medium">
-                      Crypto
-                    </h3>
-                    <div className="grow pt-2 pr-3 text-xl leading-6 text-sky-500 font-medium text-right">
-                      Value
-                    </div>
-                  </div>
+                  <ul className="flex flex-wrap text-lg md:text-xl font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
+                    <li className="mr-2">
+                      <button
+                        onClick={() => {
+                          setTabIndex(1);
+                        }}
+                        aria-current="page"
+                        className={`inline-block p-4 text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500`}
+                      >
+                        Positions
+                      </button>
+                    </li>
+                    <li className="mr-2">
+                      <button
+                        onClick={() => {
+                          setTabIndex(2);
+                        }}
+                        data-bs-toggle="tooltip"
+                        title="Coming Soon..."
+                        className="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                      >
+                        Analytics
+                      </button>
+                    </li>
+                  </ul>
 
-                  {portfolioPositions.length > 0 &&
-                    portfolioPositions.map((position) => {
-                      return (
-                        <div
-                          key={`${position.symbol}-${position.quantity}-${position.type}`}
-                          className="flex pb-2 border border-gray-200 hover:text-sky-400 hover:cursor-pointer"
+                  {/* Tab Index of 1 === Positions Table */}
+                  {tabIndex === 1 && (
+                    <>
+                      <div className="flex pb-2 border border-gray-200">
+                        {/* <a className="pl-3 text-white-500 text-2xl">-</a> */}
+                        <h3 className="pl-3 pt-2 text-xl leading-6 text-sky-500 font-medium">
+                          Crypto
+                        </h3>
+                        <div className="grow pt-2 pr-3 text-xl leading-6 text-sky-500 font-medium text-right">
+                          Value
+                        </div>
+                      </div>
+                      {portfolioPositions.map((position) => {
+                        return (
+                          <div
+                            key={`${position.symbol}-${position.quantity}-${position.type}`}
+                            className="flex pb-2 border border-gray-200 hover:text-sky-400 hover:cursor-pointer"
+                            onClick={() => {
+                              setShowModal(true);
+                              setSelectedPosition(position);
+                            }}
+                          >
+                            <h3 className="pl-3 pt-2 text-xl leading-6 font-medium">{`${
+                              tickerList[position.symbol]
+                            } (${position.type.toLowerCase()})`}</h3>
+                            <div className="grow pt-2 pr-1 text-xl leading-6 font-medium text-right">
+                              {`$${calculatePositionValue(position)}`}
+                            </div>
+                          </div>
+                        );
+                      })}
+                      <div className="pt-2">
+                        <button
+                          className="bg-sky-500 hover:bg-sky-700 text-black font-bold py-2 px-4 rounded"
                           onClick={() => {
-                            setShowModal(true);
-                            setSelectedPosition(position);
+                            setEditPositions(true);
                           }}
                         >
-                          <h3 className="pl-3 pt-2 text-xl leading-6 font-medium">{`${
-                            tickerList[position.symbol]
-                          } (${position.type.toLowerCase()})`}</h3>
-                          <div className="grow pt-2 pr-1 text-xl leading-6 font-medium text-right">
-                            {`$${calculatePositionValue(position)}`}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  <div className="pt-2">
-                    <button
-                      className="bg-sky-500 hover:bg-sky-700 text-black font-bold py-2 px-4 rounded"
-                      onClick={() => {
-                        setEditPositions(true);
-                      }}
-                    >
-                      Add Position
-                    </button>
-                  </div>
+                          Add Position
+                        </button>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Tab Index of 2 === Positions Table */}
+                  {tabIndex === 2 && (
+                    <>
+                      <div className="flex pt-10 text-lg justify-center">
+                        {/* <a className="pl-3 text-white-500 text-2xl">-</a> */}
+                        Coming Soon...
+                      </div>
+                    </>
+                  )}
                 </div>
               ) : (
+                // No Portfolio Created Yet
                 <div>
                   <div
                     className="px-10 border-t"

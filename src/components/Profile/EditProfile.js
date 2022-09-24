@@ -6,14 +6,8 @@ import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
 const EditProfile = (props) => {
-  const bioRef = useRef();
   const firstNameRef = useRef();
   const lastNameRef = useRef();
-  const streetAddressRef = useRef();
-  const cityRef = useRef();
-  const countryRef = useRef();
-  const stateRef = useRef();
-  const postalCodeRef = useRef();
   const { activeUser } = useFirestore();
   const storage = getStorage();
   const [error, setError] = useState("");
@@ -24,10 +18,8 @@ const EditProfile = (props) => {
 
   async function uploadPhoto(photoFile) {
     setLoading(true);
-    console.log(photoFile);
     const fileRef = ref(storage, "pfp" + "/" + activeUser.id);
     const uploadedPhoto = await uploadBytes(fileRef, photoFile);
-    console.log(uploadedPhoto);
     const url = await getDownloadURL(fileRef);
     setLoading(false);
     return url;
