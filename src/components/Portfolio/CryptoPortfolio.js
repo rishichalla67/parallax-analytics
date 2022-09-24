@@ -499,6 +499,7 @@ export default function CryptoPortfolio() {
                           <YAxis
                             dataKey="value"
                             tickLine={{ stroke: "#0092ff" }}
+                            // TODO: Create logic to autoscale
                             domain={[
                               parseInt(portfolioValue / 1.1),
                               parseInt(portfolioValue * 1.1),
@@ -526,7 +527,11 @@ export default function CryptoPortfolio() {
                           setTabIndex(1);
                         }}
                         aria-current="page"
-                        className={`inline-block p-4 text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500`}
+                        className={`inline-block p-4 ${
+                          tabIndex !== 1
+                            ? "rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                            : "text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
+                        }`}
                       >
                         Positions
                       </button>
@@ -538,7 +543,11 @@ export default function CryptoPortfolio() {
                         }}
                         data-bs-toggle="tooltip"
                         title="Coming Soon..."
-                        className="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                        className={`inline-block p-4 ${
+                          tabIndex !== 2
+                            ? "rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                            : "text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
+                        }`}
                       >
                         Analytics
                       </button>
@@ -600,7 +609,7 @@ export default function CryptoPortfolio() {
                   )}
                 </div>
               ) : (
-                // No Portfolio Created Yet
+                // If No Portfolio Created Yet
                 <div>
                   <div
                     className="px-10 border-t"
