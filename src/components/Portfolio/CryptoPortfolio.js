@@ -18,6 +18,7 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  CartesianGrid,
 } from "recharts";
 import { Ticker } from "../../Classes/Ticker";
 import Nav from "../Nav.js";
@@ -35,10 +36,7 @@ export default function CryptoPortfolio() {
 
   let timer = 0;
 
-  const [currentPortfolio, setCurrentPortfolio] = useState();
   const [tabIndex, setTabIndex] = useState(1);
-  const [portfolioValueHistory, setPortfolioValueHistory] = useState([]);
-  const [portfolioPositions, setPortfolioPositions] = useState([]);
   const [error, setError] = useState("");
   const [selectedPosition, setSelectedPosition] = useState();
   const [successMessage, setSuccessMessage] = useState("");
@@ -61,6 +59,9 @@ export default function CryptoPortfolio() {
     refreshAvailable,
     portfolioValue,
     setPortfolioValue,
+    getPortfolioData,
+    portfolioValueHistory,
+    portfolioPositions,
   } = useCryptoOracle();
   const {
     activeUser,
@@ -68,7 +69,6 @@ export default function CryptoPortfolio() {
     addPosition,
     removePositionFromFirebase,
     recordPortfolioValue,
-    cleanupDuplicatesInHistorical,
     addTicker,
     tickerList,
     createPortfolio,
@@ -92,31 +92,6 @@ export default function CryptoPortfolio() {
     };
   }, []);
 
-  async function getPortfolioData() {
-    const portfolio = await getPortfolio(activeUser.portfolioID);
-    setCurrentPortfolio(portfolio);
-    cleanupDuplicatesInHistorical(activeUser.portfolioID);
-    calculatePortfolioValue(portfolio);
-    setPortfolioValueHistory(portfolio.portfolioValueHistory);
-  }
-
-  function getCurrentDate() {
-    var tempDate = new Date();
-    var date =
-      tempDate.getFullYear() +
-      "-" +
-      (tempDate.getMonth() + 1) +
-      "-" +
-      tempDate.getDate() +
-      " " +
-      tempDate.getHours() +
-      ":" +
-      tempDate.getMinutes() +
-      ":" +
-      tempDate.getSeconds();
-    return date;
-  }
-
   function removePosition(position) {
     if (portfolioPositions.length > 0) {
       let index = portfolioPositions.indexOf(position);
@@ -133,40 +108,6 @@ export default function CryptoPortfolio() {
     );
     setShowModal(false);
     setChecked(false);
-  }
-
-  function calculatePortfolioValue(portfolio) {
-    let totalSum = 0;
-    let positionsList = [];
-    const positions = portfolio.positions;
-    if (positions.length > 0) {
-      positions.forEach((position) => {
-        positionsList.push(position);
-        if (nomicsTickers[position.symbol]) {
-          totalSum +=
-            parseFloat(nomicsTickers[position.symbol].usd) * position.quantity;
-        }
-      });
-    }
-    setPortfolioValue(totalSum.toFixed(2));
-    // Sort list descending order by position value
-    positionsList.sort((a, b) =>
-      parseFloat(nomicsTickers[a.symbol].usd) * a.quantity <
-      parseFloat(nomicsTickers[b.symbol].usd) * b.quantity
-        ? 1
-        : parseFloat(nomicsTickers[b.symbol].usd) * b.quantity <
-          parseFloat(nomicsTickers[a.symbol].usd) * a.quantity
-        ? -1
-        : 0
-    );
-
-    setPortfolioPositions(positionsList);
-    if (totalSum !== 0) {
-      recordPortfolioValue(
-        PricePoint(getCurrentDate(), totalSum),
-        activeUser.portfolioID
-      ).catch((err) => setError(err.message));
-    }
   }
 
   const debouncedChangeHandler = useCallback(
@@ -262,7 +203,7 @@ export default function CryptoPortfolio() {
     }
   }
 
-  if (!activeUser.username) {
+  if (!activeUser.id) {
     return (
       <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900"></div>
     );
@@ -511,10 +452,11 @@ export default function CryptoPortfolio() {
                             itemStyle={{ color: "#FFFFFF" }}
                           />
                           <Line
-                            type="natural"
+                            type="monotone"
                             dataKey="value"
                             stroke="#0092ff"
                             dot={false}
+                            activeDot={true}
                           />
                         </LineChart>
                       </ResponsiveContainer>
