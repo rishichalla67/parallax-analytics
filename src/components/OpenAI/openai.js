@@ -12,11 +12,14 @@ const OpenAI = () => {
     setInputText(event.target.value);
   };
 
+  const openAI_API_KEY = process.env.REACT_APP_OPENAI_KEY;
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
     try {
+        console.log(process.env.REACT_APP_OPENAI_KEY)
       const response = await axios.post(
         'https://api.openai.com/v1/completions',
         {
@@ -26,10 +29,9 @@ const OpenAI = () => {
         },
         {
           headers: {
-            'Access-Control-Allow-Origin': 'https://main.ds6681xn1hbi2.amplifyapp.com/',
+            'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
-            Authorization: `Bearer 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`,
-            
+            Authorization: `Bearer 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`
           },
         }
       );
@@ -51,20 +53,26 @@ const OpenAI = () => {
             value={inputText}
             onChange={handleChange}
             />
-            <button
+            {!isLoading && <button
             className="bg-red-200 hover:bg-blue-700 text-black font-bold py-2 px-4 mt-4 rounded-full"
             type="submit"
             disabled={isLoading}
             >
             Submit
-            </button>
+            </button>}
+            {isLoading && (
+                <div className="mt-8 flex items-center justify-center">
+                    <div className="w-6 h-6 bg-gray-800 rounded-full animate-bounce">
+                    <div className="w-3 h-3 bg-white rounded-full inline-block animate-bounce-dot"></div>
+                    </div>
+                </div>
+                )}
+
         </form>
         {outputText && (
             <div className="mt-8">
-            <label className="block font-bold text-white mb-2">
-                Response:
-            </label>
-            <p className="p-2 rounded-lg bg-gray-100">{outputText}</p>
+                <label className="block font-bold text-white mb-2">Response:</label>
+                <p className="p-2 rounded-lg bg-gray-800 text-white">{outputText}</p>
             </div>
         )}
         {error && (
