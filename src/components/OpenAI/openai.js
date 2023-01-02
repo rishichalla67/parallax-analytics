@@ -26,8 +26,10 @@ const OpenAI = () => {
         },
         {
           headers: {
+            'Access-Control-Allow-Origin': 'https://main.ds6681xn1hbi2.amplifyapp.com/',
             'Content-Type': 'application/json',
             Authorization: `Bearer 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`,
+            
           },
         }
       );
