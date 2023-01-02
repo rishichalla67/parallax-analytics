@@ -12,6 +12,10 @@ const OpenAI = () => {
     setInputText(event.target.value);
   };
 
+  const clearInput = (event) => {
+        setInputText('')
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
@@ -50,13 +54,15 @@ const OpenAI = () => {
             value={inputText}
             onChange={handleChange}
             />
-            {!isLoading && <button
+            {!isLoading && <div><button
             className="bg-red-200 hover:bg-blue-700 text-black font-bold py-2 px-4 mt-4 rounded-full"
             type="submit"
             disabled={isLoading}
             >
             Submit
-            </button>}
+            </button>
+            </div>}
+            
             {isLoading && (
                 <div className="mt-8 flex items-center justify-center">
                     <div className="w-6 h-6 bg-gray-800 rounded-full animate-bounce">
@@ -66,6 +72,12 @@ const OpenAI = () => {
                 )}
 
         </form>
+        <button
+            className="bg-green-200 hover:bg-blue-700 text-black font-bold py-2 px-4 mt-4 rounded-full"
+            onClick={clearInput}
+            >
+            Clear Input
+            </button>
         {outputText && (
             <div className="mt-8">
                 <label className="block font-bold text-white mb-2">Response:</label>
