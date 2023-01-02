@@ -22,9 +22,7 @@ import {
 } from "recharts";
 import { Ticker } from "../../Classes/Ticker";
 import Nav from "../Nav.js";
-// import { signal } from "@preact/signals";
 
-// let refreshPricesAvailable = signal(true);
 
 export default function CryptoPortfolio() {
   const symbolRef = useRef();
@@ -80,7 +78,6 @@ export default function CryptoPortfolio() {
     setLoading(true);
     getPortfolioData();
     fetchAllUsers();
-
     const interval = setInterval(() => {
       refreshOraclePrices();
     }, 300000);

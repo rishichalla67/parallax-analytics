@@ -2,12 +2,15 @@ import React from "react";
 import { useEffect, useContext, useState } from "react";
 import { db } from "../firebase";
 import { useAuth } from "./AuthContext";
+import { PricePoint } from "../Classes/PricePoint";
 import {
   doc,
   getDoc,
   updateDoc,
+  setDoc,
   arrayUnion,
   arrayRemove,
+  FieldValue
 } from "firebase/firestore";
 
 const FirestoreContext = React.createContext();
@@ -17,6 +20,7 @@ export function useFirestore() {
 }
 
 export function FirestoreProvider({ children }) {
+
   const { currentUser } = useAuth();
   const [activeUser, setActiveUser] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
@@ -40,6 +44,25 @@ export function FirestoreProvider({ children }) {
 
     setLoading(false);
   }, []);
+
+  // Helper Functions
+
+  function getCurrentDate() {
+    var tempDate = new Date();
+    var date =
+      tempDate.getFullYear() +
+      "-" +
+      (tempDate.getMonth() + 1) +
+      "-" +
+      tempDate.getDate() +
+      " " +
+      tempDate.getHours() +
+      ":" +
+      tempDate.getMinutes() +
+      ":" +
+      tempDate.getSeconds();
+    return date;
+  }
 
   // CRYPTO PORTFOLIO FUNCTIONS
 
@@ -148,6 +171,40 @@ export function FirestoreProvider({ children }) {
     }
   }
 
+  async function recordPortfolioPositionValues(positions, positionValues ,portfolioName){
+    // const portfolioPositionsRef = doc(db, "portfolios", portfolioName);
+    let portfolioPositionsRef = db.collection('portfolios').doc(portfolioName);
+    positions.forEach(position => {
+      positionValues.forEach(positionValue => {
+        if(position.symbol+position.quantity+position.type === positionValue.id){
+          console.log(`Position: ${position.symbol}`)
+          let positionValueHistory = position.valueHistory;
+          
+          positionValueHistory.push(PricePoint(getCurrentDate(), positionValue.value))
+          let updatedPosition = {
+              quantity: position.quantity,
+              symbol: position.symbol,
+              type: position.type,
+              valueHistory: positionValueHistory
+            }
+          const response = portfolioPositionsRef.update("positions", FieldValue.arrayUnion(updatedPosition))
+          console.log(response)
+          // updateDoc(portfolioPositionsRef, updatedPosition)
+          // updateDoc(portfolioPositionsRef, {
+          //   positions: arrayUnion({
+          //     quantity: position.quantity,
+          //     symbol: position.symbol,
+          //     type: position.type,
+          //     valueHistory: positionValueHistory
+          //   }),
+          // });
+        }
+      })
+      
+    })
+    
+  }
+
   // USER FUNCTIONALITY
 
   async function fetchAllUsers() {
@@ -211,6 +268,8 @@ export function FirestoreProvider({ children }) {
     createPortfolio,
     updatePosition,
     fetchAllUsers,
+    getCurrentDate,
+    recordPortfolioPositionValues
   };
 
   return (

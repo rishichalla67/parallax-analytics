@@ -9,6 +9,7 @@ import { FirestoreProvider } from "./contexts/FirestoreContext";
 import ForgotPassword from "./components/Authentication/ForgotPassword";
 import CryptoPortfolio from "./components/Portfolio/CryptoPortfolio";
 import { CryptoProvider } from "./contexts/CryptoContext";
+import OpenAI from "./components/OpenAI/openai"
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
                 {/* Public Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+                <Route path="/openai" element={<OpenAI/>} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
               </Routes>
             </CryptoProvider>

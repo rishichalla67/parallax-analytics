@@ -34,6 +34,7 @@ export default function Nav() {
   const navigation = [
     { name: "Portfolio", href: "/", current: true },
     { name: "Profile", href: "/profile" },
+    { name: "OpenAI", href: "/openai" },
     { name: "Sign out", href: "/login", onClick: handleLogout },
   ];
 

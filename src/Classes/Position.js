@@ -3,5 +3,6 @@ export const Position = (symbol, quantity, type) => {
     symbol: symbol,
     quantity: parseFloat(quantity),
     type: type,
+    valueHistory: []
   };
 };

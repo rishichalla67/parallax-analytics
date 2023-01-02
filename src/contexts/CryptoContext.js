@@ -17,12 +17,9 @@ export function CryptoProvider({ children }) {
     removePositionFromFirebase,
     recordPortfolioValue,
     cleanupDuplicatesInHistorical,
-    addTicker,
-    tickerList,
-    createPortfolio,
-    updatePosition,
-    fetchAllUsers,
     getPortfolioTickerList,
+    getCurrentDate, 
+    recordPortfolioPositionValues
   } = useFirestore();
   const [portfolioValue, setPortfolioValue] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -71,6 +68,20 @@ export function CryptoProvider({ children }) {
     cleanupDuplicatesInHistorical(activeUser.portfolioID);
     calculatePortfolioValue(portfolio);
     setPortfolioValueHistory(portfolio.portfolioValueHistory);
+    //positionValue -> {id: "", value: ""}
+    const portPositions = portfolio.positions
+    console.log(portPositions)
+    let priceValues = []
+    portPositions.forEach(position => {
+      priceValues.push({
+        id: position.symbol+position.quantity+position.type,
+        value: parseFloat(position.quantity) * parseFloat(nomicsTickers[position.symbol].usd)
+      })
+      
+    })
+    console.log(priceValues)
+
+    // recordPortfolioPositionValues(portPositions, priceValues, activeUser.portfolioID) 
   }
 
   function calculatePortfolioValue(portfolio) {
@@ -107,22 +118,7 @@ export function CryptoProvider({ children }) {
     }
   }
 
-  function getCurrentDate() {
-    var tempDate = new Date();
-    var date =
-      tempDate.getFullYear() +
-      "-" +
-      (tempDate.getMonth() + 1) +
-      "-" +
-      tempDate.getDate() +
-      " " +
-      tempDate.getHours() +
-      ":" +
-      tempDate.getMinutes() +
-      ":" +
-      tempDate.getSeconds();
-    return date;
-  }
+
 
   const value = {
     nomicsTickers,
