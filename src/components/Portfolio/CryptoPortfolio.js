@@ -145,10 +145,10 @@ export default function CryptoPortfolio() {
     symbolRef.current.value = value;
   }
 
-  function parseStringToFloat(str) {
-    if (!isNaN(str)) {
-      return parseFloat(parseFloat(str).toFixed(2));
-    }
+  function addCommaToNumberString(numberString) {
+    var parts = numberString.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
   }
   
 
@@ -410,7 +410,7 @@ export default function CryptoPortfolio() {
               )}
               <div className="flex justify-center border-b pb-2 border-gray-200">
                 <h3 className="pt-1 text-xl pl-4 leading-6 font-medium">Portfolio Value: </h3>
-                <h3 className="pl-2 pt-1 flex grow text-xl leading-6 font-medium text-green-400">{`$${parseStringToFloat(portfolioValue)}`}</h3>
+                <h3 className="pl-2 pt-1 flex grow text-xl leading-6 font-medium text-green-400">{`$${addCommaToNumberString(portfolioValue)}`}</h3>
                 {refreshAvailable && (
                   <div className="pl-9 pt-1">
                     <svg
@@ -445,15 +445,9 @@ export default function CryptoPortfolio() {
                             dataKey="value"
                             tickLine={{ stroke: "#0092ff" }}
                             // TODO: Create logic to autoscale
-
                             domain={[
-<<<<<<< HEAD
-                              parseInt(portfolioValueHistory[0].value * 1.0), // 
-                              parseInt(portfolioValue * 1.1),
-=======
-                              parseInt(portfolioValue * 0.75), //Lower bound
-                              parseInt(portfolioValue * 1.2), //Upper bound
->>>>>>> 8317ce498aa0e493069b9517ad7f2a0c9360491f
+                              parseInt(portfolioValueHistory[0].value * 1.0), // lower bound
+                              parseInt(portfolioValue * 1.1)
                             ]}
                           />
                           <Tooltip
@@ -533,7 +527,7 @@ export default function CryptoPortfolio() {
                               tickerList[position.symbol]
                             } (${position.type.toLowerCase()})`}</h3>
                             <div className="grow pt-2 pr-1 text-xl leading-6 font-medium text-right">
-                              {`$${calculatePositionValue(position)}`}
+                              {`$${addCommaToNumberString(calculatePositionValue(position))}`}
                             </div>
                           </div>
                         );
