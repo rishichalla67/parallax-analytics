@@ -24,7 +24,6 @@ import {
 import { Ticker } from "../../Classes/Ticker";
 import Nav from "../Nav.js";
 
-
 export default function CryptoPortfolio() {
   const symbolRef = useRef();
   const quantityRef = useRef();
@@ -446,9 +445,15 @@ export default function CryptoPortfolio() {
                             dataKey="value"
                             tickLine={{ stroke: "#0092ff" }}
                             // TODO: Create logic to autoscale
+
                             domain={[
+<<<<<<< HEAD
                               parseInt(portfolioValueHistory[0].value * 1.0), // 
                               parseInt(portfolioValue * 1.1),
+=======
+                              parseInt(portfolioValue * 0.75), //Lower bound
+                              parseInt(portfolioValue * 1.2), //Upper bound
+>>>>>>> 8317ce498aa0e493069b9517ad7f2a0c9360491f
                             ]}
                           />
                           <Tooltip
