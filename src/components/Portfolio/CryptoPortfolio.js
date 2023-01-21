@@ -10,6 +10,7 @@ import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
 import { Position } from "../../Classes/Position";
 import { PricePoint } from "../../Classes/PricePoint";
+import PortfolioChart  from "./chart.js"
 import debounce from "lodash.debounce";
 import {
   ResponsiveContainer,
@@ -145,6 +146,13 @@ export default function CryptoPortfolio() {
     symbolRef.current.value = value;
   }
 
+  function parseStringToFloat(str) {
+    if (!isNaN(str)) {
+      return parseFloat(parseFloat(str).toFixed(2));
+    }
+  }
+  
+
   async function updateSelectedPosition(e) {
     e.preventDefault();
 
@@ -213,10 +221,10 @@ export default function CryptoPortfolio() {
         <div className="text-white grid place-items-center">
           {activeUser.portfolioID ? (
             <div className="bg-black min-w-95% min-h-98vh md:max-w-5xl rounded-lg border border-sky-500 shadow-lg items-center ">
-              <div className="flex justify-center px-4 py-5 sm:px-6">
-                <h3 className="text-xl align-content-center leading-6 font-medium">
+              <div className="flex justify-center px-4 py-1 sm:px-6">
+                {/* <h3 className="text-xl align-content-center leading-6 font-medium">
                   My Crypto Portfolio
-                </h3>
+                </h3> */}
               </div>
               {error && (
                 <div role="alert">
@@ -312,7 +320,6 @@ export default function CryptoPortfolio() {
                                       defaultChecked={checked}
                                       onChange={() => {
                                         setChecked(!checked);
-                                        console.log(checked);
                                       }}
                                     />
                                     <a className="pl-2 leading-3">
@@ -402,11 +409,11 @@ export default function CryptoPortfolio() {
                   </div>
                 </div>
               )}
-              <div className="flex justify-center border-t border-b pb-2 border-gray-200">
-                <h3 className="pt-2 text-xl pl-4 leading-6 font-medium">{`Portfolio Value: `}</h3>
-                <h3 className="pl-2 pt-2 flex grow text-xl leading-6 font-medium text-green-400">{`$${portfolioValue}`}</h3>
+              <div className="flex justify-center border-b pb-2 border-gray-200">
+                <h3 className="pt-1 text-xl pl-4 leading-6 font-medium">Portfolio Value: </h3>
+                <h3 className="pl-2 pt-1 flex grow text-xl leading-6 font-medium text-green-400">{`$${parseStringToFloat(portfolioValue)}`}</h3>
                 {refreshAvailable && (
-                  <div className="pl-9 pt-2 ">
+                  <div className="pl-9 pt-1">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -430,6 +437,7 @@ export default function CryptoPortfolio() {
               {!editPositions ? (
                 <div className="flex flex-col justify-center px-4 py-5 sm:px-6 pt-10 border-gray-200">
                   {portfolioValueHistory.length > 0 && (
+                    
                     <div className="flex justify-center w-full">
                       <ResponsiveContainer width="100%" height={300 || 250}>
                         <LineChart data={portfolioValueHistory}>
@@ -439,7 +447,7 @@ export default function CryptoPortfolio() {
                             tickLine={{ stroke: "#0092ff" }}
                             // TODO: Create logic to autoscale
                             domain={[
-                              parseInt(portfolioValue / 1.1),
+                              parseInt(portfolioValueHistory[0].value * 1.0), // 
                               parseInt(portfolioValue * 1.1),
                             ]}
                           />
@@ -457,6 +465,7 @@ export default function CryptoPortfolio() {
                           />
                         </LineChart>
                       </ResponsiveContainer>
+                      {/* <PortfolioChart data={portfolioValueHistory}/> */}
                     </div>
                   )}
                   <ul className="flex flex-wrap text-lg md:text-xl font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">

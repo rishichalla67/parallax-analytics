@@ -70,7 +70,6 @@ export function CryptoProvider({ children }) {
     setPortfolioValueHistory(portfolio.portfolioValueHistory);
     //positionValue -> {id: "", value: ""}
     const portPositions = portfolio.positions
-    console.log(portPositions)
     let priceValues = []
     portPositions.forEach(position => {
       priceValues.push({
@@ -79,7 +78,6 @@ export function CryptoProvider({ children }) {
       })
       
     })
-    console.log(priceValues)
 
     // recordPortfolioPositionValues(portPositions, priceValues, activeUser.portfolioID) 
   }
