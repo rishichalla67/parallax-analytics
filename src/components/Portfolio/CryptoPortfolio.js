@@ -10,7 +10,6 @@ import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
 import { Position } from "../../Classes/Position";
 import { PricePoint } from "../../Classes/PricePoint";
-import PortfolioChart  from "./chart.js"
 import debounce from "lodash.debounce";
 import {
   ResponsiveContainer,
@@ -46,6 +45,7 @@ export default function CryptoPortfolio() {
   const [editPositions, setEditPositions] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [currentChartDateRange, setCurrentChartDateRange] = useState("1W");
 
   const cancelButtonRef = useRef(null);
   const {
@@ -60,6 +60,7 @@ export default function CryptoPortfolio() {
     getPortfolioData,
     portfolioValueHistory,
     portfolioPositions,
+    calculatePositionPrice,
   } = useCryptoOracle();
   const {
     activeUser,
@@ -71,6 +72,7 @@ export default function CryptoPortfolio() {
     tickerList,
     createPortfolio,
     updatePosition,
+    getCurrentDate,
     fetchAllUsers,
   } = useFirestore();
 
@@ -78,8 +80,11 @@ export default function CryptoPortfolio() {
     setLoading(true);
     getPortfolioData();
     fetchAllUsers();
+    // console.log(filterDataByRange(portfolioValueHistory, currentChartDateRange))
+    // recordPortfolioPositionValues();
     const interval = setInterval(() => {
       refreshOraclePrices();
+      // recordPortfolioPositionValues();
     }, 300000);
 
     setLoading(false);
@@ -111,6 +116,71 @@ export default function CryptoPortfolio() {
     debounce(handleSearchSubmit, 300),
     []
   );
+
+  async function recordPortfolioPositionValues(){
+    // No positions
+    if(portfolioPositions.length == 0){
+        return;
+    }
+    // Has positions
+    // updatePosition(originalPosition, newPosition, portfolioName)
+    portfolioPositions.map((portPosition) => {
+        let temp = {...portPosition};
+        temp.valueHistory.push(PricePoint(getCurrentDate(), calculatePositionPrice(temp)))
+        updatePosition(portPosition, temp, activeUser.portfolioID);
+        console.log(temp)
+    })
+  }
+
+  function filterDataByRange(data, dateRange) {
+      var filteredData = [];
+      var currentDate = new Date();
+
+      switch (dateRange) {
+          case "1D":
+              var oneDayAgo = new Date(currentDate);
+              oneDayAgo.setDate(currentDate.getDate() - 1);
+              filteredData = data.filter(function(item) {
+                  return new Date(item.date) >= oneDayAgo && new Date(item.date) <= currentDate;
+              });
+              break;
+          case "1W":
+              var oneWeekAgo = new Date(currentDate);
+              oneWeekAgo.setDate(currentDate.getDate() - 7);
+              filteredData = data.filter(function(item) {
+                  return new Date(item.date) >= oneWeekAgo && new Date(item.date) <= currentDate;
+              });
+              break;
+          case "1M":
+              var oneMonthAgo = new Date(currentDate);
+              oneMonthAgo.setMonth(currentDate.getMonth() - 1);
+              filteredData = data.filter(function(item) {
+                  return new Date(item.date) >= oneMonthAgo && new Date(item.date) <= currentDate;
+              });
+              break;
+          case "1Y":
+              var oneYearAgo = new Date(currentDate);
+              oneYearAgo.setFullYear(currentDate.getFullYear() - 1);
+              filteredData = data.filter(function(item) {
+                  return new Date(item.date) >= oneYearAgo && new Date(item.date) <= currentDate;
+              });
+              break;
+          case "YTD":
+              var yearToDate = new Date(currentDate.getFullYear(), 0, 1);
+              filteredData = data.filter(function(item) {
+                  return new Date(item.date) >= yearToDate && new Date(item.date) <= currentDate;
+              });
+              break;
+          case "ALL":
+              filteredData = data;
+              break;
+          default:
+              console.log("Invalid date range specified.");
+      }
+
+      return filteredData;
+  }
+
 
   async function handleSearchSubmit() {
     await searchCoinGeckoAPI(searchRef.current.value);
@@ -205,6 +275,10 @@ export default function CryptoPortfolio() {
     } else {
       setDisable(false);
     }
+  }
+
+  const onChange = (event) => {
+    setCurrentChartDateRange(event.target.value);
   }
 
   if (!activeUser.id) {
@@ -434,38 +508,53 @@ export default function CryptoPortfolio() {
                 )}
               </div>
               {!editPositions ? (
+                
                 <div className="flex flex-col justify-center px-4 py-5 sm:px-6 pt-10 border-gray-200">
                   {portfolioValueHistory.length > 0 && (
+                    <>
+                      <div className="flex justify-end ">
+                        <div className=" text-center">
+                          <select onChange={onChange} className="block bg-black appearance-none border border-gray-400 hover:border-gray-500 px-2 py-2 pr-8 rounded-lg leading-tight focus:outline-none focus:shadow-outline-blue focus:border-blue-300">
+                            <option value="1D">1 Day</option>
+                            <option value="1W">1 Week</option>
+                            <option value="1M">1 Month</option>
+                            <option value="1Y">1 Year</option>
+                            <option value="YTD">Year-to-Date</option>
+                            <option value="ALL">All</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="flex justify-center w-full">
+                        <ResponsiveContainer width="100%" height={300 || 250}>
+                          <LineChart data={filterDataByRange(portfolioValueHistory, currentChartDateRange)}>
+                            <XAxis dataKey="date" />
+                            <YAxis
+                              dataKey="value"
+                              tickLine={{ stroke: "#0092ff" }}
+                              // TODO: Create logic to autoscale
+                              domain={[
+                                parseInt(filterDataByRange(portfolioValueHistory, currentChartDateRange)[0].value * 0.95), // lower bound
+                                parseInt(portfolioValue * 1.1)
+                              ]}
+                            />
+                            <Tooltip
+                              style={{ color: "red" }}
+                              contentStyle={{ backgroundColor: "#000000" }}
+                              itemStyle={{ color: "#FFFFFF" }}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="value"
+                              stroke="#0092ff"
+                              dot={false}
+                              activeDot={true}
+                            />
+                          </LineChart>
+                        </ResponsiveContainer>
+                        
+                      </div>
                     
-                    <div className="flex justify-center w-full">
-                      <ResponsiveContainer width="100%" height={300 || 250}>
-                        <LineChart data={portfolioValueHistory}>
-                          <XAxis dataKey="date" />
-                          <YAxis
-                            dataKey="value"
-                            tickLine={{ stroke: "#0092ff" }}
-                            // TODO: Create logic to autoscale
-                            domain={[
-                              parseInt(portfolioValueHistory[0].value * 1.0), // lower bound
-                              parseInt(portfolioValue * 1.1)
-                            ]}
-                          />
-                          <Tooltip
-                            style={{ color: "red" }}
-                            contentStyle={{ backgroundColor: "#000000" }}
-                            itemStyle={{ color: "#FFFFFF" }}
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="value"
-                            stroke="#0092ff"
-                            dot={false}
-                            activeDot={true}
-                          />
-                        </LineChart>
-                      </ResponsiveContainer>
-                      {/* <PortfolioChart data={portfolioValueHistory}/> */}
-                    </div>
+                    </>
                   )}
                   <ul className="flex flex-wrap text-lg md:text-xl font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
                     <li className="mr-2">

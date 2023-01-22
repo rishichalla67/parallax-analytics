@@ -49,29 +49,34 @@ const OpenAI = () => {
         <div className="p-4 h-screen bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
         <h1 className="text-2xl font-bold text-white mb-4">Ask Anything...</h1>
         <form onSubmit={handleSubmit}>
-            <textarea
+          <textarea
             className="w-full p-2 rounded-lg bg-gray-100 focus:outline-none focus:bg-white"
             value={inputText}
             onChange={handleChange}
-            />
-            {!isLoading && <div><button
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSubmit(e);
+              }
+            }}
+          />
+          {!isLoading && <div><button
             className="bg-red-200 hover:bg-blue-700 text-black font-bold py-2 px-4 mt-4 rounded-full"
             type="submit"
             disabled={isLoading}
             >
             Submit
             </button>
-            </div>}
-            
-            {isLoading && (
-                <div className="mt-8 flex items-center justify-center">
-                    <div className="w-6 h-6 bg-gray-800 rounded-full animate-bounce">
-                    <div className="w-3 h-3 bg-white rounded-full inline-block animate-bounce-dot"></div>
-                    </div>
-                </div>
-                )}
+          </div>}
 
+          {isLoading && (
+            <div className="mt-8 flex items-center justify-center">
+              <div className="w-6 h-6 bg-gray-800 rounded-full animate-bounce">
+                <div className="w-3 h-3 bg-white rounded-full inline-block animate-bounce-dot"></div>
+              </div>
+            </div>
+          )}
         </form>
+
         <button
             className="bg-green-200 hover:bg-blue-700 text-black font-bold py-2 px-4 mt-4 rounded-full"
             onClick={clearInput}

@@ -116,6 +116,13 @@ export function CryptoProvider({ children }) {
     }
   }
 
+  function calculatePositionPrice(position){
+    if (nomicsTickers[position.symbol]) {
+        return(parseFloat(nomicsTickers[position.symbol].usd) * position.quantity);
+    }
+  }
+  
+
 
 
   const value = {
@@ -135,6 +142,7 @@ export function CryptoProvider({ children }) {
     setPortfolioValueHistory,
     portfolioValueHistory,
     getPortfolioData,
+    calculatePositionPrice,
   };
 
   return (
