@@ -45,7 +45,7 @@ export default function CryptoPortfolio() {
   const [editPositions, setEditPositions] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [currentChartDateRange, setCurrentChartDateRange] = useState("1W");
+  const [currentChartDateRange, setCurrentChartDateRange] = useState("1D");
 
   const cancelButtonRef = useRef(null);
   const {
@@ -80,11 +80,8 @@ export default function CryptoPortfolio() {
     setLoading(true);
     getPortfolioData();
     fetchAllUsers();
-    // console.log(filterDataByRange(portfolioValueHistory, currentChartDateRange))
-    // recordPortfolioPositionValues();
     const interval = setInterval(() => {
       refreshOraclePrices();
-      // recordPortfolioPositionValues();
     }, 300000);
 
     setLoading(false);
@@ -117,20 +114,20 @@ export default function CryptoPortfolio() {
     []
   );
 
-  async function recordPortfolioPositionValues(){
-    // No positions
-    if(portfolioPositions.length == 0){
-        return;
-    }
-    // Has positions
-    // updatePosition(originalPosition, newPosition, portfolioName)
-    portfolioPositions.map((portPosition) => {
-        let temp = {...portPosition};
-        temp.valueHistory.push(PricePoint(getCurrentDate(), calculatePositionPrice(temp)))
-        updatePosition(portPosition, temp, activeUser.portfolioID);
-        console.log(temp)
-    })
-  }
+  // async function recordPortfolioPositionValues(){
+  //   // No positions
+  //   if(portfolioPositions.length == 0){
+  //       return;
+  //   }
+  //   // Has positions
+  //   // updatePosition(originalPosition, newPosition, portfolioName)
+  //   portfolioPositions.map((portPosition) => {
+  //       let temp = {...portPosition};
+  //       temp.valueHistory.push(PricePoint(getCurrentDate(), calculatePositionPrice(temp)))
+  //       updatePosition(portPosition, temp, activeUser.portfolioID);
+  //       console.log(temp)
+  //   })
+  // }
 
   function filterDataByRange(data, dateRange) {
       var filteredData = [];
@@ -277,7 +274,7 @@ export default function CryptoPortfolio() {
     }
   }
 
-  const onChange = (event) => {
+  const selectDateRange = (event) => {
     setCurrentChartDateRange(event.target.value);
   }
 
@@ -514,7 +511,7 @@ export default function CryptoPortfolio() {
                     <>
                       <div className="flex justify-end ">
                         <div className=" text-center">
-                          <select onChange={onChange} className="block bg-black appearance-none border border-gray-400 hover:border-gray-500 px-2 py-2 pr-8 rounded-lg leading-tight focus:outline-none focus:shadow-outline-blue focus:border-blue-300">
+                          <select onChange={selectDateRange} className="block bg-black appearance-none border border-gray-400 hover:border-gray-500 px-2 py-2 pr-8 rounded-lg leading-tight focus:outline-none focus:shadow-outline-blue focus:border-blue-300">
                             <option value="1D">1 Day</option>
                             <option value="1W">1 Week</option>
                             <option value="1M">1 Month</option>
