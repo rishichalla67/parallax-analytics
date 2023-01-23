@@ -18,8 +18,8 @@ export function CryptoProvider({ children }) {
     recordPortfolioValue,
     cleanupDuplicatesInHistorical,
     getPortfolioTickerList,
-    getCurrentDate, 
-    recordPortfolioPositionValues
+    getCurrentDate,
+    recordPortfolioPositionValues,
   } = useFirestore();
   const [portfolioValue, setPortfolioValue] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -29,6 +29,9 @@ export function CryptoProvider({ children }) {
   const [portfolioPositions, setPortfolioPositions] = useState([]);
   const [currentPortfolio, setCurrentPortfolio] = useState();
   const [portfolioValueHistory, setPortfolioValueHistory] = useState([]);
+  const [filteredPortfolioValueHistory, setFilteredPortfolioValueHistory] =
+    useState([]);
+  const [currentChartDateRange, setCurrentChartDateRange] = useState("1D");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -67,19 +70,75 @@ export function CryptoProvider({ children }) {
     setCurrentPortfolio(portfolio);
     cleanupDuplicatesInHistorical(activeUser.portfolioID);
     calculatePortfolioValue(portfolio);
+    dateByRange(portfolio.portfolioValueHistory, currentChartDateRange);
+
     setPortfolioValueHistory(portfolio.portfolioValueHistory);
     //positionValue -> {id: "", value: ""}
-    const portPositions = portfolio.positions
-    let priceValues = []
-    portPositions.forEach(position => {
+    const portPositions = portfolio.positions;
+    let priceValues = [];
+    portPositions.forEach((position) => {
       priceValues.push({
-        id: position.symbol+position.quantity+position.type,
-        value: parseFloat(position.quantity) * parseFloat(nomicsTickers[position.symbol].usd)
-      })
-      
-    })
+        id: position.symbol + position.quantity + position.type,
+        value:
+          parseFloat(position.quantity) *
+          parseFloat(nomicsTickers[position.symbol].usd),
+      });
+    });
 
-    // recordPortfolioPositionValues(portPositions, priceValues, activeUser.portfolioID) 
+    // recordPortfolioPositionValues(portPositions, priceValues, activeUser.portfolioID)
+  }
+
+  function dateByRange(data, dateRange) {
+    let filteredData = [];
+    let currentDate = new Date();
+
+    switch (dateRange) {
+      case "1D":
+        let oneDayAgo = new Date(currentDate);
+        oneDayAgo.setDate(currentDate.getDate() - 1);
+        filteredData = data.filter(function (item) {
+          return (
+            new Date(item.date) >= oneDayAgo &&
+            new Date(item.date) <= currentDate
+          );
+        });
+        break;
+      case "1W":
+        let oneWeekAgo = new Date(currentDate);
+        oneWeekAgo.setDate(currentDate.getDate() - 7);
+        filteredData = data.filter(function (item) {
+          return (
+            new Date(item.date) >= oneWeekAgo &&
+            new Date(item.date) <= currentDate
+          );
+        });
+        break;
+      case "1M":
+        let oneMonthAgo = new Date(currentDate);
+        oneMonthAgo.setMonth(currentDate.getMonth() - 1);
+        filteredData = data.filter(function (item) {
+          return (
+            new Date(item.date) >= oneMonthAgo &&
+            new Date(item.date) <= currentDate
+          );
+        });
+        break;
+      case "1Y":
+        let oneYearAgo = new Date(currentDate);
+        oneYearAgo.setFullYear(currentDate.getFullYear() - 1);
+        filteredData = data.filter(function (item) {
+          return (
+            new Date(item.date) >= oneYearAgo &&
+            new Date(item.date) <= currentDate
+          );
+        });
+        break;
+      default:
+        console.log("Invalid date range specified.");
+    }
+
+    // console.log(filteredData);
+    setFilteredPortfolioValueHistory(filteredData);
   }
 
   function calculatePortfolioValue(portfolio) {
@@ -116,14 +175,11 @@ export function CryptoProvider({ children }) {
     }
   }
 
-  function calculatePositionPrice(position){
+  function calculatePositionPrice(position) {
     if (nomicsTickers[position.symbol]) {
-        return(parseFloat(nomicsTickers[position.symbol].usd) * position.quantity);
+      return parseFloat(nomicsTickers[position.symbol].usd) * position.quantity;
     }
   }
-  
-
-
 
   const value = {
     nomicsTickers,
@@ -143,6 +199,11 @@ export function CryptoProvider({ children }) {
     portfolioValueHistory,
     getPortfolioData,
     calculatePositionPrice,
+    setFilteredPortfolioValueHistory,
+    filteredPortfolioValueHistory,
+    dateByRange,
+    setCurrentChartDateRange,
+    currentChartDateRange,
   };
 
   return (

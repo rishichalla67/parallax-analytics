@@ -9,7 +9,6 @@ import { Dialog, Transition } from "@headlessui/react";
 import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
 import { Position } from "../../Classes/Position";
-import { PricePoint } from "../../Classes/PricePoint";
 import debounce from "lodash.debounce";
 import {
   ResponsiveContainer,
@@ -34,6 +33,8 @@ export default function CryptoPortfolio() {
   let timer = 0;
 
   const [tabIndex, setTabIndex] = useState(1);
+  const [dateIndex, setDateIndex] = useState("1D");
+
   const [error, setError] = useState("");
   const [selectedPosition, setSelectedPosition] = useState();
   const [successMessage, setSuccessMessage] = useState("");
@@ -45,7 +46,6 @@ export default function CryptoPortfolio() {
   const [editPositions, setEditPositions] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [currentChartDateRange, setCurrentChartDateRange] = useState("1D");
 
   const cancelButtonRef = useRef(null);
   const {
@@ -60,26 +60,31 @@ export default function CryptoPortfolio() {
     getPortfolioData,
     portfolioValueHistory,
     portfolioPositions,
-    calculatePositionPrice,
+    filteredPortfolioValueHistory,
+    dateByRange,
+    setCurrentChartDateRange,
+    currentChartDateRange,
   } = useCryptoOracle();
   const {
     activeUser,
-    getPortfolio,
     addPosition,
     removePositionFromFirebase,
-    recordPortfolioValue,
     addTicker,
     tickerList,
     createPortfolio,
     updatePosition,
-    getCurrentDate,
     fetchAllUsers,
   } = useFirestore();
 
+  // const [filteredPortfolioValueHistory, setFilteredPortfolioValueHistory] =
+  //   useState(portfolioValueHistory);
+
+  // dateByRange(portfolioValueHistory, currentChartDateRange);
   useEffect(() => {
     setLoading(true);
     getPortfolioData();
     fetchAllUsers();
+    dateByRange(portfolioValueHistory, currentChartDateRange);
     const interval = setInterval(() => {
       refreshOraclePrices();
     }, 300000);
@@ -89,7 +94,7 @@ export default function CryptoPortfolio() {
       clearInterval(interval);
       clearTimeout(timer);
     };
-  }, []);
+  }, [currentChartDateRange]);
 
   function removePosition(position) {
     if (portfolioPositions.length > 0) {
@@ -107,6 +112,26 @@ export default function CryptoPortfolio() {
     );
     setShowModal(false);
     setChecked(false);
+  }
+
+  function findMaxValue(data) {
+    let highest = 0;
+    data.map((item) => {
+      if (parseInt(item.value * 1.0) > highest) {
+        highest = parseInt(item.value * 1.0);
+      }
+    });
+    return highest;
+  }
+
+  function findMinValue(data) {
+    let lowest = data[0].value;
+    data.map((item) => {
+      if (parseInt(item.value * 1.0) < lowest) {
+        lowest = parseInt(item.value * 1.0);
+      }
+    });
+    return lowest;
   }
 
   const debouncedChangeHandler = useCallback(
@@ -128,56 +153,6 @@ export default function CryptoPortfolio() {
   //       console.log(temp)
   //   })
   // }
-
-  function filterDataByRange(data, dateRange) {
-      var filteredData = [];
-      var currentDate = new Date();
-
-      switch (dateRange) {
-          case "1D":
-              var oneDayAgo = new Date(currentDate);
-              oneDayAgo.setDate(currentDate.getDate() - 1);
-              filteredData = data.filter(function(item) {
-                  return new Date(item.date) >= oneDayAgo && new Date(item.date) <= currentDate;
-              });
-              break;
-          case "1W":
-              var oneWeekAgo = new Date(currentDate);
-              oneWeekAgo.setDate(currentDate.getDate() - 7);
-              filteredData = data.filter(function(item) {
-                  return new Date(item.date) >= oneWeekAgo && new Date(item.date) <= currentDate;
-              });
-              break;
-          case "1M":
-              var oneMonthAgo = new Date(currentDate);
-              oneMonthAgo.setMonth(currentDate.getMonth() - 1);
-              filteredData = data.filter(function(item) {
-                  return new Date(item.date) >= oneMonthAgo && new Date(item.date) <= currentDate;
-              });
-              break;
-          case "1Y":
-              var oneYearAgo = new Date(currentDate);
-              oneYearAgo.setFullYear(currentDate.getFullYear() - 1);
-              filteredData = data.filter(function(item) {
-                  return new Date(item.date) >= oneYearAgo && new Date(item.date) <= currentDate;
-              });
-              break;
-          case "YTD":
-              var yearToDate = new Date(currentDate.getFullYear(), 0, 1);
-              filteredData = data.filter(function(item) {
-                  return new Date(item.date) >= yearToDate && new Date(item.date) <= currentDate;
-              });
-              break;
-          case "ALL":
-              filteredData = data;
-              break;
-          default:
-              console.log("Invalid date range specified.");
-      }
-
-      return filteredData;
-  }
-
 
   async function handleSearchSubmit() {
     await searchCoinGeckoAPI(searchRef.current.value);
@@ -217,7 +192,6 @@ export default function CryptoPortfolio() {
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return parts.join(".");
   }
-  
 
   async function updateSelectedPosition(e) {
     e.preventDefault();
@@ -274,9 +248,11 @@ export default function CryptoPortfolio() {
     }
   }
 
-  const selectDateRange = (event) => {
-    setCurrentChartDateRange(event.target.value);
-  }
+  const selectDateRange = (range) => {
+    console.log(range);
+    setCurrentChartDateRange(range);
+    dateByRange(portfolioValueHistory, currentChartDateRange);
+  };
 
   if (!activeUser.id) {
     return (
@@ -291,11 +267,7 @@ export default function CryptoPortfolio() {
         <div className="text-white grid place-items-center">
           {activeUser.portfolioID ? (
             <div className="bg-black min-w-95% min-h-98vh md:max-w-5xl rounded-lg border border-sky-500 shadow-lg items-center ">
-              <div className="flex justify-center px-4 py-1 sm:px-6">
-                {/* <h3 className="text-xl align-content-center leading-6 font-medium">
-                  My Crypto Portfolio
-                </h3> */}
-              </div>
+              <div className="flex justify-center px-4 py-1 sm:px-6"></div>
               {error && (
                 <div role="alert">
                   <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
@@ -480,8 +452,18 @@ export default function CryptoPortfolio() {
                 </div>
               )}
               <div className="flex justify-center border-b pb-2 border-gray-200">
-                <h3 className="pt-1 text-xl pl-4 leading-6 font-medium">Portfolio Value: </h3>
-                <h3 className="pl-2 pt-1 flex grow text-xl leading-6 font-medium text-green-400">{`$${addCommaToNumberString(portfolioValue)}`}</h3>
+                <h3 className="pt-1 text-xl pl-4 leading-6 font-medium">
+                  Portfolio Value:
+                </h3>
+                <h3 className="pl-2 pt-1 flex grow text-xl leading-6 font-medium text-green-400">{`$${addCommaToNumberString(
+                  portfolioValue
+                )}`}</h3>
+                {/* <h3 className="mr-10 pl-2 pt-1 flex grow text-xl leading-6 font-medium justify-center">
+                  PNL:
+                </h3>
+                <h3 className="mr-10 pl-2 pt-1 flex grow text-xl leading-6 font-medium justify-center text-green-400">{`$${addCommaToNumberString(
+                  portfolioValue
+                )}`}</h3> */}
                 {refreshAvailable && (
                   <div className="pl-9 pt-1">
                     <svg
@@ -505,33 +487,98 @@ export default function CryptoPortfolio() {
                 )}
               </div>
               {!editPositions ? (
-                
                 <div className="flex flex-col justify-center px-4 py-5 sm:px-6 pt-10 border-gray-200">
+                  <div className="justify-end hidden md:flex">
+                    <div className=" text-center">
+                      <button
+                        onClick={() => {
+                          selectDateRange("1D");
+                          setDateIndex("1D");
+                        }}
+                        className={`inline-block p-4 ${
+                          dateIndex === "1D"
+                            ? "text-white bg-purple-900 font-bold py-2 px-4 rounded"
+                            : "text-white hover:bg-purple-900 font-bold py-2 px-4 rounded"
+                        }`}
+                      >
+                        1D
+                      </button>
+                      <button
+                        onClick={() => {
+                          selectDateRange("1W");
+                          setDateIndex("1W");
+                        }}
+                        className={`inline-block p-4 ${
+                          dateIndex === "1W"
+                            ? "text-white bg-purple-900 font-bold py-2 px-4 rounded"
+                            : "text-white hover:bg-purple-900 font-bold py-2 px-4 rounded"
+                        }`}
+                      >
+                        1W
+                      </button>
+                      <button
+                        onClick={() => {
+                          selectDateRange("1M");
+                          setDateIndex("1M");
+                        }}
+                        className={`inline-block p-4 ${
+                          dateIndex === "1M"
+                            ? "text-white bg-purple-900 font-bold py-2 px-4 rounded"
+                            : "text-white hover:bg-purple-900 font-bold py-2 px-4 rounded"
+                        }`}
+                      >
+                        1M
+                      </button>
+                      <button
+                        onClick={() => {
+                          selectDateRange("1Y");
+                          setDateIndex("1Y");
+                        }}
+                        className={`inline-block p-4 ${
+                          dateIndex === "1Y"
+                            ? "text-white bg-purple-900 font-bold py-2 px-4 rounded"
+                            : "text-white hover:bg-purple-900 font-bold py-2 px-4 rounded"
+                        }`}
+                      >
+                        1Y
+                      </button>
+                    </div>
+                  </div>
                   {portfolioValueHistory.length > 0 && (
                     <>
-                      <div className="flex justify-end ">
-                        <div className=" text-center">
-                          <select onChange={selectDateRange} className="block bg-black appearance-none border border-gray-400 hover:border-gray-500 px-2 py-2 pr-8 rounded-lg leading-tight focus:outline-none focus:shadow-outline-blue focus:border-blue-300">
-                            <option value="1D">1 Day</option>
-                            <option value="1W">1 Week</option>
-                            <option value="1M">1 Month</option>
-                            <option value="1Y">1 Year</option>
-                            <option value="YTD">Year-to-Date</option>
-                            <option value="ALL">All</option>
-                          </select>
-                        </div>
-                      </div>
                       <div className="flex justify-center w-full">
                         <ResponsiveContainer width="100%" height={300 || 250}>
-                          <LineChart data={filterDataByRange(portfolioValueHistory, currentChartDateRange)}>
+                          <LineChart
+                            data={
+                              filteredPortfolioValueHistory.length > 0
+                                ? filteredPortfolioValueHistory
+                                : portfolioValueHistory
+                            }
+                          >
                             <XAxis dataKey="date" />
                             <YAxis
                               dataKey="value"
                               tickLine={{ stroke: "#0092ff" }}
-                              // TODO: Create logic to autoscale
                               domain={[
-                                parseInt(filterDataByRange(portfolioValueHistory, currentChartDateRange)[0].value * 0.95), // lower bound
-                                parseInt(portfolioValue * 1.1)
+                                // filterDataByRange(portfolioValueHistory, currentChartDateRange)[0].value
+                                filteredPortfolioValueHistory.length > 0
+                                  ? parseInt(
+                                      findMinValue(
+                                        filteredPortfolioValueHistory
+                                      ) * 0.99
+                                    )
+                                  : parseInt(
+                                      findMinValue(portfolioValueHistory) * 0.99
+                                    ), // lower bound
+                                filteredPortfolioValueHistory.length > 0
+                                  ? parseInt(
+                                      findMaxValue(
+                                        filteredPortfolioValueHistory
+                                      ) * 1.01
+                                    )
+                                  : parseInt(
+                                      findMaxValue(portfolioValueHistory) * 1.01
+                                    ),
                               ]}
                             />
                             <Tooltip
@@ -545,12 +592,11 @@ export default function CryptoPortfolio() {
                               stroke="#0092ff"
                               dot={false}
                               activeDot={true}
+                              strokeWidth={3}
                             />
                           </LineChart>
                         </ResponsiveContainer>
-                        
                       </div>
-                    
                     </>
                   )}
                   <ul className="flex flex-wrap text-lg md:text-xl font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
@@ -613,7 +659,9 @@ export default function CryptoPortfolio() {
                               tickerList[position.symbol]
                             } (${position.type.toLowerCase()})`}</h3>
                             <div className="grow pt-2 pr-1 text-xl leading-6 font-medium text-right">
-                              {`$${addCommaToNumberString(calculatePositionValue(position))}`}
+                              {`$${addCommaToNumberString(
+                                calculatePositionValue(position)
+                              )}`}
                             </div>
                           </div>
                         );
