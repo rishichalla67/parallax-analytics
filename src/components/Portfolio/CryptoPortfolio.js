@@ -510,8 +510,8 @@ export default function CryptoPortfolio() {
                         }}
                         className={`inline-block p-4 ${
                           dateIndex === "1D"
-                            ? "text-white bg-purple-900 font-bold py-2 px-4 rounded"
-                            : "text-white hover:bg-purple-900 font-bold py-2 px-4 rounded"
+                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-4 rounded"
+                            : "text-sky-500 hover:bg-purple-900 font-bold m-2 py-2 px-2 rounded"
                         }`}
                       >
                         1D
@@ -523,8 +523,8 @@ export default function CryptoPortfolio() {
                         }}
                         className={`inline-block p-4 ${
                           dateIndex === "1W"
-                            ? "text-white bg-purple-900 font-bold py-2 px-4 rounded"
-                            : "text-white hover:bg-purple-900 font-bold py-2 px-4 rounded"
+                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-4 rounded"
+                            : "text-sky-500 hover:bg-purple-900 font-bold m-2 py-2 px-2 rounded"
                         }`}
                       >
                         1W
@@ -536,8 +536,8 @@ export default function CryptoPortfolio() {
                         }}
                         className={`inline-block p-4 ${
                           dateIndex === "1M"
-                            ? "text-white bg-purple-900 font-bold py-2 px-4 rounded"
-                            : "text-white hover:bg-purple-900 font-bold py-2 px-4 rounded"
+                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-4 rounded"
+                            : "text-sky-500 hover:bg-purple-900 font-bold m-2 py-2 px-2 rounded"
                         }`}
                       >
                         1M
@@ -549,8 +549,8 @@ export default function CryptoPortfolio() {
                         }}
                         className={`inline-block p-4 ${
                           dateIndex === "1Y"
-                            ? "text-white bg-purple-900 font-bold py-2 px-4 rounded"
-                            : "text-white hover:bg-purple-900 font-bold py-2 px-4 rounded"
+                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-4 rounded"
+                            : "text-sky-500 hover:bg-purple-900 font-bold m-2 py-2 px-3 rounded"
                         }`}
                       >
                         1Y
@@ -605,7 +605,7 @@ export default function CryptoPortfolio() {
                               stroke="#0092ff"
                               dot={false}
                               activeDot={true}
-                              strokeWidth={3}
+                              strokeWidth={2}
                             />
                           </LineChart>
                         </ResponsiveContainer>
