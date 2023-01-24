@@ -455,17 +455,40 @@ export default function CryptoPortfolio() {
                 <h3 className="pt-1 text-xl pl-4 leading-6 font-medium">
                   Portfolio Value:
                 </h3>
-                <h3 className="pl-2 pt-1 flex grow text-xl leading-6 font-medium text-green-400">{`$${addCommaToNumberString(
-                  portfolioValue
-                )}`}</h3>
-                {/* <h3 className="mr-10 pl-2 pt-1 flex grow text-xl leading-6 font-medium justify-center">
-                  PNL:
+                <h3 className="pl-2 pt-1 flex grow text-xl leading-6 font-medium text-green-400">
+                  {`$${addCommaToNumberString(portfolioValue)}`}
+                  {(filteredPortfolioValueHistory.length > 0 ||
+                    portfolioValueHistory.length > 0) && (
+                    <div className="pl-2 pb-1 leading-6 text-green-400">
+                      {`(${
+                        filteredPortfolioValueHistory.length > 0
+                          ? (
+                              ((filteredPortfolioValueHistory[
+                                filteredPortfolioValueHistory.length - 1
+                              ].value -
+                                filteredPortfolioValueHistory[0].value) /
+                                filteredPortfolioValueHistory[
+                                  filteredPortfolioValueHistory.length - 1
+                                ].value) *
+                              100
+                            ).toFixed(2)
+                          : (
+                              ((portfolioValueHistory[
+                                portfolioValueHistory.length - 1
+                              ].value -
+                                portfolioValueHistory[0].value) /
+                                portfolioValueHistory[
+                                  portfolioValueHistory.length - 1
+                                ].value) *
+                              100
+                            ).toFixed(2)
+                      }%)`}
+                    </div>
+                  )}
                 </h3>
-                <h3 className="mr-10 pl-2 pt-1 flex grow text-xl leading-6 font-medium justify-center text-green-400">{`$${addCommaToNumberString(
-                  portfolioValue
-                )}`}</h3> */}
+
                 {refreshAvailable && (
-                  <div className="pl-9 pt-1">
+                  <div className="pl-7 pt-1">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
