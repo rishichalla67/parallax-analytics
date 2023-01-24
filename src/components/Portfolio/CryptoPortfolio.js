@@ -248,6 +248,14 @@ export default function CryptoPortfolio() {
     }
   }
 
+  function calculatePnl(data) {
+    return (
+      ((data[data.length - 1].value - data[0].value) /
+        data[data.length - 1].value) *
+      100
+    ).toFixed(2);
+  }
+
   const selectDateRange = (range) => {
     console.log(range);
     setCurrentChartDateRange(range);
@@ -462,26 +470,8 @@ export default function CryptoPortfolio() {
                     <div className="pl-2 pb-1 leading-6 text-green-400">
                       {`(${
                         filteredPortfolioValueHistory.length > 0
-                          ? (
-                              ((filteredPortfolioValueHistory[
-                                filteredPortfolioValueHistory.length - 1
-                              ].value -
-                                filteredPortfolioValueHistory[0].value) /
-                                filteredPortfolioValueHistory[
-                                  filteredPortfolioValueHistory.length - 1
-                                ].value) *
-                              100
-                            ).toFixed(2)
-                          : (
-                              ((portfolioValueHistory[
-                                portfolioValueHistory.length - 1
-                              ].value -
-                                portfolioValueHistory[0].value) /
-                                portfolioValueHistory[
-                                  portfolioValueHistory.length - 1
-                                ].value) *
-                              100
-                            ).toFixed(2)
+                          ? calculatePnl(filteredPortfolioValueHistory)
+                          : calculatePnl(portfolioValueHistory)
                       }%)`}
                     </div>
                   )}
