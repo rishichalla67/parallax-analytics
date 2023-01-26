@@ -460,15 +460,53 @@ export default function CryptoPortfolio() {
                 </div>
               )}
               <div className="flex justify-center border-b pb-2 border-gray-200">
-                <h3 className="pt-1 text-xl pl-4 leading-6 font-medium">
+                <h3 className="hidden sm:inline pt-1 text-xl pl-4 leading-6 font-medium">
                   Portfolio Value:
                 </h3>
-                <h3 className="pl-2 pt-1 flex grow text-xl leading-6 font-medium text-green-400">
+                <h3 className="sm:hidden pt-1 text-xl pl-2 leading-6 font-small">
+                  Value:
+                </h3>
+                <h3 className="pl-2 pt-1 flex grow text-xl leading-6 font-small sm:font-medium">
                   {`$${addCommaToNumberString(portfolioValue)}`}
                   {(filteredPortfolioValueHistory.length > 0 ||
                     portfolioValueHistory.length > 0) && (
-                    <div className="pl-2 pb-1 leading-6 text-green-400">
-                      {`(${
+                    <div
+                      className={`pl-2 sm:pl-3 pb-1 leading-6 ${
+                        (
+                          filteredPortfolioValueHistory.length > 0
+                            ? calculatePnl(filteredPortfolioValueHistory) > 0
+                            : calculatePnl(portfolioValueHistory) > 0
+                        )
+                          ? "text-green-400"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {`$${
+                        // Get the $ Value of the pnl %
+                        filteredPortfolioValueHistory.length > 0
+                          ? addCommaToNumberString(
+                              (
+                                (calculatePnl(filteredPortfolioValueHistory) /
+                                  100) *
+                                filteredPortfolioValueHistory[
+                                  filteredPortfolioValueHistory.length - 1
+                                ].value
+                              )
+                                .toFixed(2)
+                                .toString()
+                            )
+                          : addCommaToNumberString(
+                              (
+                                (calculatePnl(portfolioValueHistory) / 100) *
+                                portfolioValueHistory[
+                                  portfolioValueHistory.length - 1
+                                ].value
+                              )
+                                .toFixed(2)
+                                .toString()
+                            )
+                      }      (${
+                        // Get the Pnl as a percentage
                         filteredPortfolioValueHistory.length > 0
                           ? calculatePnl(filteredPortfolioValueHistory)
                           : calculatePnl(portfolioValueHistory)
@@ -622,7 +660,7 @@ export default function CryptoPortfolio() {
                         className={`inline-block p-4 ${
                           tabIndex !== 1
                             ? "rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
-                            : "text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
+                            : "text-slate-200 bg-gray-100 rounded-t-lg active dark:bg-gray-800"
                         }`}
                       >
                         Positions

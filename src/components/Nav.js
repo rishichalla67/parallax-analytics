@@ -9,6 +9,8 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
+let currentTab = "Portfolio";
+
 export default function Nav() {
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -28,14 +30,36 @@ export default function Nav() {
       .catch((err) => setError(err.message));
   }
 
-  // Add here for user specific menu
+  function setCurrentTab(current) {
+    currentTab = current;
+  }
 
   // Add here for more nav bar tabs
   const navigation = [
-    { name: "Portfolio", href: "/", current: true },
-    { name: "Profile", href: "/profile" },
-    { name: "OpenAI", href: "/openai" },
-    { name: "Sign out", href: "/login", onClick: handleLogout },
+    {
+      name: "Portfolio",
+      href: "/",
+      current: currentTab,
+      onClick: setCurrentTab("Portfolio"),
+    },
+    {
+      name: "Profile",
+      href: "/profile",
+      current: currentTab,
+      onClick: setCurrentTab("Profile"),
+    },
+    {
+      name: "OpenAI",
+      href: "/openai",
+      current: currentTab,
+      onClick: setCurrentTab("OpenAI"),
+    },
+    {
+      name: "Sign out",
+      href: "/login",
+      onClick: handleLogout,
+      current: currentTab,
+    },
   ];
 
   if (!activeUser.id) {
@@ -100,9 +124,9 @@ export default function Nav() {
         >
           {({ open }) => (
             <>
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid justify-items-stretch">
+              <div className="px-4 sm:px-6 lg:px-9 grid justify-items-stretch">
                 <div className="flex items-center justify-self-end h-16">
-                  <div className="flex items-center">
+                  <div className="items-center">
                     <div className="flex-shrink-0"></div>
                     <div className="hidden md:block">
                       <div className="ml-10 flex items-baseline space-x-4">
@@ -110,8 +134,9 @@ export default function Nav() {
                           <a
                             key={item.name}
                             href={item.href}
-                            className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-transparent	"
-                            aria-current={item.current ? "page" : undefined}
+                            className={`hover:bg-gray-900 text-slate-200 block opacity-80 px-3 py-2 rounded-md text-base font-bold bg-transparent ${
+                              item.current === item.name ? "bg-gray-900" : ""
+                            }`}
                           >
                             {item.name}
                           </a>
