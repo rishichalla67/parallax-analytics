@@ -12,10 +12,12 @@
     "firebase": "^9.9.1",
     "firebase-tools": "^11.9.0",
     "lodash.debounce": "^4.0.8",
+    "moment": "^2.29.4",
     "react": "^18.1.0",
     "react-charts": "^3.0.0-beta.48",
     "react-dom": "^18.1.0",
     "react-scripts": "5.0.1",
+    "react-spring": "^9.6.1",
     "recharts": "^2.1.14",
     "tailwindcss-gradients": "^3.0.0"
   },

@@ -17,10 +17,10 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  CartesianGrid,
 } from "recharts";
 import { Ticker } from "../../Classes/Ticker";
 import Nav from "../Nav.js";
+import {Analyics, calculatePnl} from "./Analytics";
 
 export default function CryptoPortfolio() {
   const symbolRef = useRef();
@@ -64,6 +64,7 @@ export default function CryptoPortfolio() {
     dateByRange,
     setCurrentChartDateRange,
     currentChartDateRange,
+    filterDataByDateRange
   } = useCryptoOracle();
   const {
     activeUser,
@@ -76,15 +77,10 @@ export default function CryptoPortfolio() {
     fetchAllUsers,
   } = useFirestore();
 
-  // const [filteredPortfolioValueHistory, setFilteredPortfolioValueHistory] =
-  //   useState(portfolioValueHistory);
-
-  // dateByRange(portfolioValueHistory, currentChartDateRange);
   useEffect(() => {
     setLoading(true);
     getPortfolioData();
     fetchAllUsers();
-    dateByRange(portfolioValueHistory, currentChartDateRange);
     const interval = setInterval(() => {
       refreshOraclePrices();
     }, 300000);
@@ -95,6 +91,10 @@ export default function CryptoPortfolio() {
       clearTimeout(timer);
     };
   }, [currentChartDateRange]);
+
+  useEffect(() => {
+    filterDataByDateRange(portfolioValueHistory, currentChartDateRange);
+  }, [currentChartDateRange])
 
   function removePosition(position) {
     if (portfolioPositions.length > 0) {
@@ -139,21 +139,6 @@ export default function CryptoPortfolio() {
     []
   );
 
-  // async function recordPortfolioPositionValues(){
-  //   // No positions
-  //   if(portfolioPositions.length == 0){
-  //       return;
-  //   }
-  //   // Has positions
-  //   // updatePosition(originalPosition, newPosition, portfolioName)
-  //   portfolioPositions.map((portPosition) => {
-  //       let temp = {...portPosition};
-  //       temp.valueHistory.push(PricePoint(getCurrentDate(), calculatePositionPrice(temp)))
-  //       updatePosition(portPosition, temp, activeUser.portfolioID);
-  //       console.log(temp)
-  //   })
-  // }
-
   async function handleSearchSubmit() {
     await searchCoinGeckoAPI(searchRef.current.value);
   }
@@ -188,7 +173,7 @@ export default function CryptoPortfolio() {
   }
 
   function addCommaToNumberString(numberString) {
-    var parts = numberString.toString().split(".");
+    let parts = numberString.toString().split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return parts.join(".");
   }
@@ -232,7 +217,6 @@ export default function CryptoPortfolio() {
 
       timer = setTimeout(() => {
         setRefreshAvailable(true);
-        console.log(refreshAvailable);
       }, 10000);
     }
   };
@@ -248,19 +232,13 @@ export default function CryptoPortfolio() {
     }
   }
 
-  function calculatePnl(data) {
-    return (
-      ((data[data.length - 1].value - data[0].value) /
-        data[data.length - 1].value) *
-      100
-    ).toFixed(2);
-  }
-
-  const selectDateRange = (range) => {
-    console.log(range);
-    setCurrentChartDateRange(range);
-    dateByRange(portfolioValueHistory, currentChartDateRange);
-  };
+  // function calculatePnl(data) {
+  //   return (
+  //     ((data[data.length - 1].value - data[0].value) /
+  //       data[data.length - 1].value) *
+  //     100
+  //   ).toFixed(2);
+  // }
 
   if (!activeUser.id) {
     return (
@@ -539,16 +517,16 @@ export default function CryptoPortfolio() {
               </div>
               {!editPositions ? (
                 <div className="flex flex-col justify-center px-4 py-5 sm:px-6 pt-10 border-gray-200">
-                  <div className="justify-end hidden md:flex">
+                  <div className="justify-end flex">
                     <div className=" text-center">
                       <button
                         onClick={() => {
-                          selectDateRange("1D");
+                          setCurrentChartDateRange("1D");
                           setDateIndex("1D");
                         }}
                         className={`inline-block p-4 ${
                           dateIndex === "1D"
-                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-4 rounded"
+                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-2 rounded"
                             : "text-sky-500 hover:bg-purple-900 font-bold m-2 py-2 px-2 rounded"
                         }`}
                       >
@@ -556,12 +534,12 @@ export default function CryptoPortfolio() {
                       </button>
                       <button
                         onClick={() => {
-                          selectDateRange("1W");
+                          setCurrentChartDateRange("1W");
                           setDateIndex("1W");
                         }}
                         className={`inline-block p-4 ${
                           dateIndex === "1W"
-                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-4 rounded"
+                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-2 rounded"
                             : "text-sky-500 hover:bg-purple-900 font-bold m-2 py-2 px-2 rounded"
                         }`}
                       >
@@ -569,12 +547,12 @@ export default function CryptoPortfolio() {
                       </button>
                       <button
                         onClick={() => {
-                          selectDateRange("1M");
+                          setCurrentChartDateRange("1M");
                           setDateIndex("1M");
                         }}
                         className={`inline-block p-4 ${
                           dateIndex === "1M"
-                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-4 rounded"
+                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-2 rounded"
                             : "text-sky-500 hover:bg-purple-900 font-bold m-2 py-2 px-2 rounded"
                         }`}
                       >
@@ -582,13 +560,13 @@ export default function CryptoPortfolio() {
                       </button>
                       <button
                         onClick={() => {
-                          selectDateRange("1Y");
+                          setCurrentChartDateRange("1Y");
                           setDateIndex("1Y");
                         }}
                         className={`inline-block p-4 ${
                           dateIndex === "1Y"
-                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-4 rounded"
-                            : "text-sky-500 hover:bg-purple-900 font-bold m-2 py-2 px-3 rounded"
+                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-2 rounded"
+                            : "text-sky-500 hover:bg-purple-900 font-bold m-2 py-2 px-2 rounded"
                         }`}
                       >
                         1Y
@@ -660,7 +638,7 @@ export default function CryptoPortfolio() {
                         className={`inline-block p-4 ${
                           tabIndex !== 1
                             ? "rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
-                            : "text-slate-200 bg-gray-100 rounded-t-lg active dark:bg-gray-800"
+                            : "text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800"
                         }`}
                       >
                         Positions
@@ -734,8 +712,7 @@ export default function CryptoPortfolio() {
                   {tabIndex === 2 && (
                     <>
                       <div className="flex pt-10 text-lg justify-center">
-                        {/* <a className="pl-3 text-white-500 text-2xl">-</a> */}
-                        Coming Soon...
+                          <Analyics portfolioValueHistory={portfolioValueHistory}/>
                       </div>
                     </>
                   )}
