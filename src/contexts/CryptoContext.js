@@ -4,7 +4,6 @@ import { useFirestore } from "../contexts/FirestoreContext";
 import { PricePoint } from "../Classes/PricePoint";
 import moment from "moment";
 
-
 const CryptoContext = React.createContext();
 
 export function useCryptoOracle() {
@@ -72,7 +71,10 @@ export function CryptoProvider({ children }) {
     setCurrentPortfolio(portfolio);
     cleanupDuplicatesInHistorical(activeUser.portfolioID);
     calculatePortfolioValue(portfolio);
-    filterDataByDateRange(portfolio.portfolioValueHistory, currentChartDateRange);
+    filterDataByDateRange(
+      portfolio.portfolioValueHistory,
+      currentChartDateRange
+    );
 
     setPortfolioValueHistory(portfolio.portfolioValueHistory);
     //positionValue -> {id: "", value: ""}
@@ -90,102 +92,102 @@ export function CryptoProvider({ children }) {
     // recordPortfolioPositionValues(portPositions, priceValues, activeUser.portfolioID)
   }
 
-  async function dateByRange(data, dateRange) {
-    
-    let currentDate = new Date();
+  // async function dateByRange(data, dateRange) {
 
-    switch (dateRange) {
-      case "1D":
-        let oneDayAgo = new Date(currentDate);
-        oneDayAgo.setDate(currentDate.getDate() - 1);
-        setFilteredPortfolioValueHistory(data.filter(function (item) {
-          return (
-            new Date(item.date) >= oneDayAgo &&
-            new Date(item.date) <= currentDate
-          );
-        }));
-        // console.log(filteredData.length)
-        break;
-      case "1W":
-        let oneWeekAgo = new Date(currentDate);
-        oneWeekAgo.setDate(currentDate.getDate() - 7);
-        setFilteredPortfolioValueHistory(data.filter(function (item) {
-          return (
-            new Date(item.date) >= oneWeekAgo &&
-            new Date(item.date) <= currentDate
-          );
-        }));
-        break;
-      case "1M":
-        let oneMonthAgo = new Date(currentDate);
-        oneMonthAgo.setMonth(currentDate.getMonth() - 1);
-        setFilteredPortfolioValueHistory(data.filter(function (item) {
-          return (
-            new Date(item.date) >= oneMonthAgo &&
-            new Date(item.date) <= currentDate
-          );
-        }));
-        break;
-      case "1Y":
-        let oneYearAgo = new Date(currentDate);
-        oneYearAgo.setFullYear(currentDate.getFullYear() - 1);
-        setFilteredPortfolioValueHistory(data.filter(function (item) {
-          return (
-            new Date(item.date) >= oneYearAgo &&
-            new Date(item.date) <= currentDate
-          );
-        }));
-        break;
-      default:
-        console.log("Invalid date range specified.");
-    }
+  //   let currentDate = new Date();
 
-    // console.log(filteredData);
-    // setFilteredPortfolioValueHistory(filteredData);
-    // return(filteredData)
-  }
+  //   switch (dateRange) {
+  //     case "1D":
+  //       let oneDayAgo = new Date(currentDate);
+  //       oneDayAgo.setDate(currentDate.getDate() - 1);
+  //       setFilteredPortfolioValueHistory(data.filter(function (item) {
+  //         return (
+  //           new Date(item.date) >= oneDayAgo &&
+  //           new Date(item.date) <= currentDate
+  //         );
+  //       }));
+  //       // console.log(filteredData.length)
+  //       break;
+  //     case "1W":
+  //       let oneWeekAgo = new Date(currentDate);
+  //       oneWeekAgo.setDate(currentDate.getDate() - 7);
+  //       setFilteredPortfolioValueHistory(data.filter(function (item) {
+  //         return (
+  //           new Date(item.date) >= oneWeekAgo &&
+  //           new Date(item.date) <= currentDate
+  //         );
+  //       }));
+  //       break;
+  //     case "1M":
+  //       let oneMonthAgo = new Date(currentDate);
+  //       oneMonthAgo.setMonth(currentDate.getMonth() - 1);
+  //       setFilteredPortfolioValueHistory(data.filter(function (item) {
+  //         return (
+  //           new Date(item.date) >= oneMonthAgo &&
+  //           new Date(item.date) <= currentDate
+  //         );
+  //       }));
+  //       break;
+  //     case "1Y":
+  //       let oneYearAgo = new Date(currentDate);
+  //       oneYearAgo.setFullYear(currentDate.getFullYear() - 1);
+  //       setFilteredPortfolioValueHistory(data.filter(function (item) {
+  //         return (
+  //           new Date(item.date) >= oneYearAgo &&
+  //           new Date(item.date) <= currentDate
+  //         );
+  //       }));
+  //       break;
+  //     default:
+  //       console.log("Invalid date range specified.");
+  //   }
+
+  //   // console.log(filteredData);
+  //   // setFilteredPortfolioValueHistory(filteredData);
+  //   // return(filteredData)
+  // }
 
   function filterDataByDateRange(data, dateRange) {
-      let filteredData = [];
-      const currentDate = new Date();
-      const oneDay = 24 * 60 * 60 * 1000; // milliseconds in one day
-      const oneWeek = 7 * oneDay; // milliseconds in one week
-      const oneMonth = 30 * oneDay; // milliseconds in one month
-      const oneYear = 365 * oneDay; // milliseconds in one year
+    let filteredData = [];
+    const currentDate = new Date();
+    const oneDay = 24 * 60 * 60 * 1000; // milliseconds in one day
+    const oneWeek = 7 * oneDay; // milliseconds in one week
+    const oneMonth = 30 * oneDay; // milliseconds in one month
+    const oneYear = 365 * oneDay; // milliseconds in one year
 
-      data.forEach(item => {
-          const itemDate = moment(item.date, "YYYY-MM-DD HH:mm:ss");
-          let timeDiff = currentDate - itemDate.toDate();
+    data.forEach((item) => {
+      const itemDate = moment(item.date, "YYYY-MM-DD HH:mm:ss");
+      let timeDiff = currentDate - itemDate.toDate();
 
-          switch (dateRange) {
-          case "1D":
-              if (timeDiff <= oneDay) {
-              filteredData.push(item);
-              }
-              break;
-          case "1W":
-              if (timeDiff <= oneWeek) {
-              filteredData.push(item);
-              }
-              break;
-          case "1M":
-              if (timeDiff <= oneMonth) {
-              filteredData.push(item);
-              }
-              break;
-          case "1Y":
-              if (timeDiff <= oneYear) {
-              filteredData.push(item);
-              }
-              break;
-          default:
-              // Return original data if invalid date range is provided
-              filteredData = data;
+      switch (dateRange) {
+        case "1D":
+          if (timeDiff <= oneDay) {
+            filteredData.push(item);
           }
-      });
+          break;
+        case "1W":
+          if (timeDiff <= oneWeek) {
+            filteredData.push(item);
+          }
+          break;
+        case "1M":
+          if (timeDiff <= oneMonth) {
+            filteredData.push(item);
+          }
+          break;
+        case "1Y":
+          if (timeDiff <= oneYear) {
+            filteredData.push(item);
+          }
+          break;
+        default:
+          // Return original data if invalid date range is provided
+          filteredData = data;
+      }
+    });
 
-      setFilteredPortfolioValueHistory(filteredData);
-    }
+    setFilteredPortfolioValueHistory(filteredData);
+  }
 
   function calculatePortfolioValue(portfolio) {
     let totalSum = 0;
@@ -247,7 +249,6 @@ export function CryptoProvider({ children }) {
     calculatePositionPrice,
     setFilteredPortfolioValueHistory,
     filteredPortfolioValueHistory,
-    dateByRange,
     filterDataByDateRange,
     setCurrentChartDateRange,
     currentChartDateRange,

@@ -20,7 +20,7 @@ import {
 } from "recharts";
 import { Ticker } from "../../Classes/Ticker";
 import Nav from "../Nav.js";
-import {Analyics, calculatePnl} from "./Analytics";
+import { Analyics, calculatePnl } from "./Analytics";
 
 export default function CryptoPortfolio() {
   const symbolRef = useRef();
@@ -61,10 +61,9 @@ export default function CryptoPortfolio() {
     portfolioValueHistory,
     portfolioPositions,
     filteredPortfolioValueHistory,
-    dateByRange,
     setCurrentChartDateRange,
     currentChartDateRange,
-    filterDataByDateRange
+    filterDataByDateRange,
   } = useCryptoOracle();
   const {
     activeUser,
@@ -94,7 +93,7 @@ export default function CryptoPortfolio() {
 
   useEffect(() => {
     filterDataByDateRange(portfolioValueHistory, currentChartDateRange);
-  }, [currentChartDateRange])
+  }, [currentChartDateRange]);
 
   function removePosition(position) {
     if (portfolioPositions.length > 0) {
@@ -437,86 +436,62 @@ export default function CryptoPortfolio() {
                   </div>
                 </div>
               )}
-              <div className="flex justify-center border-b pb-2 border-gray-200">
-                <h3 className="hidden sm:inline pt-1 text-xl pl-4 leading-6 font-medium">
-                  Portfolio Value:
-                </h3>
-                <h3 className="sm:hidden pt-1 text-xl pl-2 leading-6 font-small">
-                  Value:
-                </h3>
-                <h3 className="pl-2 pt-1 flex grow text-xl leading-6 font-small sm:font-medium">
+              <div className="flex justify-center pl-16 sm:pl-24 pb-2">
+                <h3 className="pt-3 sm:pt-1 flex grow flex-col text-4xl sm:text-5xl leading-6 font-small sm:font-medium">
                   {`$${addCommaToNumberString(portfolioValue)}`}
-                  {(filteredPortfolioValueHistory.length > 0 ||
-                    portfolioValueHistory.length > 0) && (
+                  {filteredPortfolioValueHistory.length > 0 && (
                     <div
-                      className={`pl-2 sm:pl-3 pb-1 leading-6 ${
-                        (
-                          filteredPortfolioValueHistory.length > 0
-                            ? calculatePnl(filteredPortfolioValueHistory) > 0
-                            : calculatePnl(portfolioValueHistory) > 0
-                        )
+                      className={`pl-2 pt-4 text-lg sm:pl-3 pb-1 leading-6 ${
+                        calculatePnl(filteredPortfolioValueHistory) > 0
                           ? "text-green-400"
                           : "text-red-500"
                       }`}
                     >
                       {`$${
                         // Get the $ Value of the pnl %
-                        filteredPortfolioValueHistory.length > 0
-                          ? addCommaToNumberString(
-                              (
-                                (calculatePnl(filteredPortfolioValueHistory) /
-                                  100) *
-                                filteredPortfolioValueHistory[
-                                  filteredPortfolioValueHistory.length - 1
-                                ].value
-                              )
-                                .toFixed(2)
-                                .toString()
-                            )
-                          : addCommaToNumberString(
-                              (
-                                (calculatePnl(portfolioValueHistory) / 100) *
-                                portfolioValueHistory[
-                                  portfolioValueHistory.length - 1
-                                ].value
-                              )
-                                .toFixed(2)
-                                .toString()
-                            )
+                        addCommaToNumberString(
+                          (
+                            (calculatePnl(filteredPortfolioValueHistory) /
+                              100) *
+                            filteredPortfolioValueHistory[
+                              filteredPortfolioValueHistory.length - 1
+                            ].value
+                          )
+                            .toFixed(2)
+                            .toString()
+                        )
                       }      (${
                         // Get the Pnl as a percentage
-                        filteredPortfolioValueHistory.length > 0
-                          ? calculatePnl(filteredPortfolioValueHistory)
-                          : calculatePnl(portfolioValueHistory)
+                        calculatePnl(filteredPortfolioValueHistory)
                       }%)`}
                     </div>
                   )}
                 </h3>
 
-                {refreshAvailable && (
-                  <div className="pl-7 pt-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="#0092ff"
-                      className={`w-6 h-6 hover:cursor-pointer mr-4`}
-                      onClick={() => {
-                        refreshAll();
-                      }}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-                      />
-                    </svg>
-                  </div>
-                )}
+                <div
+                  className={`pl-7 pt-3 ${refreshAvailable ? "" : "disabled"}`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke={`${refreshAvailable ? "#0092ff" : "#aec5d6"}`}
+                    className={`w-6 h-6 hover:cursor-pointer mr-4`}
+                    onClick={() => {
+                      refreshAll();
+                    }}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                    />
+                  </svg>
+                </div>
               </div>
               {!editPositions ? (
-                <div className="flex flex-col justify-center px-4 py-5 sm:px-6 pt-10 border-gray-200">
+                <div className="flex flex-col justify-center px-4 pt-2 sm:px-6">
                   <div className="justify-end flex">
                     <div className=" text-center">
                       <button
@@ -621,7 +596,7 @@ export default function CryptoPortfolio() {
                               stroke="#0092ff"
                               dot={false}
                               activeDot={true}
-                              strokeWidth={2}
+                              strokeWidth={1}
                             />
                           </LineChart>
                         </ResponsiveContainer>
@@ -712,7 +687,9 @@ export default function CryptoPortfolio() {
                   {tabIndex === 2 && (
                     <>
                       <div className="flex pt-10 text-lg justify-center">
-                          <Analyics portfolioValueHistory={portfolioValueHistory}/>
+                        <Analyics
+                          portfolioValueHistory={portfolioValueHistory}
+                        />
                       </div>
                     </>
                   )}
