@@ -79,19 +79,20 @@ export default function CryptoPortfolio() {
   } = useFirestore();
 
   useEffect(() => {
-    setLoading(true);
     getPortfolioData();
     fetchAllUsers();
+  }, []);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       refreshOraclePrices();
     }, 300000);
 
-    setLoading(false);
     return () => {
       clearInterval(interval);
       clearTimeout(timer);
     };
-  }, [currentChartDateRange]);
+  }, []);
 
   useEffect(() => {
     filterDataByDateRange(portfolioValueHistory, currentChartDateRange);
@@ -652,9 +653,9 @@ export default function CryptoPortfolio() {
                       </button>
                     </div>
                   </div>
-                  {portfolioValueHistory.length > 0 && (
+                  {filteredPortfolioValueHistory.length > 0 && (
                     <>
-                      <div className="flex justify-start w-full">
+                      <div className="flex justify-start ">
                         <ResponsiveContainer width="100%" height={300 || 250}>
                           <LineChart data={filteredPortfolioValueHistory}>
                             <XAxis hide={true} dataKey="date" />
