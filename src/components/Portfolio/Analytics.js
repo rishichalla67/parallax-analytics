@@ -10,7 +10,7 @@ export function calculatePnl(data) {
       100
     ).toFixed(2);
   }
-  console.log(data);
+  //   console.log(data);
 }
 
 export function Analyics({ portfolioValueHistory }) {
@@ -58,7 +58,7 @@ export function Analyics({ portfolioValueHistory }) {
     return filteredData;
   }
 
-  console.log(filterDataByDateRange(portfolioValueHistory, "1D"));
+  //   console.log(filterDataByDateRange(portfolioValueHistory, "1D"));
 
   const [pnl1D, setPnl1D] = useState("");
   const [pnl1W, setPnl1W] = useState("");
@@ -66,7 +66,7 @@ export function Analyics({ portfolioValueHistory }) {
   const [pnl1Y, setPnl1Y] = useState("");
 
   useEffect(() => {
-    let dayFilterRange = filterDataByDateRange(portfolioValueHistory, "1D");
+    let dayFilterRange = filterDataByDateRange(portfolioValueHistory, "24HR");
     let weekFilterRange = filterDataByDateRange(portfolioValueHistory, "1W");
     let monthFilterRange = filterDataByDateRange(portfolioValueHistory, "1M");
     let yearFilterRange = filterDataByDateRange(portfolioValueHistory, "1Y");
@@ -83,7 +83,7 @@ export function Analyics({ portfolioValueHistory }) {
         <div className="text-lg sm:text-4xl font-medium leading-6">PnL</div>
         <div className="flex flex-wrap sm:text-xl md:text-3xl sm:gap-4">
           <div className={`text-center sm:text-left p-1 `}>
-            1D:
+            24HR:
             <a
               className={`pl-2 ${
                 pnl1D >= 0 ? "text-green-500" : "text-red-500"
