@@ -693,19 +693,20 @@ export default function CryptoPortfolio() {
                               content={({ payload }) => {
                                 return (
                                   <div className="bg-black p-2">
-                                    {payload.map((data, i) => (
-                                      <div key={i}>
-                                        {/* {console.log(data)} */}
-                                        <p>
-                                          {"Date: "}
-                                          {formatDate(data.payload.date)}
-                                        </p>
-                                        <p>
-                                          {data.name} :{" $"}
-                                          {addCommaToNumberString(data.value)}
-                                        </p>
-                                      </div>
-                                    ))}
+                                    {payload &&
+                                      payload.map((data, i) => (
+                                        <div key={i}>
+                                          {/* {console.log(data)} */}
+                                          <p>
+                                            {"Date: "}
+                                            {formatDate(data.payload.date)}
+                                          </p>
+                                          <p>
+                                            {data.name} :{" $"}
+                                            {addCommaToNumberString(data.value)}
+                                          </p>
+                                        </div>
+                                      ))}
                                   </div>
                                 );
                               }}
