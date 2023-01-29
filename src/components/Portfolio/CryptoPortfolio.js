@@ -34,7 +34,7 @@ export default function CryptoPortfolio() {
   let timer = 0;
 
   const [tabIndex, setTabIndex] = useState(1);
-  const [dateIndex, setDateIndex] = useState("1D");
+  const [dateIndex, setDateIndex] = useState("24HR");
 
   const [error, setError] = useState("");
   const [selectedPosition, setSelectedPosition] = useState();
@@ -248,7 +248,7 @@ export default function CryptoPortfolio() {
     }
 
     switch (currentChartDateRange) {
-      case "1D":
+      case "24HR":
         let today = moment().startOf("day");
         if (momentDate.isSame(today, "day")) {
           formattedDate = momentDate.format("h:mm A");
@@ -600,16 +600,16 @@ export default function CryptoPortfolio() {
                     <div className=" text-center">
                       <button
                         onClick={() => {
-                          setCurrentChartDateRange("1D");
-                          setDateIndex("1D");
+                          setCurrentChartDateRange("24HR");
+                          setDateIndex("24HR");
                         }}
                         className={`inline-block p-4 ${
-                          dateIndex === "1D"
+                          dateIndex === "24HR"
                             ? "text-white bg-purple-900 font-bold m-2 py-2 px-2 rounded"
                             : "text-sky-500 hover:bg-purple-900 font-bold m-2 py-2 px-2 rounded"
                         }`}
                       >
-                        1D
+                        24HR
                       </button>
                       <button
                         onClick={() => {
