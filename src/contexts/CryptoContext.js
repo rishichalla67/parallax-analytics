@@ -32,7 +32,7 @@ export function CryptoProvider({ children }) {
   const [portfolioValueHistory, setPortfolioValueHistory] = useState([]);
   const [filteredPortfolioValueHistory, setFilteredPortfolioValueHistory] =
     useState([]);
-  const [currentChartDateRange, setCurrentChartDateRange] = useState("1D");
+  const [currentChartDateRange, setCurrentChartDateRange] = useState("24HR");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -92,61 +92,6 @@ export function CryptoProvider({ children }) {
     // recordPortfolioPositionValues(portPositions, priceValues, activeUser.portfolioID)
   }
 
-  // async function dateByRange(data, dateRange) {
-
-  //   let currentDate = new Date();
-
-  //   switch (dateRange) {
-  //     case "1D":
-  //       let oneDayAgo = new Date(currentDate);
-  //       oneDayAgo.setDate(currentDate.getDate() - 1);
-  //       setFilteredPortfolioValueHistory(data.filter(function (item) {
-  //         return (
-  //           new Date(item.date) >= oneDayAgo &&
-  //           new Date(item.date) <= currentDate
-  //         );
-  //       }));
-  //       // console.log(filteredData.length)
-  //       break;
-  //     case "1W":
-  //       let oneWeekAgo = new Date(currentDate);
-  //       oneWeekAgo.setDate(currentDate.getDate() - 7);
-  //       setFilteredPortfolioValueHistory(data.filter(function (item) {
-  //         return (
-  //           new Date(item.date) >= oneWeekAgo &&
-  //           new Date(item.date) <= currentDate
-  //         );
-  //       }));
-  //       break;
-  //     case "1M":
-  //       let oneMonthAgo = new Date(currentDate);
-  //       oneMonthAgo.setMonth(currentDate.getMonth() - 1);
-  //       setFilteredPortfolioValueHistory(data.filter(function (item) {
-  //         return (
-  //           new Date(item.date) >= oneMonthAgo &&
-  //           new Date(item.date) <= currentDate
-  //         );
-  //       }));
-  //       break;
-  //     case "1Y":
-  //       let oneYearAgo = new Date(currentDate);
-  //       oneYearAgo.setFullYear(currentDate.getFullYear() - 1);
-  //       setFilteredPortfolioValueHistory(data.filter(function (item) {
-  //         return (
-  //           new Date(item.date) >= oneYearAgo &&
-  //           new Date(item.date) <= currentDate
-  //         );
-  //       }));
-  //       break;
-  //     default:
-  //       console.log("Invalid date range specified.");
-  //   }
-
-  //   // console.log(filteredData);
-  //   // setFilteredPortfolioValueHistory(filteredData);
-  //   // return(filteredData)
-  // }
-
   function filterDataByDateRange(data, dateRange) {
     let filteredData = [];
     const currentDate = new Date();
@@ -160,7 +105,7 @@ export function CryptoProvider({ children }) {
       let timeDiff = currentDate - itemDate.toDate();
 
       switch (dateRange) {
-        case "1D":
+        case "24HR":
           if (timeDiff <= oneDay) {
             filteredData.push(item);
           }

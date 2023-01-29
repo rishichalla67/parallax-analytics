@@ -29,7 +29,7 @@ export function Analyics({ portfolioValueHistory }) {
       let timeDiff = currentDate - itemDate.toDate();
 
       switch (dateRange) {
-        case "1D":
+        case "24HR":
           if (timeDiff <= oneDay) {
             filteredData.push(item);
           }
