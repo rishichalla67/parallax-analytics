@@ -5,7 +5,6 @@ import React, {
   useCallback,
   Fragment,
 } from "react";
-import { motion } from "framer-motion";
 import { Dialog, Transition } from "@headlessui/react";
 import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
@@ -808,7 +807,7 @@ export default function CryptoPortfolio() {
                           </div>
                         );
                       })}
-                      <div className="pt-2">
+                      <div className="py-5 ">
                         <button
                           className="bg-sky-500 hover:bg-sky-700 text-black font-bold py-2 px-4 rounded"
                           onClick={() => {
