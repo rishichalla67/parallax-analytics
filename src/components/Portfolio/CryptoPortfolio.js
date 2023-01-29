@@ -699,7 +699,7 @@ export default function CryptoPortfolio() {
                                         <div key={i}>
                                           {/* {console.log(data)} */}
                                           <p>
-                                            {"Date: "}
+                                            {"date: "}
                                             {formatDate(data.payload.date)}
                                           </p>
                                           <p>
