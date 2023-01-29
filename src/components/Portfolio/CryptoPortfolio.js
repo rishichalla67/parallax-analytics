@@ -718,7 +718,11 @@ export default function CryptoPortfolio() {
                             <Line
                               type="monotone"
                               dataKey="value"
-                              stroke="#0092ff"
+                              stroke={`${
+                                calculatePnl(filteredPortfolioValueHistory) > 0
+                                  ? "#00FF7F"
+                                  : "#B90E0A"
+                              }`}
                               dot={false}
                               activeDot={true}
                               strokeWidth={1}
