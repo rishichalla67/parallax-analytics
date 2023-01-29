@@ -21,6 +21,7 @@ import {
 import { Ticker } from "../../Classes/Ticker";
 import Nav from "../Nav.js";
 import { Analyics, calculatePnl } from "./Analytics";
+const moment = require("moment");
 
 export default function CryptoPortfolio() {
   const symbolRef = useRef();
@@ -232,8 +233,56 @@ export default function CryptoPortfolio() {
     }
   }
 
-  function maskNumber(number) {
-    return number.toString().replace(/[\d\.]/g, "*");
+  function maskNumber(input) {
+    if (typeof input === "number")
+      return input.toString().replace(/[\d\.]/g, "*");
+    else if (typeof input === "string") return input.replace(/[\d\.]/g, "*");
+    else return "Invalid Input";
+  }
+
+  function maskArrayOfObjects(input) {
+    if (Array.isArray(input)) {
+      input.map(function (item) {
+        if (typeof item.value === "number")
+          item.value = item.value.toString().replace(/[\d\.]/g, "*");
+        else if (typeof item.value === "string")
+          item.value = item.value.replace(/[\d\.]/g, "*");
+      });
+      return input;
+    } else {
+      return "Invalid Input";
+    }
+  }
+
+  function formatDate(date) {
+    let formattedDate;
+    let momentDate = moment(date, "YYYY-MM-DD HH:mm:ss"); //parse the date in this format
+    if (!momentDate.isValid()) {
+      return "Invalid Date";
+    }
+
+    switch (currentChartDateRange) {
+      case "1D":
+        let today = moment().startOf("day");
+        if (momentDate.isSame(today, "day")) {
+          formattedDate = momentDate.format("h:mm A");
+        } else if (momentDate.isSame(today.subtract(1, "days"), "day")) {
+          formattedDate = "Yesterday " + momentDate.format("h:mm A");
+        }
+        break;
+      case "1W":
+        formattedDate = momentDate.format("ddd h:mm A");
+        break;
+      case "1M":
+        formattedDate = momentDate.format("MMMM Do");
+        break;
+      case "1Y":
+        formattedDate = momentDate.format("MMMM Do, YYYY");
+        break;
+      default:
+        formattedDate = momentDate.format();
+    }
+    return formattedDate;
   }
 
   // function calculatePnl(data) {
@@ -494,11 +543,13 @@ export default function CryptoPortfolio() {
                       />
                     </svg>
                   </div>
-                  <div className={`${privacyFilter ? "hidden" : "pb-2"}`}>
+                  <div
+                    className={`${privacyFilter ? "hidden" : "pt-2 sm:pt-0"}`}
+                  >
                     {`$${addCommaToNumberString(portfolioValue)}`}
                   </div>
                   <div
-                    className={`${privacyFilter ? "" : "hidden"}`}
+                    className={`${privacyFilter ? "pt-4 sm:pt-0" : "hidden"}`}
                   >{`$${maskNumber(portfolioValue)}`}</div>
                   {filteredPortfolioValueHistory.length > 0 && (
                     <div
@@ -506,25 +557,38 @@ export default function CryptoPortfolio() {
                         calculatePnl(filteredPortfolioValueHistory) > 0
                           ? "text-green-400"
                           : "text-red-500"
-                      }`}
+                      } `}
                     >
                       {`$${
                         // Get the $ Value of the pnl %
-                        addCommaToNumberString(
-                          (
-                            (calculatePnl(filteredPortfolioValueHistory) /
-                              100) *
-                            filteredPortfolioValueHistory[
-                              filteredPortfolioValueHistory.length - 1
-                            ].value
-                          )
-                            .toFixed(2)
-                            .toString()
-                        )
-                      }      (${
-                        // Get the Pnl as a percentage
-                        calculatePnl(filteredPortfolioValueHistory)
-                      }%)`}
+                        privacyFilter
+                          ? maskNumber(
+                              (
+                                (calculatePnl(filteredPortfolioValueHistory) /
+                                  100) *
+                                filteredPortfolioValueHistory[
+                                  filteredPortfolioValueHistory.length - 1
+                                ].value
+                              )
+                                .toFixed(2)
+                                .toString()
+                            )
+                          : addCommaToNumberString(
+                              (
+                                (calculatePnl(filteredPortfolioValueHistory) /
+                                  100) *
+                                filteredPortfolioValueHistory[
+                                  filteredPortfolioValueHistory.length - 1
+                                ].value
+                              )
+                                .toFixed(2)
+                                .toString()
+                            )
+                      }
+                           (${
+                             // Get the Pnl as a percentage
+                             calculatePnl(filteredPortfolioValueHistory)
+                           }%)`}
                     </div>
                   )}
                 </h3>
@@ -611,46 +675,73 @@ export default function CryptoPortfolio() {
                   </div>
                   {portfolioValueHistory.length > 0 && (
                     <>
-                      <div className="flex justify-center w-full">
+                      <div className="flex justify-start w-full">
                         <ResponsiveContainer width="100%" height={300 || 250}>
-                          <LineChart
-                            data={
-                              filteredPortfolioValueHistory.length > 0
-                                ? filteredPortfolioValueHistory
-                                : portfolioValueHistory
-                            }
-                          >
-                            <XAxis dataKey="date" />
+                          <LineChart data={filteredPortfolioValueHistory}>
+                            <XAxis hide={true} dataKey="date" />
                             <YAxis
+                              // tick={!privacyFilter}
+                              hide={privacyFilter}
+                              axisLine={false}
                               dataKey="value"
-                              tickLine={{ stroke: "#0092ff" }}
+                              tickLine={false}
+                              tickFormatter={(value) =>
+                                `$${addCommaToNumberString(value)}`
+                              }
+                              // tick={{ fontSize: "0.rem" }}
                               domain={[
                                 // filterDataByRange(portfolioValueHistory, currentChartDateRange)[0].value
-                                filteredPortfolioValueHistory.length > 0
-                                  ? parseInt(
-                                      findMinValue(
-                                        filteredPortfolioValueHistory
-                                      ) * 0.99
-                                    )
-                                  : parseInt(
-                                      findMinValue(portfolioValueHistory) * 0.99
-                                    ), // lower bound
-                                filteredPortfolioValueHistory.length > 0
-                                  ? parseInt(
-                                      findMaxValue(
-                                        filteredPortfolioValueHistory
-                                      ) * 1.01
-                                    )
-                                  : parseInt(
-                                      findMaxValue(portfolioValueHistory) * 1.01
-                                    ),
+                                Math.round(
+                                  parseInt(
+                                    (findMinValue(
+                                      filteredPortfolioValueHistory
+                                    ) *
+                                      0.99) /
+                                      10
+                                  ) * 10
+                                ), // lower bound
+                                Math.round(
+                                  parseInt(
+                                    (findMaxValue(
+                                      filteredPortfolioValueHistory
+                                    ) *
+                                      1.01) /
+                                      10
+                                  ) * 10
+                                ), // upper bound
                               ]}
                             />
-                            <Tooltip
+                            {/* <Tooltip
                               style={{ color: "red" }}
                               contentStyle={{ backgroundColor: "#000000" }}
                               itemStyle={{ color: "#FFFFFF" }}
+                            /> */}
+
+                            <Tooltip
+                              style={{ color: "red" }}
+                              content={({ payload }) => {
+                                return (
+                                  <div className="bg-black p-2">
+                                    {payload.map((data, i) => (
+                                      <div key={i}>
+                                        {/* {console.log(data)} */}
+                                        <p>
+                                          {"Date: "}
+                                          {formatDate(data.payload.date)}
+                                        </p>
+                                        <p>
+                                          {data.name} :{" $"}
+                                          {addCommaToNumberString(data.value)}
+                                        </p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              }}
+                              contentStyle={{ backgroundColor: "#000000" }}
+                              itemStyle={{ color: "#FFFFFF" }}
                             />
+
                             <Line
                               type="monotone"
                               dataKey="value"
@@ -664,7 +755,7 @@ export default function CryptoPortfolio() {
                       </div>
                     </>
                   )}
-                  <ul className="flex flex-wrap text-lg md:text-xl font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
+                  <ul className="flex -mt-5 sm:-mt-0 flex-wrap text-lg md:text-xl font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
                     <li className="mr-2">
                       <button
                         onClick={() => {
@@ -686,7 +777,7 @@ export default function CryptoPortfolio() {
                           setTabIndex(2);
                         }}
                         data-bs-toggle="tooltip"
-                        title="Coming Soon..."
+                        title="Check PnL for all time ranges! More coming soon..."
                         className={`inline-block p-4 ${
                           tabIndex !== 2
                             ? "rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
@@ -723,11 +814,26 @@ export default function CryptoPortfolio() {
                             <h3 className="pl-3 pt-2 text-xl leading-6 font-medium">{`${
                               tickerList[position.symbol]
                             } (${position.type.toLowerCase()})`}</h3>
-                            <div className="grow pt-2 pr-1 text-xl leading-6 font-medium text-right">
+                            <div
+                              className={`${
+                                privacyFilter
+                                  ? "hidden"
+                                  : "grow pt-2 pr-1 text-xl leading-6 font-medium text-right"
+                              }`}
+                            >
                               {`$${addCommaToNumberString(
                                 calculatePositionValue(position)
                               )}`}
                             </div>
+                            <div
+                              className={`${
+                                privacyFilter
+                                  ? "grow pt-2 pr-1 text-xl leading-6 font-medium text-right"
+                                  : "hidden"
+                              }`}
+                            >{`$${maskNumber(
+                              calculatePositionValue(position)
+                            )}`}</div>
                           </div>
                         );
                       })}
