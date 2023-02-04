@@ -118,6 +118,7 @@ export function FirestoreProvider({ children }) {
 
   async function addPosition(position, portfolioName) {
     const portfolioPositionsRef = doc(db, "portfolios", portfolioName);
+    console.log(position)
     await updateDoc(portfolioPositionsRef, {
       positions: arrayUnion(position),
     });
