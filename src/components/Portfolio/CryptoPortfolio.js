@@ -5,28 +5,35 @@ import React, {
 } from "react";
 import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
-import {
-  ResponsiveContainer,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from "recharts";
+
 import Nav from "../Nav.js";
 import { Analyics, calculatePnl } from "./Analytics";
 import UpdatePosition from "./UpdatePosition";
 import NewPortfolio from "./NewPortfolio";
 import AddPosition from "./AddPosition";
+import Chart from "./Chart";
 
-const moment = require("moment");
+
+export function calculatePositionValue(nomicsTickers ,position) {
+  if (nomicsTickers[position.symbol] !== undefined) {
+    return (
+      parseFloat(position.quantity) *
+      parseFloat(nomicsTickers[position.symbol].usd)
+    ).toFixed(2);
+  }
+}
+
+export function addCommaToNumberString(numberString) {
+  let parts = numberString.toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
+}
 
 
 export default function CryptoPortfolio() {
   let timer = 0;
 
   const [tabIndex, setTabIndex] = useState(1);
-  const [dateIndex, setDateIndex] = useState("24HR");
 
   const [error, setError] = useState("");
   const [selectedPosition, setSelectedPosition] = useState();
@@ -82,48 +89,9 @@ export default function CryptoPortfolio() {
   }, []);
 
   useEffect(() => {
-    filterDataByDateRange(portfolioValueHistory, currentChartDateRange);
+    filterDataByDateRange(portfolioValueHistory, currentChartDateRange, true);
   }, [currentChartDateRange]);
 
-
-  function findMaxValue(data) {
-    let highest = 0;
-    data.map((item) => {
-      if (parseInt(item.value * 1.0) > highest) {
-        highest = parseInt(item.value * 1.0);
-      }
-    });
-    return highest;
-  }
-
-  function findMinValue(data) {
-    let lowest = data[0].value;
-    data.map((item) => {
-      if (parseInt(item.value * 1.0) < lowest) {
-        lowest = parseInt(item.value * 1.0);
-      }
-    });
-    return lowest;
-  }
-
-  
-
-  function addCommaToNumberString(numberString) {
-    let parts = numberString.toString().split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return parts.join(".");
-  }
-
-  
-
-  function calculatePositionValue(position) {
-    if (nomicsTickers[position.symbol] !== undefined) {
-      return (
-        parseFloat(position.quantity) *
-        parseFloat(nomicsTickers[position.symbol].usd)
-      ).toFixed(2);
-    }
-  }
 
   const refreshAll = () => {
     if (refreshAvailable) {
@@ -143,37 +111,6 @@ export default function CryptoPortfolio() {
       return input.toString().replace(/[\d\.]/g, "*");
     else if (typeof input === "string") return input.replace(/[\d\.]/g, "*");
     else return "Invalid Input";
-  }
-
-  function formatDate(date) {
-    let formattedDate;
-    let momentDate = moment(date, "YYYY-MM-DD HH:mm:ss"); //parse the date in this format
-    if (!momentDate.isValid()) {
-      return "Invalid Date";
-    }
-
-    switch (currentChartDateRange) {
-      case "24HR":
-        let today = moment().startOf("day");
-        if (momentDate.isSame(today, "day")) {
-          formattedDate = momentDate.format("h:mm A");
-        } else if (momentDate.isSame(today.subtract(1, "days"), "day")) {
-          formattedDate = "Yesterday " + momentDate.format("h:mm A");
-        }
-        break;
-      case "1W":
-        formattedDate = momentDate.format("ddd h:mm A");
-        break;
-      case "1M":
-        formattedDate = momentDate.format("MMMM Do");
-        break;
-      case "1Y":
-        formattedDate = momentDate.format("MMMM Do, YYYY");
-        break;
-      default:
-        formattedDate = momentDate.format();
-    }
-    return formattedDate;
   }
 
   // const portfolioValueRef = useRef(null);
@@ -350,141 +287,7 @@ export default function CryptoPortfolio() {
               </div>
               {!editPositions ? (
                 <div className="flex flex-col justify-center px-4 pt-2 sm:px-6">
-                  <div className="justify-end flex">
-                    <div className=" text-center">
-                      <button
-                        onClick={() => {
-                          setCurrentChartDateRange("24HR");
-                          setDateIndex("24HR");
-                        }}
-                        className={`inline-block p-4 ${
-                          dateIndex === "24HR"
-                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-2 rounded"
-                            : "text-sky-500 hover:bg-purple-900 font-bold m-2 py-2 px-2 rounded"
-                        }`}
-                      >
-                        24HR
-                      </button>
-                      <button
-                        onClick={() => {
-                          setCurrentChartDateRange("1W");
-                          setDateIndex("1W");
-                        }}
-                        className={`inline-block p-4 ${
-                          dateIndex === "1W"
-                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-2 rounded"
-                            : "text-sky-500 hover:bg-purple-900 font-bold m-2 py-2 px-2 rounded"
-                        }`}
-                      >
-                        1W
-                      </button>
-                      <button
-                        onClick={() => {
-                          setCurrentChartDateRange("1M");
-                          setDateIndex("1M");
-                        }}
-                        className={`inline-block p-4 ${
-                          dateIndex === "1M"
-                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-2 rounded"
-                            : "text-sky-500 hover:bg-purple-900 font-bold m-2 py-2 px-2 rounded"
-                        }`}
-                      >
-                        1M
-                      </button>
-                      <button
-                        onClick={() => {
-                          setCurrentChartDateRange("1Y");
-                          setDateIndex("1Y");
-                        }}
-                        className={`inline-block p-4 ${
-                          dateIndex === "1Y"
-                            ? "text-white bg-purple-900 font-bold m-2 py-2 px-2 rounded"
-                            : "text-sky-500 hover:bg-purple-900 font-bold m-2 py-2 px-2 rounded"
-                        }`}
-                      >
-                        1Y
-                      </button>
-                    </div>
-                  </div>
-                  {filteredPortfolioValueHistory.length > 0 && (
-                    <>
-                      <div className="flex justify-start ">
-                        <ResponsiveContainer width="100%" height={300 || 250}>
-                          <LineChart data={filteredPortfolioValueHistory}>
-                            <XAxis hide={true} dataKey="date" />
-                            <YAxis
-                              hide={privacyFilter}
-                              axisLine={false}
-                              dataKey="value"
-                              tickLine={false}
-                              tickFormatter={(value) =>
-                                `$${addCommaToNumberString(value)}`
-                              }
-                              // tick={{ fontSize: "0.rem" }}
-                              domain={[
-                                Math.round(
-                                  parseInt(
-                                    (findMinValue(
-                                      filteredPortfolioValueHistory
-                                    ) *
-                                      0.99) /
-                                      10
-                                  ) * 10
-                                ), // lower bound
-                                Math.round(
-                                  parseInt(
-                                    (findMaxValue(
-                                      filteredPortfolioValueHistory
-                                    ) *
-                                      1.01) /
-                                      10
-                                  ) * 10
-                                ), // upper bound
-                              ]}
-                            />
-                            <Tooltip
-                              style={{ color: "red" }}
-                              content={({ payload }) => {
-                                return (
-                                  <div className="bg-black p-2">
-                                    {payload &&
-                                      payload.map((data, i) => (
-                                        <div key={i}>
-                                          {/* {console.log(data)} */}
-                                          <p>
-                                            {"date: "}
-                                            {formatDate(data.payload.date)}
-                                          </p>
-                                          <p>
-                                            {data.name} :{" $"}
-                                            {addCommaToNumberString(data.value)}
-                                          </p>
-                                        </div>
-                                      ))}
-                                  </div>
-                                );
-                              }}
-                              contentStyle={{ backgroundColor: "#000000" }}
-                              itemStyle={{ color: "#FFFFFF" }}
-                            />
-
-                            <Line
-                              type="monotone"
-                              dataKey="value"
-                              stroke={`${
-                                calculatePnl(filteredPortfolioValueHistory) > 0
-                                  ? "#00FF7F"
-                                  : "#B90E0A"
-                              }`}
-                              dot={false}
-                              activeDot={true}
-                              strokeWidth={1}
-                            />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </>
-                  )}
+                  <Chart privacyFilter={privacyFilter}/>
                   <ul className="flex -mt-5 sm:-mt-0 flex-wrap text-lg md:text-xl font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
                     <li className="mr-2">
                       <button
@@ -507,7 +310,7 @@ export default function CryptoPortfolio() {
                           setTabIndex(2);
                         }}
                         data-bs-toggle="tooltip"
-                        title="Check PnL for all time ranges! More coming soon..."
+                        title="Check out some details about your positions! More coming soon..."
                         className={`inline-block p-4 ${
                           tabIndex !== 2
                             ? "rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
@@ -551,7 +354,7 @@ export default function CryptoPortfolio() {
                               }`}
                             >
                               {`$${addCommaToNumberString(
-                                calculatePositionValue(position)
+                                calculatePositionValue(nomicsTickers, position)
                               )}`}
                             </div>
                             <div
@@ -561,7 +364,7 @@ export default function CryptoPortfolio() {
                                   : "hidden"
                               }`}
                             >{`$${maskNumber(
-                              calculatePositionValue(position)
+                              calculatePositionValue(nomicsTickers, position)
                             )}`}</div>
                           </div>
                         );
@@ -582,15 +385,13 @@ export default function CryptoPortfolio() {
                   {/* Tab Index of 2 === Positions Table */}
                   {tabIndex === 2 && (
                     <>
-                      <div className="flex pt-10 text-lg justify-center">
-                        <Analyics
-                        />
+                      <div className="flex text-lg justify-center">
+                        <Analyics/>
                       </div>
                     </>
                   )}
                 </div>
               ) : (
-                // If No Portfolio Created Yet
                 <AddPosition setError={setError} setSuccessMessage={setSuccessMessage} setEditPositions={setEditPositions}/>
               )}
             </div>

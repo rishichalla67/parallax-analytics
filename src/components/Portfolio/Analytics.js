@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
+import { addCommaToNumberString } from "./CryptoPortfolio";
 
-import moment from "moment";
 
 export function calculatePnl(data) {
   if (data[0].value) {
@@ -17,19 +17,13 @@ export function calculatePnl(data) {
 
 export function Analyics() {
   const {
+    nomicsTickers,
     portfolioValueHistory,
     filterDataByDateRange,
     portfolioPositions,
   } = useCryptoOracle();
   const {
-    activeUser,
-    addPosition,
-    removePositionFromFirebase,
-    addTicker,
     tickerList,
-    createPortfolio,
-    updatePosition,
-    fetchAllUsers,
   } = useFirestore();
 
   //   console.log(filterDataByDateRange(portfolioValueHistory, "1D"));
@@ -39,11 +33,23 @@ export function Analyics() {
   const [pnl1M, setPnl1M] = useState("");
   const [pnl1Y, setPnl1Y] = useState("");
 
+  function calculatePositionPnl(position){
+    let positionPnl = "Need Avg Price"
+    if(position.avgCost === ""){
+      return positionPnl
+    }
+    let initialInvestment = position.avgCost*position.quantity
+    positionPnl = ((((nomicsTickers[position.symbol].usd - position.avgCost)*position.quantity)/initialInvestment)*100).toFixed(2)
+    positionPnl = positionPnl+"%"
+    
+    return positionPnl;
+  }
+
   useEffect(() => {
-    let dayFilterRange = filterDataByDateRange(portfolioValueHistory, "24HR");
-    let weekFilterRange = filterDataByDateRange(portfolioValueHistory, "1W");
-    let monthFilterRange = filterDataByDateRange(portfolioValueHistory, "1M");
-    let yearFilterRange = filterDataByDateRange(portfolioValueHistory, "1Y");
+    let dayFilterRange = filterDataByDateRange(portfolioValueHistory, "24HR", false);
+    let weekFilterRange = filterDataByDateRange(portfolioValueHistory, "1W", false);
+    let monthFilterRange = filterDataByDateRange(portfolioValueHistory, "1M", false);
+    let yearFilterRange = filterDataByDateRange(portfolioValueHistory, "1Y", false);
 
     setPnl1D(calculatePnl(dayFilterRange));
     setPnl1W(calculatePnl(weekFilterRange));
@@ -51,96 +57,45 @@ export function Analyics() {
     setPnl1Y(calculatePnl(yearFilterRange));
   }, []);
 
+
   return (
-    <div className="bg-gray-800 text-white p-2 md:px-16 md:py-16">
+    <div className="bg-gray-800  text-white p-2 md:px-12 md:py-12">
       <div className="flex flex-col sm:gap-4 text-sm">
-        <div className="text-lg sm:text-4xl font-medium leading-6">PnL</div>
-        <div className="flex flex-wrap sm:text-xl md:text-3xl sm:gap-4">
-          <div className={`text-center sm:text-left p-1 `}>
-            24HR:
-            <a
-              className={`pl-2 ${
-                pnl1D >= 0 ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {pnl1D}%
-            </a>
-          </div>
-          <div className={`text-center sm:text-left p-1 `}>
-            1W:
-            <a
-              className={`pl-2 ${
-                pnl1W >= 0 ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {pnl1W}%
-            </a>
-          </div>
-          <div className={`text-center sm:text-left p-1 `}>
-            1M:
-            <a
-              className={`pl-2 ${
-                pnl1M >= 0 ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {pnl1M}%
-            </a>
-          </div>
-          <div className={`text-center sm:text-left p-1 `}>
-            1Y:
-            <a
-              className={`pl-2 ${
-                pnl1Y >= 0 ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {pnl1Y}%
-            </a>
-          </div>
-        </div>
-        {/* Position Table */}
-        <div className="flex flex-wrap sm:text-xl md:text-3xl sm:gap-4">
-          <div className={`text-center sm:text-left p-1 `}>
-            24HR:
-            <a
-              className={`pl-2 ${
-                pnl1D >= 0 ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {pnl1D}%
-            </a>
-          </div>
-          <div className={`text-center sm:text-left p-1 `}>
-            1W:
-            <a
-              className={`pl-2 ${
-                pnl1W >= 0 ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {pnl1W}%
-            </a>
-          </div>
-          <div className={`text-center sm:text-left p-1 `}>
-            1M:
-            <a
-              className={`pl-2 ${
-                pnl1M >= 0 ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {pnl1M}%
-            </a>
-          </div>
-          <div className={`text-center sm:text-left p-1 `}>
-            1Y:
-            <a
-              className={`pl-2 ${
-                pnl1Y >= 0 ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {pnl1Y}%
-            </a>
-          </div>
+        <div className="flex flex-col items-center">
+          <table className="w-full text-center">
+            <thead>
+              <tr className=" sm:text-lg border-b">
+                <th className="p-2 sm:p-3 text-start">Symbol</th>
+                <th className="p-3">Current Price</th>
+                <th className="p-3">Avg Price</th>
+                <th className="p-3">Quantity</th>
+                <th className="p-3">PnL</th>
+              </tr>
+            </thead>
+            <tbody>
+              {portfolioPositions.map((position, index) => (
+                <tr
+                  className={`sm:text-lg ${
+                    index === portfolioPositions.length - 1
+                      ? ""
+                      : "border-b border-dashed"
+                  }`}
+                  key={position.symbol}
+                >
+                  <td className="flex p-3 justify-start">{tickerList[position.symbol]}</td>
+                  <td className="p-3">${nomicsTickers[position.symbol].usd}</td>
+                  <td className="p-3">${position.avgCost}</td>
+                  <td className="p-3">{position.quantity.toFixed(2)}</td>
+                  <td className={`p-3 ${calculatePositionPnl(position).includes("-") ? 'text-red-500' : calculatePositionPnl(position) === "Need Avg Price" ? 'text-white text-[.7rem] leading-3' : 'text-green-500'}`}>
+                    {calculatePositionPnl(position)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
+
   );
 }

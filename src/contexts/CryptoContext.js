@@ -71,10 +71,11 @@ export function CryptoProvider({ children }) {
     setCurrentPortfolio(portfolio);
     cleanupDuplicatesInHistorical(activeUser.portfolioID);
     calculatePortfolioValue(portfolio);
+    setFilteredPortfolioValueHistory(
     filterDataByDateRange(
       portfolio.portfolioValueHistory,
-      currentChartDateRange
-    );
+      currentChartDateRange, true
+    ));
 
     setPortfolioValueHistory(portfolio.portfolioValueHistory);
     //positionValue -> {id: "", value: ""}
@@ -92,7 +93,7 @@ export function CryptoProvider({ children }) {
     // recordPortfolioPositionValues(portPositions, priceValues, activeUser.portfolioID)
   }
 
-  function filterDataByDateRange(data, dateRange) {
+  function filterDataByDateRange(data, dateRange, assignVariable) {
     let filteredData = [];
     const currentDate = new Date();
     const oneDay = 24 * 60 * 60 * 1000; // milliseconds in one day
@@ -130,8 +131,10 @@ export function CryptoProvider({ children }) {
           filteredData = data;
       }
     });
-
-    setFilteredPortfolioValueHistory(filteredData);
+    
+    // Only set filteredPortfolioValueHistory if setVariable is true
+    if(assignVariable){
+      setFilteredPortfolioValueHistory(filteredData)}
     return filteredData;
   }
 
