@@ -94,7 +94,7 @@ export function Analyics(privacyFilter) {
     <div className="bg-gray-800  text-white p-2 md:px-12 md:py-12">
       <div className="flex flex-col sm:gap-4 text-sm">
         <div className="flex flex-col items-center">
-          <table className=" text-[.65rem]">
+          <table className="text-[.8rem] sm:text-[.95rem]">
             <thead>
               <tr className="text-[.7rem] sm:text-lg border-b">
                 <th className="p-2 sm:p-3">Symbol</th>
@@ -115,13 +115,13 @@ export function Analyics(privacyFilter) {
                   key={position.symbol}
                 >
                   {/* Symbol */}
-                  <td className="p-2">{tickerList[position.symbol]}</td>
+                  <td className="">{tickerList[position.symbol]}</td>
                   {/* Current Price */}
-                  <td className="p-2">${nomicsTickers[position.symbol].usd}</td>
+                  <td className="">${nomicsTickers[position.symbol].usd}</td>
                   {/* Avg Price */}
-                  <td className="p-2">${position.avgCost}</td>
+                  <td className="">${position.avgCost}</td>
                   {/* Quantity */}
-                  <td className="p-2">
+                  <td className="">
                     {position.symbol === "bitcoin"
                       ? privacyFilter.privacyFilter
                         ? maskNumber(position.quantity.toFixed(4))
