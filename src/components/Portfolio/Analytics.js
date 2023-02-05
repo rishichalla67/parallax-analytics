@@ -14,6 +14,12 @@ export function calculatePnl(data) {
   //   console.log(data);
 }
 
+export function formatSymbol(str) {
+  let symbol = "";
+  symbol = str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  return symbol;
+}
+
 export function Analyics(privacyFilter) {
   const {
     nomicsTickers,
@@ -115,7 +121,9 @@ export function Analyics(privacyFilter) {
                   key={position.symbol}
                 >
                   {/* Symbol */}
-                  <td className="">{tickerList[position.symbol]}</td>
+                  <td className="">
+                    {formatSymbol(tickerList[position.symbol])}
+                  </td>
                   {/* Current Price */}
                   <td className="">${nomicsTickers[position.symbol].usd}</td>
                   {/* Avg Price */}
