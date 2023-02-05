@@ -385,7 +385,7 @@ export default function CryptoPortfolio() {
                   {/* Tab Index of 2 === Positions Table */}
                   {tabIndex === 2 && (
                     <>
-                      <div className="flex text-lg justify-center">
+                      <div className="flex p-2 text-lg justify-center">
                         <Analyics/>
                       </div>
                     </>

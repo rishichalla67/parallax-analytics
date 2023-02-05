@@ -33,7 +33,19 @@ export function Analyics() {
   const [pnl1M, setPnl1M] = useState("");
   const [pnl1Y, setPnl1Y] = useState("");
 
+
   function calculatePositionPnl(position){
+    let positionPnl = "Need Avg Price"
+    if(position.avgCost === ""){
+      return positionPnl
+    }
+    let initialInvestment = position.avgCost*position.quantity
+    positionPnl = (((nomicsTickers[position.symbol].usd - position.avgCost)*position.quantity)-initialInvestment).toFixed(2)    
+    positionPnl = "$"+positionPnl
+    return positionPnl;
+  }
+
+  function calculatePositionPnlPercentage(position){
     let positionPnl = "Need Avg Price"
     if(position.avgCost === ""){
       return positionPnl
@@ -62,14 +74,14 @@ export function Analyics() {
     <div className="bg-gray-800  text-white p-2 md:px-12 md:py-12">
       <div className="flex flex-col sm:gap-4 text-sm">
         <div className="flex flex-col items-center">
-          <table className="w-full text-center">
+          <table className="w-full text-[.65rem]">
             <thead>
-              <tr className=" sm:text-lg border-b">
+              <tr className="text-[.7rem] sm:text-lg border-b">
                 <th className="p-2 sm:p-3 text-start">Symbol</th>
-                <th className="p-3">Current Price</th>
-                <th className="p-3">Avg Price</th>
-                <th className="p-3">Quantity</th>
-                <th className="p-3">PnL</th>
+                <th className="p-2">Current Price</th>
+                <th className="p-2">Avg Price</th>
+                <th className="p-2">Quantity</th>
+                <th className="p-3 pl-6">PnL</th>
               </tr>
             </thead>
             <tbody>
@@ -82,12 +94,18 @@ export function Analyics() {
                   }`}
                   key={position.symbol}
                 >
-                  <td className="flex p-3 justify-start">{tickerList[position.symbol]}</td>
-                  <td className="p-3">${nomicsTickers[position.symbol].usd}</td>
-                  <td className="p-3">${position.avgCost}</td>
-                  <td className="p-3">{position.quantity.toFixed(2)}</td>
-                  <td className={`p-3 ${calculatePositionPnl(position).includes("-") ? 'text-red-500' : calculatePositionPnl(position) === "Need Avg Price" ? 'text-white text-[.7rem] leading-3' : 'text-green-500'}`}>
-                    {calculatePositionPnl(position)}
+                  <td className="p-2">{tickerList[position.symbol]}</td>
+                  <td className="p-2">${nomicsTickers[position.symbol].usd}</td>
+                  <td className="p-2">${position.avgCost}</td>
+                  <td className="p-2">{position.quantity.toFixed(2)}</td>
+                  <td className={`sm:hidden p-2 text-right ${calculatePositionPnl(position).includes("-") ? 'text-red-500' : calculatePositionPnl(position) === "Need Avg Price" ? 'text-white text-[.7rem] leading-3' : 'text-green-500'}`}>
+                    {calculatePositionPnlPercentage(position)} {addCommaToNumberString(calculatePositionPnl(position))}
+                  </td>
+                  <td className={`hidden sm:block p-2 text-right ${calculatePositionPnl(position).includes("-") ? 'text-red-500' : calculatePositionPnl(position) === "Need Avg Price" ? 'text-white text-[.7rem] leading-3' : 'text-green-500'}`}>
+                    {calculatePositionPnlPercentage(position)} 
+                  </td>
+                  <td className={`sm:leading-2 hidden sm:block p-2 text-right ${calculatePositionPnl(position).includes("-") ? 'text-red-500' : calculatePositionPnl(position) === "Need Avg Price" ? 'text-white text-[.7rem] leading-3' : 'text-green-500'}`}>
+                    {addCommaToNumberString(calculatePositionPnl(position))}
                   </td>
                 </tr>
               ))}
