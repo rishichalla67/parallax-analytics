@@ -1,8 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
 
@@ -13,8 +9,7 @@ import NewPortfolio from "./NewPortfolio";
 import AddPosition from "./AddPosition";
 import Chart from "./Chart";
 
-
-export function calculatePositionValue(nomicsTickers ,position) {
+export function calculatePositionValue(nomicsTickers, position) {
   if (nomicsTickers[position.symbol] !== undefined) {
     return (
       parseFloat(position.quantity) *
@@ -29,6 +24,12 @@ export function addCommaToNumberString(numberString) {
   return parts.join(".");
 }
 
+export function maskNumber(input) {
+  if (typeof input === "number")
+    return input.toString().replace(/[\d\.]/g, "*");
+  else if (typeof input === "string") return input.replace(/[\d\.\-]/g, "*");
+  else return "Invalid Input";
+}
 
 export default function CryptoPortfolio() {
   let timer = 0;
@@ -39,7 +40,6 @@ export default function CryptoPortfolio() {
   const [selectedPosition, setSelectedPosition] = useState();
   const [successMessage, setSuccessMessage] = useState("");
   const [privacyFilter, setPrivacyFilter] = useState(false);
-
 
   const [editPositions, setEditPositions] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -57,11 +57,7 @@ export default function CryptoPortfolio() {
     currentChartDateRange,
     filterDataByDateRange,
   } = useCryptoOracle();
-  const {
-    activeUser,
-    tickerList,
-    fetchAllUsers,
-  } = useFirestore();
+  const { activeUser, tickerList, fetchAllUsers } = useFirestore();
 
   useEffect(() => {
     getPortfolioData();
@@ -83,7 +79,6 @@ export default function CryptoPortfolio() {
     filterDataByDateRange(portfolioValueHistory, currentChartDateRange, true);
   }, [currentChartDateRange]);
 
-
   const refreshAll = () => {
     if (refreshAvailable) {
       setRefreshAvailable(false);
@@ -94,15 +89,6 @@ export default function CryptoPortfolio() {
       }, 10000);
     }
   };
-
-  
-
-  function maskNumber(input) {
-    if (typeof input === "number")
-      return input.toString().replace(/[\d\.]/g, "*");
-    else if (typeof input === "string") return input.replace(/[\d\.]/g, "*");
-    else return "Invalid Input";
-  }
 
   // const portfolioValueRef = useRef(null);
   // useEffect(() => {
@@ -149,9 +135,13 @@ export default function CryptoPortfolio() {
                 </div>
               )}
               {showModal && (
-                <UpdatePosition selectedPosition={selectedPosition} setShowModal={setShowModal} setSuccessMessage={setSuccessMessage}/>
+                <UpdatePosition
+                  selectedPosition={selectedPosition}
+                  setShowModal={setShowModal}
+                  setSuccessMessage={setSuccessMessage}
+                />
               )}
-              
+
               <div className="flex justify-center pl-20 sm:pl-24 pb-2">
                 <h3 className="pt-3 sm:pt-1 flex grow flex-col text-4xl sm:text-5xl leading-6 font-small sm:font-medium">
                   <div
@@ -277,12 +267,11 @@ export default function CryptoPortfolio() {
                 </div>
               </div>
               <div className={`p-1 sm:p-2`}>
-                <Chart privacyFilter={privacyFilter}/>
+                <Chart privacyFilter={privacyFilter} />
               </div>
-              
+
               {!editPositions ? (
                 <div className="flex flex-col justify-center px-4 pt-2 sm:px-6">
-                  
                   <ul className="flex -mt-5 sm:-mt-0 flex-wrap text-lg md:text-xl font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
                     <li className="mr-2">
                       <button
@@ -381,17 +370,21 @@ export default function CryptoPortfolio() {
                   {tabIndex === 2 && (
                     <>
                       <div className="w-full sm:text-lg ">
-                        <Analyics privacyFilter={privacyFilter}/>
+                        <Analyics privacyFilter={privacyFilter} />
                       </div>
                     </>
                   )}
                 </div>
               ) : (
-                <AddPosition setError={setError} setSuccessMessage={setSuccessMessage} setEditPositions={setEditPositions}/>
+                <AddPosition
+                  setError={setError}
+                  setSuccessMessage={setSuccessMessage}
+                  setEditPositions={setEditPositions}
+                />
               )}
             </div>
           ) : (
-            <NewPortfolio/>
+            <NewPortfolio />
           )}
         </div>
       </div>

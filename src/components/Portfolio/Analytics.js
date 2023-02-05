@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
-import { addCommaToNumberString } from "./CryptoPortfolio";
+import { addCommaToNumberString, maskNumber } from "./CryptoPortfolio";
 
 export function calculatePnl(data) {
   if (data[0].value) {
@@ -87,7 +87,8 @@ export function Analyics(privacyFilter) {
     setPnl1W(calculatePnl(weekFilterRange));
     setPnl1M(calculatePnl(monthFilterRange));
     setPnl1Y(calculatePnl(yearFilterRange));
-  }, []);
+    console.log(privacyFilter.privacyFilter);
+  }, [privacyFilter]);
 
   return (
     <div className="bg-gray-800  text-white p-2 md:px-12 md:py-12">
@@ -122,7 +123,11 @@ export function Analyics(privacyFilter) {
                   {/* Quantity */}
                   <td className="p-2">
                     {position.symbol === "bitcoin"
-                      ? addCommaToNumberString(position.quantity.toFixed(4))
+                      ? privacyFilter.privacyFilter
+                        ? maskNumber(position.quantity.toFixed(4))
+                        : addCommaToNumberString(position.quantity.toFixed(4))
+                      : privacyFilter.privacyFilter
+                      ? maskNumber(position.quantity.toFixed(2))
                       : addCommaToNumberString(position.quantity.toFixed(2))}
                   </td>
                   {/* PnL (Mobile) */}
@@ -135,8 +140,11 @@ export function Analyics(privacyFilter) {
                         : "text-green-500"
                     }`}
                   >
-                    {calculatePositionPnlPercentage(position)}{" "}
-                    {addCommaToNumberString(calculatePositionPnl(position))}
+                    {calculatePositionPnlPercentage(position)}
+                    {"   "}
+                    {privacyFilter.privacyFilter
+                      ? maskNumber(calculatePositionPnl(position))
+                      : addCommaToNumberString(calculatePositionPnl(position))}
                   </td>
                   {/* Pnl*/}
                   <td
