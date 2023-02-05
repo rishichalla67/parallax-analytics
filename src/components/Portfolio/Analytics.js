@@ -15,7 +15,7 @@ export function calculatePnl(data) {
   //   console.log(data);
 }
 
-export function Analyics() {
+export function Analyics(privacyFilter) {
   const {
     nomicsTickers,
     portfolioValueHistory,
@@ -77,7 +77,7 @@ export function Analyics() {
           <table className="w-full text-[.65rem]">
             <thead>
               <tr className="text-[.7rem] sm:text-lg border-b">
-                <th className="p-2 sm:p-3 text-start">Symbol</th>
+                <th className="p-2 sm:p-3">Symbol</th>
                 <th className="p-2">Current Price</th>
                 <th className="p-2">Avg Price</th>
                 <th className="p-2">Quantity</th>

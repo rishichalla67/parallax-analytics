@@ -47,28 +47,19 @@ export default function CryptoPortfolio() {
   const {
     nomicsTickers,
     refreshOraclePrices,
-    searchCoinGeckoAPI,
-    searchResults,
     setRefreshAvailable,
     refreshAvailable,
     portfolioValue,
-    setPortfolioValue,
     getPortfolioData,
     portfolioValueHistory,
     portfolioPositions,
     filteredPortfolioValueHistory,
-    setCurrentChartDateRange,
     currentChartDateRange,
     filterDataByDateRange,
   } = useCryptoOracle();
   const {
     activeUser,
-    addPosition,
-    removePositionFromFirebase,
-    addTicker,
     tickerList,
-    createPortfolio,
-    updatePosition,
     fetchAllUsers,
   } = useFirestore();
 
@@ -386,7 +377,7 @@ export default function CryptoPortfolio() {
                   {tabIndex === 2 && (
                     <>
                       <div className="flex p-2 text-lg justify-center">
-                        <Analyics/>
+                        <Analyics privacyFilter={privacyFilter}/>
                       </div>
                     </>
                   )}
