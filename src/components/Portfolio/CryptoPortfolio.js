@@ -121,7 +121,7 @@ export default function CryptoPortfolio() {
       <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
         <div className="text-white grid place-items-center">
           {activeUser.portfolioID ? (
-            <div className="bg-black min-w-95% min-h-98vh md:max-w-5xl rounded-lg border border-sky-500 shadow-lg items-center ">
+            <div className="bg-black w-full sm:min-w-95% md:max-w-5xl rounded-lg border border-sky-500 shadow-lg items-center ">
               <div className="flex justify-center px-4 py-1 sm:px-6"></div>
               {error && (
                 <div role="alert">
@@ -276,9 +276,13 @@ export default function CryptoPortfolio() {
                   </svg>
                 </div>
               </div>
+              <div className={`p-1 sm:p-2`}>
+                <Chart privacyFilter={privacyFilter}/>
+              </div>
+              
               {!editPositions ? (
                 <div className="flex flex-col justify-center px-4 pt-2 sm:px-6">
-                  <Chart privacyFilter={privacyFilter}/>
+                  
                   <ul className="flex -mt-5 sm:-mt-0 flex-wrap text-lg md:text-xl font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
                     <li className="mr-2">
                       <button
@@ -376,7 +380,7 @@ export default function CryptoPortfolio() {
                   {/* Tab Index of 2 === Positions Table */}
                   {tabIndex === 2 && (
                     <>
-                      <div className="flex p-2 text-lg justify-center">
+                      <div className="w-full sm:text-lg ">
                         <Analyics privacyFilter={privacyFilter}/>
                       </div>
                     </>

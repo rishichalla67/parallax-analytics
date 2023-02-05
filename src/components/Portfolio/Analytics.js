@@ -74,7 +74,7 @@ export function Analyics(privacyFilter) {
     <div className="bg-gray-800  text-white p-2 md:px-12 md:py-12">
       <div className="flex flex-col sm:gap-4 text-sm">
         <div className="flex flex-col items-center">
-          <table className="w-full text-[.65rem]">
+          <table className=" text-[.65rem]">
             <thead>
               <tr className="text-[.7rem] sm:text-lg border-b">
                 <th className="p-2 sm:p-3">Symbol</th>
@@ -94,13 +94,19 @@ export function Analyics(privacyFilter) {
                   }`}
                   key={position.symbol}
                 >
+                  {/* Symbol */}
                   <td className="p-2">{tickerList[position.symbol]}</td>
+                  {/* Current Price */}
                   <td className="p-2">${nomicsTickers[position.symbol].usd}</td>
+                  {/* Avg Price */}
                   <td className="p-2">${position.avgCost}</td>
-                  <td className="p-2">{position.quantity.toFixed(2)}</td>
+                  {/* Quantity */}
+                  <td className="p-2">{ position.symbol === 'bitcoin'?addCommaToNumberString(position.quantity.toFixed(4)):addCommaToNumberString(position.quantity.toFixed(2))}</td>
+                  {/* PnL (Mobile) */}
                   <td className={`sm:hidden p-2 text-right ${calculatePositionPnl(position).includes("-") ? 'text-red-500' : calculatePositionPnl(position) === "Need Avg Price" ? 'text-white text-[.7rem] leading-3' : 'text-green-500'}`}>
                     {calculatePositionPnlPercentage(position)} {addCommaToNumberString(calculatePositionPnl(position))}
                   </td>
+                  {/* Pnl*/}
                   <td className={`hidden sm:block p-2 text-right ${calculatePositionPnl(position).includes("-") ? 'text-red-500' : calculatePositionPnl(position) === "Need Avg Price" ? 'text-white text-[.7rem] leading-3' : 'text-green-500'}`}>
                     {calculatePositionPnlPercentage(position)} 
                   </td>
