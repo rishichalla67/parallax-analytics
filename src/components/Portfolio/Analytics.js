@@ -3,7 +3,6 @@ import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
 import { addCommaToNumberString } from "./CryptoPortfolio";
 
-
 export function calculatePnl(data) {
   if (data[0].value) {
     return (
@@ -22,9 +21,7 @@ export function Analyics(privacyFilter) {
     filterDataByDateRange,
     portfolioPositions,
   } = useCryptoOracle();
-  const {
-    tickerList,
-  } = useFirestore();
+  const { tickerList } = useFirestore();
 
   //   console.log(filterDataByDateRange(portfolioValueHistory, "1D"));
 
@@ -33,42 +30,64 @@ export function Analyics(privacyFilter) {
   const [pnl1M, setPnl1M] = useState("");
   const [pnl1Y, setPnl1Y] = useState("");
 
-
-  function calculatePositionPnl(position){
-    let positionPnl = "Need Avg Price"
-    if(position.avgCost === ""){
-      return positionPnl
+  function calculatePositionPnl(position) {
+    let positionPnl = "";
+    if (position.avgCost === "") {
+      return positionPnl;
     }
-    let initialInvestment = position.avgCost*position.quantity
-    positionPnl = (((nomicsTickers[position.symbol].usd - position.avgCost)*position.quantity)-initialInvestment).toFixed(2)    
-    positionPnl = "$"+positionPnl
+    let initialInvestment = position.avgCost * position.quantity;
+    positionPnl = (
+      nomicsTickers[position.symbol].usd * position.quantity -
+      initialInvestment
+    ).toFixed(2);
+    positionPnl = "$" + positionPnl;
     return positionPnl;
   }
 
-  function calculatePositionPnlPercentage(position){
-    let positionPnl = "Need Avg Price"
-    if(position.avgCost === ""){
-      return positionPnl
+  function calculatePositionPnlPercentage(position) {
+    let positionPnl = "Need Avg Price";
+    if (position.avgCost === "") {
+      return positionPnl;
     }
-    let initialInvestment = position.avgCost*position.quantity
-    positionPnl = ((((nomicsTickers[position.symbol].usd - position.avgCost)*position.quantity)/initialInvestment)*100).toFixed(2)
-    positionPnl = positionPnl+"%"
-    
+    let initialInvestment = position.avgCost * position.quantity;
+    positionPnl = (
+      (((nomicsTickers[position.symbol].usd - position.avgCost) *
+        position.quantity) /
+        initialInvestment) *
+      100
+    ).toFixed(2);
+    positionPnl = positionPnl + "%";
+
     return positionPnl;
   }
 
   useEffect(() => {
-    let dayFilterRange = filterDataByDateRange(portfolioValueHistory, "24HR", false);
-    let weekFilterRange = filterDataByDateRange(portfolioValueHistory, "1W", false);
-    let monthFilterRange = filterDataByDateRange(portfolioValueHistory, "1M", false);
-    let yearFilterRange = filterDataByDateRange(portfolioValueHistory, "1Y", false);
+    let dayFilterRange = filterDataByDateRange(
+      portfolioValueHistory,
+      "24HR",
+      false
+    );
+    let weekFilterRange = filterDataByDateRange(
+      portfolioValueHistory,
+      "1W",
+      false
+    );
+    let monthFilterRange = filterDataByDateRange(
+      portfolioValueHistory,
+      "1M",
+      false
+    );
+    let yearFilterRange = filterDataByDateRange(
+      portfolioValueHistory,
+      "1Y",
+      false
+    );
 
     setPnl1D(calculatePnl(dayFilterRange));
     setPnl1W(calculatePnl(weekFilterRange));
     setPnl1M(calculatePnl(monthFilterRange));
     setPnl1Y(calculatePnl(yearFilterRange));
   }, []);
-
 
   return (
     <div className="bg-gray-800  text-white p-2 md:px-12 md:py-12">
@@ -101,16 +120,45 @@ export function Analyics(privacyFilter) {
                   {/* Avg Price */}
                   <td className="p-2">${position.avgCost}</td>
                   {/* Quantity */}
-                  <td className="p-2">{ position.symbol === 'bitcoin'?addCommaToNumberString(position.quantity.toFixed(4)):addCommaToNumberString(position.quantity.toFixed(2))}</td>
+                  <td className="p-2">
+                    {position.symbol === "bitcoin"
+                      ? addCommaToNumberString(position.quantity.toFixed(4))
+                      : addCommaToNumberString(position.quantity.toFixed(2))}
+                  </td>
                   {/* PnL (Mobile) */}
-                  <td className={`sm:hidden p-2 text-right ${calculatePositionPnl(position).includes("-") ? 'text-red-500' : calculatePositionPnl(position) === "Need Avg Price" ? 'text-white text-[.7rem] leading-3' : 'text-green-500'}`}>
-                    {calculatePositionPnlPercentage(position)} {addCommaToNumberString(calculatePositionPnl(position))}
+                  <td
+                    className={`sm:hidden p-2 text-right ${
+                      calculatePositionPnlPercentage(position).includes("-")
+                        ? "text-red-500"
+                        : calculatePositionPnl(position) === "Need Avg Price"
+                        ? "text-white text-[.7rem] leading-3"
+                        : "text-green-500"
+                    }`}
+                  >
+                    {calculatePositionPnlPercentage(position)}{" "}
+                    {addCommaToNumberString(calculatePositionPnl(position))}
                   </td>
                   {/* Pnl*/}
-                  <td className={`hidden sm:block p-2 text-right ${calculatePositionPnl(position).includes("-") ? 'text-red-500' : calculatePositionPnl(position) === "Need Avg Price" ? 'text-white text-[.7rem] leading-3' : 'text-green-500'}`}>
-                    {calculatePositionPnlPercentage(position)} 
+                  <td
+                    className={`hidden sm:block p-2 text-right ${
+                      calculatePositionPnl(position).includes("-")
+                        ? "text-red-500"
+                        : calculatePositionPnl(position) === "Need Avg Price"
+                        ? "text-white text-[.7rem] leading-3"
+                        : "text-green-500"
+                    }`}
+                  >
+                    {calculatePositionPnlPercentage(position)}
                   </td>
-                  <td className={`sm:leading-2 hidden sm:block p-2 text-right ${calculatePositionPnl(position).includes("-") ? 'text-red-500' : calculatePositionPnl(position) === "Need Avg Price" ? 'text-white text-[.7rem] leading-3' : 'text-green-500'}`}>
+                  <td
+                    className={`sm:leading-2 hidden sm:block p-2 text-right ${
+                      calculatePositionPnl(position).includes("-")
+                        ? "text-red-500"
+                        : calculatePositionPnl(position) === "Need Avg Price"
+                        ? "text-white text-[.7rem] leading-3"
+                        : "text-green-500"
+                    }`}
+                  >
                     {addCommaToNumberString(calculatePositionPnl(position))}
                   </td>
                 </tr>
@@ -120,6 +168,5 @@ export function Analyics(privacyFilter) {
         </div>
       </div>
     </div>
-
   );
 }
