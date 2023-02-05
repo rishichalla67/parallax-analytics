@@ -51,9 +51,6 @@ export default function AddPosition({setError, setSuccessMessage, setEditPositio
   const [open, setOpen] = useState(true);
   const cancelButtonRef = useRef(null);
 
-
-
-
   const debouncedChangeHandler = useCallback(
     debounce(handleSearchSubmit, 300),
     []
@@ -70,7 +67,7 @@ export default function AddPosition({setError, setSuccessMessage, setEditPositio
   async function handleSubmit(e) {
     e.preventDefault();
 
-    setLoading(true);
+    // setLoading(true);
     let positionToAdd = Position(
       symbolRef.current.value,
       quantityRef.current.value,
@@ -86,7 +83,7 @@ export default function AddPosition({setError, setSuccessMessage, setEditPositio
     );
     refreshOraclePrices();
     setEditPositions(false);
-    setLoading(false);
+    // setLoading(false);
   }
 
     
@@ -131,22 +128,21 @@ export default function AddPosition({setError, setSuccessMessage, setEditPositio
           >
             <div className="text-white rounded-md shadow-sm -space-y-px">
               <div
-              className="px-10 border-t"
+              className="px-10 "
             >
-              <div className="pt-4 sm:px-6">
+              <div className="pt-4 sm:pt-0 sm:px-6">
                 <input
                   id="search"
                   name="search"
                   autoComplete="off"
                   onChange={debouncedChangeHandler}
                   ref={searchRef}
-                  required
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Search CoinGecko API..."
                 />
               </div>
             </div>
-            <div className="px-10 overflow-y-auto h-48 border-b">
+            <div className="sm:px-10 overflow-y-auto h-40">
             {searchResults &&
               searchResults.map((result) => {
                 return (
@@ -172,8 +168,9 @@ export default function AddPosition({setError, setSuccessMessage, setEditPositio
                 );
               })}
           </div>
+          <div className="flex space-x-2 flex-row pt-3">
               <div>
-                <h3 className="flex align-content-left font-semibold">
+                <h3 className="flex align-content-left pt-2 font-semibold">
                   Crypto Ticker
                 </h3>
                 <label htmlFor="Symbol" className="sr-only">
@@ -186,8 +183,8 @@ export default function AddPosition({setError, setSuccessMessage, setEditPositio
                   ref={symbolRef}
                   required
                   readOnly
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="example: bitcoin"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-sky-500 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="ex. bitcoin"
                 />
               </div>
               <div className="pt-2 ">
@@ -204,10 +201,13 @@ export default function AddPosition({setError, setSuccessMessage, setEditPositio
                   ref={quantityRef}
                   autoComplete="quantity"
                   required
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                  placeholder="example: .01"
+                  pattern="[0-9]+"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-sky-500"
+                  placeholder="ex. 0.01"
                 />
               </div>
+            </div>
+            <div className="flex space-x-2 flex-row pt-3">
               <div className="pt-2">
                 <h3 className="flex align-content-left font-semibold">
                   Position Type
@@ -221,8 +221,8 @@ export default function AddPosition({setError, setSuccessMessage, setEditPositio
                   type="type"
                   ref={typeRef}
                   required
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                  placeholder="examples: 'STAKE' or 'LP' or 'HOLD'"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-sky-500"
+                  placeholder="ex. 'STAKE' or 'LP' or 'HOLD'"
                 />
               </div>
               <div className="pt-2">
@@ -238,35 +238,41 @@ export default function AddPosition({setError, setSuccessMessage, setEditPositio
                   type="averageCost"
                   ref={avgCostRef}
                   required
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                  placeholder="example: 3.25"
+                  pattern="^\d+(\.\d{1,2})?$"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-sky-500"
+                  placeholder="ex. 3.25"
                 />
               </div>
-              <div className="pt-4">
-                <button
-                  type="submit"
-                  onClick={() => {
-                    // setShowForm("invisible");
-                  }}
-                  className="bg-sky-500 hover:bg-sky-700 text-black font-bold py-2 px-4 rounded"
-                  disabled={loading}
-                >
-                  Add Position
-                </button>
               </div>
-              
-              <div className="pt-4">
-                <button
-                  type="submit"
-                  onClick={() => {
-                    setEditPositions(false);
-                  }}
-                  className="bg-red-500 hover:bg-red-700 text-black font-bold py-2 px-4 rounded"
-                  disabled={loading}
-                >
-                  Cancel
-                </button>
-              </div>
+              <div className="flex flex-col space-x-2 items-center justify-center">
+                <div className="pt-4">
+                  <button
+                    type="submit"
+                    onClick={() => {
+                      // setShowForm("invisible");
+                      // searchResults = [];
+                    }}
+                    className="bg-sky-500 hover:bg-sky-700 text-black font-bold py-2 px-4 rounded"
+                    disabled={loading}
+                  >
+                    Add Position
+                  </button>
+                </div>
+                
+                <div className="pt-4">
+                  <button
+                    type="cancel"
+                    onClick={() => {
+                      setEditPositions(false);
+                      
+                    }}
+                    className="bg-red-500 hover:bg-red-700 text-black font-bold py-2 px-4 rounded"
+                    disabled={loading}
+                  >
+                    Cancel
+                  </button>
+                </div>
+                </div>
             </div>
           </form>
                 </Dialog.Panel>

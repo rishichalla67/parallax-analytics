@@ -132,6 +132,7 @@ export function CryptoProvider({ children }) {
     });
 
     setFilteredPortfolioValueHistory(filteredData);
+    return filteredData;
   }
 
   function calculatePortfolioValue(portfolio) {

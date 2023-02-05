@@ -584,7 +584,6 @@ export default function CryptoPortfolio() {
                     <>
                       <div className="flex pt-10 text-lg justify-center">
                         <Analyics
-                          portfolioValueHistory={portfolioValueHistory}
                         />
                       </div>
                     </>
