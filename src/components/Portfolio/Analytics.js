@@ -35,6 +35,42 @@ export function Analyics(privacyFilter) {
   const [pnl1W, setPnl1W] = useState("");
   const [pnl1M, setPnl1M] = useState("");
   const [pnl1Y, setPnl1Y] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [sortAscending, setSortAscending] = useState(true);
+
+  const handleHeaderClick = (header) => {
+    if (sortBy === header) {
+      setSortAscending(!sortAscending);
+    } else {
+      setSortBy(header);
+      setSortAscending(true);
+    }
+  };
+
+  const sortedPositions = [...portfolioPositions].sort((a, b) => {
+    switch (sortBy) {
+      case "symbol":
+        return sortAscending
+          ? formatSymbol(tickerList[a.symbol]).localeCompare(formatSymbol(tickerList[b.symbol]))
+          : formatSymbol(tickerList[b.symbol]).localeCompare(formatSymbol(tickerList[a.symbol]));
+      case "currentPrice":
+        return sortAscending
+          ? nomicsTickers[a.symbol].usd - nomicsTickers[b.symbol].usd
+          : nomicsTickers[b.symbol].usd - nomicsTickers[a.symbol].usd;
+      case "avgPrice":
+        return sortAscending ? a.avgCost - b.avgCost : b.avgCost - a.avgCost;
+      case "quantity":
+        return sortAscending
+          ? a.quantity - b.quantity
+          : b.quantity - a.quantity;
+      // case "pnl":
+      //   return sortAscending
+      //     ? calculatePositionPnl(a) - calculatePositionPnl(b)
+      //     : calculatePositionPnl(b) - calculatePositionPnl(a);
+      default:
+        return 0;
+    }
+  });
 
   function calculatePositionPnl(position) {
     let positionPnl = "";
@@ -97,23 +133,38 @@ export function Analyics(privacyFilter) {
   }, [privacyFilter]);
 
   return (
-    <div className=" text-white ">
+    <div className="pb-4 sm:pb-0 text-white ">
       <div className="flex flex-col sm:gap-4 text-sm">
       <div className="flex flex-col items-center">
         <table className="text-sm sm:text-base sm:w-full min-w-full overflow-x-auto">
           <thead>
-            <tr className="bg-gray-100 text-gray-700">
-              <th className="px-2 py-1 sm:px-4 sm:py-2">Symbol</th>
-              <th className="px-2 py-1 sm:px-4 sm:py-2">Current Price</th>
-              <th className="px-2 py-1 sm:px-4 sm:py-2">Avg Price</th>
-              <th className="px-2 py-1 sm:px-4 sm:py-2">Quantity</th>
+            <tr className="bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 text-white">
+              <th
+                className="px-2 py-1 sm:px-4 sm:py-2  hover:animate-pulse hover:cursor-pointer"
+                onClick={() => handleHeaderClick("symbol")}
+              >
+                Symbol {sortBy === "symbol" && (sortAscending ? "(A-Z)" : "(Z-A)")}
+              </th>
+              <th
+                className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer"
+                onClick={() => handleHeaderClick("currentPrice")}
+              >
+                Current Price {sortBy === "currentPrice" && (sortAscending ? "↑" : "↓")}
+              </th>
+              <th
+                className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer"
+                onClick={() => handleHeaderClick("avgPrice")}
+              >
+                Avg Price {sortBy === "avgPrice" && (sortAscending ? "↑" : "↓")}
+              </th>
+              <th className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer" onClick={() => handleHeaderClick("quantity")}>Quantity {sortBy === "quantity" && (sortAscending ? "↑" : "↓")}</th>
               <th className="px-2 py-1 sm:px-4 sm:py-2">PnL</th>
             </tr>
           </thead>
           <tbody>
-            {portfolioPositions.map((position, index) => (
+            {sortedPositions.map((position, index) => (
               <tr
-                className={`${index === portfolioPositions.length - 1 ? "" : "border-b border-gray-300"}`}
+                className={`${index === sortedPositions.length - 1 ? "" : "border-b border-gray-300"}`}
                 key={position.symbol}
               >
                 <td className="py-1">

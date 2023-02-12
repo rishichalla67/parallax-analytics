@@ -43,6 +43,8 @@ export default function CryptoPortfolio() {
 
   const [editPositions, setEditPositions] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [sortBy, setSortBy] = useState("crypto");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const {
     nomicsTickers,
@@ -90,6 +92,32 @@ export default function CryptoPortfolio() {
       }, 10000);
     }
   };
+
+  const handleSort = (column) => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(column);
+      setSortOrder("asc");
+    }
+  };
+
+  const sortedPositions = [...portfolioPositions]
+    .sort((a, b) => {
+      if (sortBy === "crypto") {
+        if (sortOrder === "asc") {
+          return formatSymbol(tickerList[a.symbol]).localeCompare(formatSymbol(tickerList[b.symbol]));
+        } else {
+          return formatSymbol(tickerList[b.symbol]).localeCompare(formatSymbol(tickerList[a.symbol]));
+        }
+      } else {
+        if (sortOrder === "asc") {
+          return calculatePositionValue(nomicsTickers, a) - calculatePositionValue(nomicsTickers, b);
+        } else {
+          return calculatePositionValue(nomicsTickers, b) - calculatePositionValue(nomicsTickers, a);
+        }
+      }
+    });
 
   // const portfolioValueRef = useRef(null);
   // useEffect(() => {
@@ -313,12 +341,16 @@ export default function CryptoPortfolio() {
                       <table className="table-auto w-full bg-black text-white">
                         <thead>
                           <tr className="border-b border-gray-400">
-                            <th className="px-4 py-2">Crypto</th>
-                            <th className="px-4 py-2">Value</th>
+                            <th className="px-4 py-2 hover:text-purple-600 hover:cursor-pointer" onClick={() => handleSort("crypto")}>
+                              Crypto {sortBy === "crypto" && (sortOrder === "asc" ? "(A-Z)" : "(Z-A)")}
+                            </th>
+                            <th className="px-4 py-2 hover:text-purple-600 hover:cursor-pointer" onClick={() => handleSort("value")}>
+                              Value {sortBy === "value" && (sortOrder === "asc" ? "↑" : "↓")}
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
-                          {portfolioPositions.map((position) => {
+                          {sortedPositions.map((position) => {
                             return (
                               <tr
                                 key={`${position.symbol}-${position.quantity}-${position.type}`}
