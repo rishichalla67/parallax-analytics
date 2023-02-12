@@ -340,11 +340,11 @@ export default function CryptoPortfolio() {
                     <>
                       <table className="table-auto w-full bg-black text-white">
                         <thead>
-                          <tr className="border-b border-gray-400">
-                            <th className="px-4 py-2 hover:text-purple-600 hover:cursor-pointer" onClick={() => handleSort("crypto")}>
+                          <tr className="bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 text-white">
+                            <th className="px-4 py-2 hover:animate-pulse hover:cursor-pointer" onClick={() => handleSort("crypto")}>
                               Crypto {sortBy === "crypto" && (sortOrder === "asc" ? "(A-Z)" : "(Z-A)")}
                             </th>
-                            <th className="px-4 py-2 hover:text-purple-600 hover:cursor-pointer" onClick={() => handleSort("value")}>
+                            <th className="px-4 py-2 hover:animate-pulse hover:cursor-pointer" onClick={() => handleSort("value")}>
                               Value {sortBy === "value" && (sortOrder === "asc" ? "↑" : "↓")}
                             </th>
                           </tr>
