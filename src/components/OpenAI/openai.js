@@ -96,12 +96,15 @@ const OpenAI = () => {
             >
             Clear Input
             </button>
-        {outputText && (
-            <div className="mt-8">
+            {outputText && (
+              <div className="mt-8">
                 <label className="block font-bold text-white mb-2">Response:</label>
-                <p className="p-2 rounded-lg bg-gray-800 text-white">{outputText}</p>
-            </div>
-        )}
+                <p 
+                  className="p-2 rounded-lg bg-gray-800 text-white"
+                  dangerouslySetInnerHTML={{__html: outputText}}
+                />
+              </div>
+            )}
         {error && (
             <div className="mt-8 text-red-500">
             An error occurred: {error.message}
