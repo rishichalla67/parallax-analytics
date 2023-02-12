@@ -16,11 +16,38 @@ const OpenAI = () => {
         setInputText('')
   }
 
+  const copyToClipboard = (text) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    textArea.remove();
+  };
+
+  const CopyIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="feather feather-copy"
+    >
+      <rect x="9" y="9" width="10" height="10" rx="" ry="" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+
   const formatResponse = (text) => {
     let formattedText = text;
     
     // Add line breaks for paragraphs
-    formattedText = formattedText.replace(/(\r\n|\n|\r)/gm, "<br/><br/>");
+    formattedText = formattedText.replace(/(\r\n|\n|\r)/gm, "<div/><div/>");
   
     // Add syntax highlighting for code snippets
     formattedText = formattedText.replace(/```(.*?)```/g, "<pre><code>$1</code></pre>");
@@ -99,10 +126,18 @@ const OpenAI = () => {
             {outputText && (
               <div className="mt-8">
                 <label className="block font-bold text-white mb-2">Response:</label>
-                <p 
-                  className="p-2 rounded-lg bg-gray-800 text-white"
-                  dangerouslySetInnerHTML={{__html: outputText}}
-                />
+                <div className="relative">
+                  <p 
+                    className="p-2 rounded-lg bg-gray-800 text-white text-left"
+                    dangerouslySetInnerHTML={{__html: outputText}}
+                  />
+                  <button
+                    className="bg-slate-500 absolute top-0 right-0 p-2 text-white"
+                    onClick={() => copyToClipboard(outputText)}
+                  >
+                    <CopyIcon/>
+                  </button>
+                </div>
               </div>
             )}
         {error && (
