@@ -104,6 +104,9 @@ export function CryptoProvider({ children }) {
   function filterDataByDateRange(data, dateRange, assignVariable) {
     let filteredData = [];
     const currentDate = new Date();
+    const oneHour = 60 * 60 * 1000; 
+    const sixHours = 6 * oneHour; // milliseconds in six hours
+    const twelveHours = 12 * oneHour; // milliseconds in twelve hours
     const oneDay = 24 * 60 * 60 * 1000; // milliseconds in one day
     const oneWeek = 7 * oneDay; // milliseconds in one week
     const oneMonth = 30 * oneDay; // milliseconds in one month
@@ -114,6 +117,21 @@ export function CryptoProvider({ children }) {
       let timeDiff = currentDate - itemDate.toDate();
 
       switch (dateRange) {
+        case "1HR":
+          if (timeDiff <= oneHour) {
+            filteredData.push(item);
+          }
+        break;
+        case "6HR":
+          if (timeDiff <= sixHours) {
+            filteredData.push(item);
+          }
+        break;
+        case "12HR":
+          if (timeDiff <= twelveHours) {
+            filteredData.push(item);
+          }
+        break;
         case "24HR":
           if (timeDiff <= oneDay) {
             filteredData.push(item);
