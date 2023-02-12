@@ -3,7 +3,7 @@ import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
 
 import Nav from "../Nav.js";
-import { Analyics, calculatePnl } from "./Analytics";
+import { Analyics, calculatePnl, formatSymbol } from "./Analytics";
 import UpdatePosition from "./UpdatePosition";
 import NewPortfolio from "./NewPortfolio";
 import AddPosition from "./AddPosition";
@@ -56,6 +56,7 @@ export default function CryptoPortfolio() {
     filteredPortfolioValueHistory,
     currentChartDateRange,
     filterDataByDateRange,
+    getTickerDailyPnL
   } = useCryptoOracle();
   const { activeUser, tickerList, fetchAllUsers } = useFirestore();
 
@@ -309,50 +310,37 @@ export default function CryptoPortfolio() {
                   {/* Tab Index of 1 === Positions Table */}
                   {tabIndex === 1 && (
                     <>
-                      <div className="flex pb-2 border border-gray-200">
-                        <h3 className="pl-3 pt-2 text-xl leading-6 text-sky-500 font-medium">
-                          Crypto
-                        </h3>
-                        <div className="grow pt-2 pr-3 text-xl leading-6 text-sky-500 font-medium text-right">
-                          Value
-                        </div>
-                      </div>
-                      {portfolioPositions.map((position) => {
-                        return (
-                          <div
-                            key={`${position.symbol}-${position.quantity}-${position.type}`}
-                            className="flex pb-2 border border-gray-200 hover:text-sky-400 hover:cursor-pointer"
-                            onClick={() => {
-                              setShowModal(true);
-                              setSelectedPosition(position);
-                            }}
-                          >
-                            <h3 className="pl-3 pt-2 text-xl leading-6 font-medium">{`${
-                              tickerList[position.symbol]
-                            } (${position.type.toLowerCase()})`}</h3>
-                            <div
-                              className={`${
-                                privacyFilter
-                                  ? "hidden"
-                                  : "grow pt-2 pr-1 text-xl leading-6 font-medium text-right"
-                              }`}
-                            >
-                              {`$${addCommaToNumberString(
-                                calculatePositionValue(nomicsTickers, position)
-                              )}`}
-                            </div>
-                            <div
-                              className={`${
-                                privacyFilter
-                                  ? "grow pt-2 pr-1 text-xl leading-6 font-medium text-right"
-                                  : "hidden"
-                              }`}
-                            >{`$${maskNumber(
-                              calculatePositionValue(nomicsTickers, position)
-                            )}`}</div>
-                          </div>
-                        );
-                      })}
+                      <table className="table-auto w-full bg-black text-white">
+                        <thead>
+                          <tr className="border-b border-gray-400">
+                            <th className="px-4 py-2">Crypto</th>
+                            <th className="px-4 py-2">Value</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {portfolioPositions.map((position) => {
+                            return (
+                              <tr
+                                key={`${position.symbol}-${position.quantity}-${position.type}`}
+                                className="border-b border-gray-400 hover:bg-purple-900 hover:cursor-pointer"
+                                onClick={() => {
+                                  setShowModal(true);
+                                  setSelectedPosition(position);
+                                }}
+                              >
+                                <td className="px-4 py-2">{formatSymbol(tickerList[position.symbol])}</td>
+                                <td className="px-4 py-2">
+                                  {
+                                    privacyFilter
+                                      ? `$${maskNumber(calculatePositionValue(nomicsTickers, position))}`
+                                      : `$${addCommaToNumberString(calculatePositionValue(nomicsTickers, position))}`
+                                  }
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
                       <div className="py-5 ">
                         <button
                           className="bg-sky-500 hover:bg-sky-700 text-black font-bold py-2 px-4 rounded"

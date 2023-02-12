@@ -34,6 +34,7 @@ export function CryptoProvider({ children }) {
     useState([]);
   const [currentChartDateRange, setCurrentChartDateRange] = useState("24HR");
   const [error, setError] = useState("");
+  const [positionTickerPnLLists, setPositionTickerPnLLists] = useState([])
 
   useEffect(() => {
     refreshOraclePrices();
@@ -54,6 +55,14 @@ export function CryptoProvider({ children }) {
       .then((tickers) => {
         setNomicsTickers(tickers);
         setLoading(false);
+      });
+  }
+
+  function getTickerDailyPnL(ticker) {
+    fetch(`https://api.coingecko.com/api/v3/coins/${ticker.toLowerCase()}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false`)
+      .then((response) => response.json())
+      .then((searchResponse) => {
+        return searchResponse.market_data.price_change_percentage_24h;
       });
   }
 
@@ -89,7 +98,6 @@ export function CryptoProvider({ children }) {
           parseFloat(nomicsTickers[position.symbol].usd),
       });
     });
-
     // recordPortfolioPositionValues(portPositions, priceValues, activeUser.portfolioID)
   }
 
@@ -201,6 +209,8 @@ export function CryptoProvider({ children }) {
     filterDataByDateRange,
     setCurrentChartDateRange,
     currentChartDateRange,
+    getTickerDailyPnL,
+    positionTickerPnLLists
   };
 
   return (

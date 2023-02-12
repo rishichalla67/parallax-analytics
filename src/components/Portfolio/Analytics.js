@@ -97,91 +97,63 @@ export function Analyics(privacyFilter) {
   }, [privacyFilter]);
 
   return (
-    <div className="bg-gray-800  text-white p-2 md:px-12 md:py-12">
+    <div className=" text-white ">
       <div className="flex flex-col sm:gap-4 text-sm">
-        <div className="flex flex-col items-center">
-          <table className="text-[.8rem] sm:text-[.95rem]">
-            <thead>
-              <tr className="text-[.7rem] sm:text-lg border-b">
-                <th className="p-2 sm:p-3">Symbol</th>
-                <th className="p-2">Current Price</th>
-                <th className="p-2">Avg Price</th>
-                <th className="p-2">Quantity</th>
-                <th className="p-3 pl-6">PnL</th>
-              </tr>
-            </thead>
-            <tbody>
-              {portfolioPositions.map((position, index) => (
-                <tr
-                  className={`sm:text-lg ${
-                    index === portfolioPositions.length - 1
-                      ? ""
-                      : "border-b border-dashed"
+      <div className="flex flex-col items-center">
+        <table className="text-sm sm:text-base sm:w-full min-w-full overflow-x-auto">
+          <thead>
+            <tr className="bg-gray-100 text-gray-700">
+              <th className="px-2 py-1 sm:px-4 sm:py-2">Symbol</th>
+              <th className="px-2 py-1 sm:px-4 sm:py-2">Current Price</th>
+              <th className="px-2 py-1 sm:px-4 sm:py-2">Avg Price</th>
+              <th className="px-2 py-1 sm:px-4 sm:py-2">Quantity</th>
+              <th className="px-2 py-1 sm:px-4 sm:py-2">PnL</th>
+            </tr>
+          </thead>
+          <tbody>
+            {portfolioPositions.map((position, index) => (
+              <tr
+                className={`${index === portfolioPositions.length - 1 ? "" : "border-b border-gray-300"}`}
+                key={position.symbol}
+              >
+                <td className="py-1">
+                  {formatSymbol(tickerList[position.symbol])}
+                </td>
+                <td className="py-1 sm:px-4 sm:py-2">${nomicsTickers[position.symbol].usd}</td>
+                <td className="py-1 sm:px-4 sm:py-2">${position.avgCost}</td>
+                <td className="py-1 sm:px-4 sm:py-2">
+                  {position.symbol === "bitcoin"
+                    ? privacyFilter.privacyFilter
+                      ? maskNumber(position.quantity.toFixed(4))
+                      : addCommaToNumberString(position.quantity.toFixed(4))
+                    : privacyFilter.privacyFilter
+                    ? maskNumber(position.quantity.toFixed(2))
+                    : addCommaToNumberString(position.quantity.toFixed(2))}
+                </td>
+                <td
+                  className={`py-1 sm:px-4 sm:py-2 ${
+                    calculatePositionPnlPercentage(position).includes("-")
+                      ? "text-red-500"
+                      : calculatePositionPnl(position) === "Need Avg Price"
+                      ? "text-gray-600"
+                      : "text-green-500"
                   }`}
-                  key={position.symbol}
                 >
-                  {/* Symbol */}
-                  <td className="">
-                    {formatSymbol(tickerList[position.symbol])}
-                  </td>
-                  {/* Current Price */}
-                  <td className="">${nomicsTickers[position.symbol].usd}</td>
-                  {/* Avg Price */}
-                  <td className="">${position.avgCost}</td>
-                  {/* Quantity */}
-                  <td className="">
-                    {position.symbol === "bitcoin"
-                      ? privacyFilter.privacyFilter
-                        ? maskNumber(position.quantity.toFixed(4))
-                        : addCommaToNumberString(position.quantity.toFixed(4))
-                      : privacyFilter.privacyFilter
-                      ? maskNumber(position.quantity.toFixed(2))
-                      : addCommaToNumberString(position.quantity.toFixed(2))}
-                  </td>
-                  {/* PnL (Mobile) */}
-                  <td
-                    className={`sm:hidden p-2 text-right ${
-                      calculatePositionPnlPercentage(position).includes("-")
-                        ? "text-red-500"
-                        : calculatePositionPnl(position) === "Need Avg Price"
-                        ? "text-white text-[.7rem] leading-3"
-                        : "text-green-500"
-                    }`}
-                  >
-                    {calculatePositionPnlPercentage(position)}
-                    {"   "}
-                    {privacyFilter.privacyFilter
-                      ? maskNumber(calculatePositionPnl(position))
-                      : addCommaToNumberString(calculatePositionPnl(position))}
-                  </td>
-                  {/* Pnl*/}
-                  <td
-                    className={`hidden sm:block p-2 text-right ${
-                      calculatePositionPnl(position).includes("-")
-                        ? "text-red-500"
-                        : calculatePositionPnl(position) === "Need Avg Price"
-                        ? "text-white text-[.7rem] leading-3"
-                        : "text-green-500"
-                    }`}
-                  >
-                    {calculatePositionPnlPercentage(position)}
-                  </td>
-                  <td
-                    className={`sm:leading-2 hidden sm:block p-2 text-right ${
-                      calculatePositionPnl(position).includes("-")
-                        ? "text-red-500"
-                        : calculatePositionPnl(position) === "Need Avg Price"
-                        ? "text-white text-[.7rem] leading-3"
-                        : "text-green-500"
-                    }`}
-                  >
-                    {addCommaToNumberString(calculatePositionPnl(position))}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  <div>{privacyFilter.privacyFilter
+                    ? maskNumber(calculatePositionPnl(position))
+                    : addCommaToNumberString(calculatePositionPnl(position))}</div>
+                    
+                  ({addCommaToNumberString(calculatePositionPnlPercentage(position))})
+                  
+                  
+                </td>
+                
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       </div>
     </div>
   );

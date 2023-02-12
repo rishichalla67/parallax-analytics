@@ -201,7 +201,7 @@ export default function AddPosition({setError, setSuccessMessage, setEditPositio
                   ref={quantityRef}
                   autoComplete="quantity"
                   required
-                  pattern="[0-9]+"
+                  pattern="^\d+(\.\d{1,8})?$"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-sky-500"
                   placeholder="ex. 0.01"
                 />
@@ -238,7 +238,7 @@ export default function AddPosition({setError, setSuccessMessage, setEditPositio
                   type="averageCost"
                   ref={avgCostRef}
                   required
-                  pattern="^\d+(\.\d{1,2})?$"
+                  pattern="^\d+(\.\d{1,4})?$"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-sky-500"
                   placeholder="ex. 3.25"
                 />
