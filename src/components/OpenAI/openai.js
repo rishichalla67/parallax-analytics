@@ -16,6 +16,18 @@ const OpenAI = () => {
         setInputText('')
   }
 
+  const formatResponse = (text) => {
+    let formattedText = text;
+    
+    // Add line breaks for paragraphs
+    formattedText = formattedText.replace(/(\r\n|\n|\r)/gm, "<br/><br/>");
+  
+    // Add syntax highlighting for code snippets
+    formattedText = formattedText.replace(/```(.*?)```/g, "<pre><code>$1</code></pre>");
+  
+    return formattedText;
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
@@ -36,7 +48,8 @@ const OpenAI = () => {
           },
         }
       );
-      setOutputText(response.data.choices[0].text);
+      const formattedResponse = formatResponse(response.data.choices[0].text);
+      setOutputText(formattedResponse);
     } catch (error) {
       setError(error);
     }
