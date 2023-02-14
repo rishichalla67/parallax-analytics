@@ -80,6 +80,10 @@ export function Analyics(privacyFilter) {
         return sortAscending
           ? calculatePositionPnl(a, false) - calculatePositionPnl(b, false)
           : calculatePositionPnl(b, false) - calculatePositionPnl(a, false);
+      case "24hrDelta":
+        return sortAscending
+          ? findSymbolPrice(a.symbol) - findSymbolPrice(b.symbol)
+          : findSymbolPrice(b.symbol) - findSymbolPrice(a.symbol);
       default:
         return 0;
     }
@@ -163,15 +167,15 @@ export function Analyics(privacyFilter) {
                 </th>
                 <th
                   className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer"
-                  onClick={() => handleHeaderClick("")}
+                  onClick={() => handleHeaderClick("24hrDelta")}
                 >
-                  24hr Δ {sortBy === "quantity" && (sortAscending ? "↑" : "↓")}
+                  24hr Δ {sortBy === "24hrDelta" && (sortAscending ? "↑" : "↓")}
                 </th>
                 <th
                   className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer"
                   onClick={() => handleHeaderClick("pnl")}
                 >
-                  PnL {sortBy === "pnl" && (sortAscending ? "↑" : "↓")}
+                  Position PnL {sortBy === "pnl" && (sortAscending ? "↑" : "↓")}
                 </th>
               </tr>
             </thead>
