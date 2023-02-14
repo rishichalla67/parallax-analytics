@@ -20,21 +20,30 @@ export function formatSymbol(str) {
   return symbol;
 }
 
+export function countDigits(num) {
+  const str = num.toString(); // Convert number to string
+  const decimalIndex = str.indexOf("."); // Find the decimal point index
+  const digits = decimalIndex === -1 ? str : str.slice(0, decimalIndex); // Extract digits before decimal
+  return digits.length; // Return the length of the extracted digits
+}
+
 export function Analyics(privacyFilter) {
   const {
     nomicsTickers,
     portfolioValueHistory,
     filterDataByDateRange,
     portfolioPositions,
+    getAllTickerDailyPnLs,
+    positionTickerPnLLists,
   } = useCryptoOracle();
   const { tickerList } = useFirestore();
 
   //   console.log(filterDataByDateRange(portfolioValueHistory, "1D"));
 
-  const [pnl1D, setPnl1D] = useState("");
-  const [pnl1W, setPnl1W] = useState("");
-  const [pnl1M, setPnl1M] = useState("");
-  const [pnl1Y, setPnl1Y] = useState("");
+  // const [pnl1D, setPnl1D] = useState("");
+  // const [pnl1W, setPnl1W] = useState("");
+  // const [pnl1M, setPnl1M] = useState("");
+  // const [pnl1Y, setPnl1Y] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortAscending, setSortAscending] = useState(true);
 
@@ -51,8 +60,12 @@ export function Analyics(privacyFilter) {
     switch (sortBy) {
       case "symbol":
         return sortAscending
-          ? formatSymbol(tickerList[a.symbol]).localeCompare(formatSymbol(tickerList[b.symbol]))
-          : formatSymbol(tickerList[b.symbol]).localeCompare(formatSymbol(tickerList[a.symbol]));
+          ? formatSymbol(tickerList[a.symbol]).localeCompare(
+              formatSymbol(tickerList[b.symbol])
+            )
+          : formatSymbol(tickerList[b.symbol]).localeCompare(
+              formatSymbol(tickerList[a.symbol])
+            );
       case "currentPrice":
         return sortAscending
           ? nomicsTickers[a.symbol].usd - nomicsTickers[b.symbol].usd
@@ -63,16 +76,16 @@ export function Analyics(privacyFilter) {
         return sortAscending
           ? a.quantity - b.quantity
           : b.quantity - a.quantity;
-      // case "pnl":
-      //   return sortAscending
-      //     ? calculatePositionPnl(a) - calculatePositionPnl(b)
-      //     : calculatePositionPnl(b) - calculatePositionPnl(a);
+      case "pnl":
+        return sortAscending
+          ? calculatePositionPnl(a, false) - calculatePositionPnl(b, false)
+          : calculatePositionPnl(b, false) - calculatePositionPnl(a, false);
       default:
         return 0;
     }
   });
 
-  function calculatePositionPnl(position) {
+  function calculatePositionPnl(position, forDisplay) {
     let positionPnl = "";
     if (position.avgCost === "") {
       return positionPnl;
@@ -82,11 +95,23 @@ export function Analyics(privacyFilter) {
       nomicsTickers[position.symbol].usd * position.quantity -
       initialInvestment
     ).toFixed(2);
-    positionPnl = "$" + positionPnl;
+    if (forDisplay) {
+      positionPnl = "$" + positionPnl;
+    }
     return positionPnl;
   }
 
-  function calculatePositionPnlPercentage(position) {
+  function findSymbolPrice(symbol) {
+    for (let i = 0; i < positionTickerPnLLists.length; i++) {
+      const obj = positionTickerPnLLists[i];
+      if (obj.id === symbol) {
+        return obj.price_change_percentage_24h;
+      }
+    }
+    return null; // Return null if symbol is not found
+  }
+
+  function calculatePositionPnlPercentage(position, forDisplay) {
     let positionPnl = "Need Avg Price";
     if (position.avgCost === "") {
       return positionPnl;
@@ -98,113 +123,125 @@ export function Analyics(privacyFilter) {
         initialInvestment) *
       100
     ).toFixed(2);
-    positionPnl = positionPnl + "%";
+    if (forDisplay) {
+      positionPnl = positionPnl + "%";
+    }
 
+    console.log(`${position.symbol}: ${(positionPnl % 10).toFixed(2)}`);
     return positionPnl;
   }
 
-  useEffect(() => {
-    let dayFilterRange = filterDataByDateRange(
-      portfolioValueHistory,
-      "24HR",
-      false
-    );
-    let weekFilterRange = filterDataByDateRange(
-      portfolioValueHistory,
-      "1W",
-      false
-    );
-    let monthFilterRange = filterDataByDateRange(
-      portfolioValueHistory,
-      "1M",
-      false
-    );
-    let yearFilterRange = filterDataByDateRange(
-      portfolioValueHistory,
-      "1Y",
-      false
-    );
-
-    setPnl1D(calculatePnl(dayFilterRange));
-    setPnl1W(calculatePnl(weekFilterRange));
-    setPnl1M(calculatePnl(monthFilterRange));
-    setPnl1Y(calculatePnl(yearFilterRange));
-    console.log(privacyFilter.privacyFilter);
-  }, [privacyFilter]);
+  useEffect(() => {}, [privacyFilter]);
 
   return (
     <div className="pb-4 sm:pb-0 text-white ">
       <div className="flex flex-col sm:gap-4 text-sm">
-      <div className="flex flex-col items-center">
-        <table className="text-sm sm:text-base sm:w-full min-w-full overflow-x-auto">
-          <thead>
-            <tr className="bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 text-white">
-              <th
-                className="px-2 py-1 sm:px-4 sm:py-2  hover:animate-pulse hover:cursor-pointer"
-                onClick={() => handleHeaderClick("symbol")}
-              >
-                Symbol {sortBy === "symbol" && (sortAscending ? "(A-Z)" : "(Z-A)")}
-              </th>
-              <th
-                className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer"
-                onClick={() => handleHeaderClick("currentPrice")}
-              >
-                Current Price {sortBy === "currentPrice" && (sortAscending ? "↑" : "↓")}
-              </th>
-              <th
-                className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer"
-                onClick={() => handleHeaderClick("avgPrice")}
-              >
-                Avg Price {sortBy === "avgPrice" && (sortAscending ? "↑" : "↓")}
-              </th>
-              <th className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer" onClick={() => handleHeaderClick("quantity")}>Quantity {sortBy === "quantity" && (sortAscending ? "↑" : "↓")}</th>
-              <th className="px-2 py-1 sm:px-4 sm:py-2">PnL</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedPositions.map((position, index) => (
-              <tr
-                className={`${index === sortedPositions.length - 1 ? "" : "border-b border-gray-300"}`}
-                key={position.symbol}
-              >
-                <td className="py-1">
-                  {formatSymbol(tickerList[position.symbol])}
-                </td>
-                <td className="py-1 sm:px-4 sm:py-2">${nomicsTickers[position.symbol].usd}</td>
-                <td className="py-1 sm:px-4 sm:py-2">${position.avgCost}</td>
-                <td className="py-1 sm:px-4 sm:py-2">
-                  {position.symbol === "bitcoin"
-                    ? privacyFilter.privacyFilter
-                      ? maskNumber(position.quantity.toFixed(4))
-                      : addCommaToNumberString(position.quantity.toFixed(4))
-                    : privacyFilter.privacyFilter
-                    ? maskNumber(position.quantity.toFixed(2))
-                    : addCommaToNumberString(position.quantity.toFixed(2))}
-                </td>
-                <td
-                  className={`py-1 sm:px-4 sm:py-2 ${
-                    calculatePositionPnlPercentage(position).includes("-")
-                      ? "text-red-500"
-                      : calculatePositionPnl(position) === "Need Avg Price"
-                      ? "text-gray-600"
-                      : "text-green-500"
-                  }`}
+        <div className="flex flex-col items-center">
+          <table className="text-sm sm:text-base sm:w-full min-w-full overflow-x-auto">
+            <thead>
+              <tr className="bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 text-white">
+                <th
+                  className="px-2 py-1 sm:px-4 sm:py-2  hover:animate-pulse hover:cursor-pointer"
+                  onClick={() => handleHeaderClick("symbol")}
                 >
-                  <div>{privacyFilter.privacyFilter
-                    ? maskNumber(calculatePositionPnl(position))
-                    : addCommaToNumberString(calculatePositionPnl(position))}</div>
-                    
-                  ({addCommaToNumberString(calculatePositionPnlPercentage(position))})
-                  
-                  
-                </td>
-                
+                  Symbol{" "}
+                  {sortBy === "symbol" && (sortAscending ? "(A-Z)" : "(Z-A)")}
+                </th>
+                <th
+                  className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer"
+                  onClick={() => handleHeaderClick("currentPrice")}
+                >
+                  Current Price{" "}
+                  {sortBy === "currentPrice" && (sortAscending ? "↑" : "↓")}
+                </th>
+                <th
+                  className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer"
+                  onClick={() => handleHeaderClick("avgPrice")}
+                >
+                  Avg Price{" "}
+                  {sortBy === "avgPrice" && (sortAscending ? "↑" : "↓")}
+                </th>
+                <th
+                  className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer"
+                  onClick={() => handleHeaderClick("")}
+                >
+                  24hr Δ {sortBy === "quantity" && (sortAscending ? "↑" : "↓")}
+                </th>
+                <th
+                  className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer"
+                  onClick={() => handleHeaderClick("pnl")}
+                >
+                  PnL {sortBy === "pnl" && (sortAscending ? "↑" : "↓")}
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
+            </thead>
+            <tbody>
+              {sortedPositions.map((position, index) => (
+                <tr
+                  className={`${
+                    index === sortedPositions.length - 1
+                      ? ""
+                      : "border-b border-gray-300"
+                  }`}
+                  key={position.symbol}
+                >
+                  <td className="py-1">
+                    {formatSymbol(tickerList[position.symbol])}
+                  </td>
+                  <td className="py-1 sm:px-4 sm:py-2">
+                    ${nomicsTickers[position.symbol].usd}
+                  </td>
+                  <td className="py-1 sm:px-4 sm:py-2">
+                    $
+                    {position.avgCost % 10 < 4
+                      ? position.avgCost
+                      : parseInt(position.avgCost)}
+                  </td>
+                  <td
+                    className={`py-1 sm:px-4 sm:py-2 ${
+                      findSymbolPrice(position.symbol) < 0
+                        ? "text-red-500"
+                        : "text-green-500"
+                    }`}
+                  >
+                    {findSymbolPrice(position.symbol).toFixed(2)}%
+                  </td>
+                  <td
+                    className={`py-1 sm:px-4 sm:py-2 ${
+                      calculatePositionPnlPercentage(position, false).includes(
+                        "-"
+                      )
+                        ? "text-red-500"
+                        : calculatePositionPnl(position, true) ===
+                          "Need Avg Price"
+                        ? "text-gray-600"
+                        : "text-green-500"
+                    }`}
+                  >
+                    <div>
+                      {privacyFilter.privacyFilter
+                        ? maskNumber(calculatePositionPnl(position))
+                        : addCommaToNumberString(
+                            calculatePositionPnl(position, true)
+                          )}
+                    </div>
+                    (
+                    {addCommaToNumberString(
+                      countDigits(
+                        calculatePositionPnlPercentage(position, false)
+                      ) < 3
+                        ? calculatePositionPnlPercentage(position, true)
+                        : parseInt(
+                            calculatePositionPnlPercentage(position, false)
+                          ) + "%"
+                    )}
+                    )
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

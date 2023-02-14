@@ -44,7 +44,7 @@ export default function CryptoPortfolio() {
   const [editPositions, setEditPositions] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [sortBy, setSortBy] = useState("crypto");
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [sortAscending, setSortAscending] = useState(true);
 
   const {
     nomicsTickers,
@@ -58,7 +58,7 @@ export default function CryptoPortfolio() {
     filteredPortfolioValueHistory,
     currentChartDateRange,
     filterDataByDateRange,
-    getTickerDailyPnL
+    getTickerDailyPnL,
   } = useCryptoOracle();
   const { activeUser, tickerList, fetchAllUsers } = useFirestore();
 
@@ -95,35 +95,70 @@ export default function CryptoPortfolio() {
 
   const handleSort = (column) => {
     if (sortBy === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      setSortAscending(!sortAscending);
     } else {
       setSortBy(column);
-      setSortOrder("asc");
+      setSortAscending(true);
     }
   };
 
-  const sortedPositions = [...portfolioPositions]
-    .sort((a, b) => {
-      if (sortBy === "crypto") {
-        if (sortOrder === "asc") {
-          return formatSymbol(tickerList[a.symbol]).localeCompare(formatSymbol(tickerList[b.symbol]));
-        } else {
-          return formatSymbol(tickerList[b.symbol]).localeCompare(formatSymbol(tickerList[a.symbol]));
-        }
-      } else {
-        if (sortOrder === "asc") {
-          return calculatePositionValue(nomicsTickers, a) - calculatePositionValue(nomicsTickers, b);
-        } else {
-          return calculatePositionValue(nomicsTickers, b) - calculatePositionValue(nomicsTickers, a);
-        }
-      }
-    });
+  // const sortedPositions = [...portfolioPositions].sort((a, b) => {
+  //   if (sortBy === "crypto") {
+  //     if (sortOrder === "asc") {
+  //       return formatSymbol(tickerList[a.symbol]).localeCompare(
+  //         formatSymbol(tickerList[b.symbol])
+  //       );
+  //     } else {
+  //       return formatSymbol(tickerList[b.symbol]).localeCompare(
+  //         formatSymbol(tickerList[a.symbol])
+  //       );
+  //     }
+  //   } else {
+  //     if (sortOrder === "asc") {
+  //       return (
+  //         calculatePositionValue(nomicsTickers, a) -
+  //         calculatePositionValue(nomicsTickers, b)
+  //       );
+  //     } else {
+  //       return (
+  //         calculatePositionValue(nomicsTickers, b) -
+  //         calculatePositionValue(nomicsTickers, a)
+  //       );
+  //     }
+  //   }
+  // });
+
+  const sortedPositions = [...portfolioPositions].sort((a, b) => {
+    switch (sortBy) {
+      case "crypto":
+        return sortAscending
+          ? formatSymbol(tickerList[a.symbol]).localeCompare(
+              formatSymbol(tickerList[b.symbol])
+            )
+          : formatSymbol(tickerList[b.symbol]).localeCompare(
+              formatSymbol(tickerList[a.symbol])
+            );
+      case "value":
+        return sortAscending
+          ? calculatePositionValue(nomicsTickers, a) -
+              calculatePositionValue(nomicsTickers, b)
+          : calculatePositionValue(nomicsTickers, b) -
+              calculatePositionValue(nomicsTickers, a);
+      case "quantity":
+        return sortAscending
+          ? a.quantity - b.quantity
+          : b.quantity - a.quantity;
+
+      default:
+        return 0;
+    }
+  });
 
   // const portfolioValueRef = useRef(null);
   // useEffect(() => {
   //   portfolioValueRef.current.classList.add("animate-pulse");
   // }, []);
-  const constraintsRef = useRef(null);
+  // const constraintsRef = useRef(null);
   if (!activeUser.id) {
     return (
       <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900"></div>
@@ -341,11 +376,29 @@ export default function CryptoPortfolio() {
                       <table className="table-auto w-full bg-black text-white">
                         <thead>
                           <tr className="bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 text-white">
-                            <th className="px-4 py-2 hover:animate-pulse hover:cursor-pointer" onClick={() => handleSort("crypto")}>
-                              Crypto {sortBy === "crypto" && (sortOrder === "asc" ? "(A-Z)" : "(Z-A)")}
+                            <th
+                              className="px-4 py-2 hover:animate-pulse hover:cursor-pointer"
+                              onClick={() => handleSort("crypto")}
+                            >
+                              Crypto{" "}
+                              {sortBy === "crypto" &&
+                                (sortAscending ? "(A-Z)" : "(Z-A)")}
                             </th>
-                            <th className="px-4 py-2 hover:animate-pulse hover:cursor-pointer" onClick={() => handleSort("value")}>
-                              Value {sortBy === "value" && (sortOrder === "asc" ? "↑" : "↓")}
+                            <th
+                              className="px-4 py-2 hover:animate-pulse hover:cursor-pointer"
+                              onClick={() => handleSort("quantity")}
+                            >
+                              Quantity{" "}
+                              {sortBy === "quantity" &&
+                                (sortAscending ? "↑" : "↓")}
+                            </th>
+                            <th
+                              className="px-4 py-2 hover:animate-pulse hover:cursor-pointer"
+                              onClick={() => handleSort("value")}
+                            >
+                              Value{" "}
+                              {sortBy === "value" &&
+                                (sortAscending ? "↑" : "↓")}
                             </th>
                           </tr>
                         </thead>
@@ -360,13 +413,36 @@ export default function CryptoPortfolio() {
                                   setSelectedPosition(position);
                                 }}
                               >
-                                <td className="px-4 py-2">{formatSymbol(tickerList[position.symbol])}</td>
                                 <td className="px-4 py-2">
-                                  {
-                                    privacyFilter
-                                      ? `$${maskNumber(calculatePositionValue(nomicsTickers, position))}`
-                                      : `$${addCommaToNumberString(calculatePositionValue(nomicsTickers, position))}`
-                                  }
+                                  {formatSymbol(tickerList[position.symbol])}
+                                </td>
+                                <td className="py-1 sm:px-4 sm:py-2">
+                                  {position.symbol === "bitcoin"
+                                    ? privacyFilter.privacyFilter
+                                      ? maskNumber(position.quantity.toFixed(4))
+                                      : addCommaToNumberString(
+                                          position.quantity.toFixed(4)
+                                        )
+                                    : privacyFilter.privacyFilter
+                                    ? maskNumber(position.quantity.toFixed(2))
+                                    : addCommaToNumberString(
+                                        position.quantity.toFixed(2)
+                                      )}
+                                </td>
+                                <td className="px-4 py-2">
+                                  {privacyFilter
+                                    ? `$${maskNumber(
+                                        calculatePositionValue(
+                                          nomicsTickers,
+                                          position
+                                        )
+                                      )}`
+                                    : `$${addCommaToNumberString(
+                                        calculatePositionValue(
+                                          nomicsTickers,
+                                          position
+                                        )
+                                      )}`}
                                 </td>
                               </tr>
                             );

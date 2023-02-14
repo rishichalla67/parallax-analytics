@@ -34,7 +34,7 @@ export function CryptoProvider({ children }) {
     useState([]);
   const [currentChartDateRange, setCurrentChartDateRange] = useState("24HR");
   const [error, setError] = useState("");
-  const [positionTickerPnLLists, setPositionTickerPnLLists] = useState([])
+  const [positionTickerPnLLists, setPositionTickerPnLLists] = useState([]);
 
   useEffect(() => {
     refreshOraclePrices();
@@ -58,11 +58,30 @@ export function CryptoProvider({ children }) {
       });
   }
 
-  function getTickerDailyPnL(ticker) {
-    fetch(`https://api.coingecko.com/api/v3/coins/${ticker.toLowerCase()}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false`)
+  function getAllTickerDailyPnLs(positions) {
+    const positionSymbolList = [];
+    positions.map((position) => {
+      positionSymbolList.push(position.symbol);
+    });
+
+    fetch(
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${positionSymbolList.join(
+        ","
+      )}&sparkline=false&price_change_percentage=24h`
+    )
       .then((response) => response.json())
       .then((searchResponse) => {
-        return searchResponse.market_data.price_change_percentage_24h;
+        const positionTickerPnLLists = searchResponse.map(
+          (searchResponseObject) => {
+            return {
+              id: searchResponseObject.id,
+              price_change_24h: searchResponseObject.price_change_24h,
+              price_change_percentage_24h:
+                searchResponseObject.price_change_percentage_24h,
+            };
+          }
+        );
+        setPositionTickerPnLLists(positionTickerPnLLists);
       });
   }
 
@@ -80,11 +99,14 @@ export function CryptoProvider({ children }) {
     setCurrentPortfolio(portfolio);
     cleanupDuplicatesInHistorical(activeUser.portfolioID);
     calculatePortfolioValue(portfolio);
+    getAllTickerDailyPnLs(portfolio.positions);
     setFilteredPortfolioValueHistory(
-    filterDataByDateRange(
-      portfolio.portfolioValueHistory,
-      currentChartDateRange, true
-    ));
+      filterDataByDateRange(
+        portfolio.portfolioValueHistory,
+        currentChartDateRange,
+        true
+      )
+    );
 
     setPortfolioValueHistory(portfolio.portfolioValueHistory);
     //positionValue -> {id: "", value: ""}
@@ -104,7 +126,7 @@ export function CryptoProvider({ children }) {
   function filterDataByDateRange(data, dateRange, assignVariable) {
     let filteredData = [];
     const currentDate = new Date();
-    const oneHour = 60 * 60 * 1000; 
+    const oneHour = 60 * 60 * 1000;
     const sixHours = 6 * oneHour; // milliseconds in six hours
     const twelveHours = 12 * oneHour; // milliseconds in twelve hours
     const oneDay = 24 * 60 * 60 * 1000; // milliseconds in one day
@@ -121,17 +143,17 @@ export function CryptoProvider({ children }) {
           if (timeDiff <= oneHour) {
             filteredData.push(item);
           }
-        break;
+          break;
         case "6HR":
           if (timeDiff <= sixHours) {
             filteredData.push(item);
           }
-        break;
+          break;
         case "12HR":
           if (timeDiff <= twelveHours) {
             filteredData.push(item);
           }
-        break;
+          break;
         case "24HR":
           if (timeDiff <= oneDay) {
             filteredData.push(item);
@@ -157,10 +179,11 @@ export function CryptoProvider({ children }) {
           filteredData = data;
       }
     });
-    
+
     // Only set filteredPortfolioValueHistory if setVariable is true
-    if(assignVariable){
-      setFilteredPortfolioValueHistory(filteredData)}
+    if (assignVariable) {
+      setFilteredPortfolioValueHistory(filteredData);
+    }
     return filteredData;
   }
 
@@ -227,8 +250,9 @@ export function CryptoProvider({ children }) {
     filterDataByDateRange,
     setCurrentChartDateRange,
     currentChartDateRange,
-    getTickerDailyPnL,
-    positionTickerPnLLists
+    positionTickerPnLLists,
+    getAllTickerDailyPnLs,
+    positionTickerPnLLists,
   };
 
   return (
