@@ -131,7 +131,7 @@ export function Analyics(privacyFilter) {
       positionPnl = positionPnl + "%";
     }
 
-    console.log(`${position.symbol}: ${(positionPnl % 10).toFixed(2)}`);
+    // console.log(`${position.symbol}: ${(positionPnl % 10).toFixed(2)}`);
     return positionPnl;
   }
 
