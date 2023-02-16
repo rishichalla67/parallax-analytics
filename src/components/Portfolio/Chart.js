@@ -76,6 +76,17 @@ export default function Chart({ privacyFilter }) {
     fetchAllUsers,
   } = useFirestore();
 
+  function calculateChartPnl(selectedValue) {
+    if (filteredPortfolioValueHistory[0].value) {
+      return (
+        ((selectedValue - filteredPortfolioValueHistory[0].value) /
+          selectedValue) *
+        100
+      ).toFixed(2);
+    }
+    //   console.log(data);
+  }
+
   function formatDate(date) {
     let formattedDate;
     let momentDate = moment(date, "YYYY-MM-DD HH:mm:ss"); //parse the date in this format
@@ -83,7 +94,7 @@ export default function Chart({ privacyFilter }) {
       return "Invalid Date";
     }
 
-    switch (currentChartDateRange) {
+    switch (dateIndex) {
       case "24HR":
         let today = moment().startOf("day");
         if (momentDate.isSame(today, "day")) {
@@ -239,7 +250,7 @@ export default function Chart({ privacyFilter }) {
                   style={{ color: "red" }}
                   content={({ payload }) => {
                     return (
-                      <div className="bg-black p-2">
+                      <div className="bg-black p-2 text-left">
                         {payload &&
                           payload.map((data, i) => (
                             <div key={i}>
@@ -252,6 +263,20 @@ export default function Chart({ privacyFilter }) {
                                 {data.name} :{" $"}
                                 {addCommaToNumberString(data.value)}
                               </p>
+                              <div className="flex flex-row">
+                                {dateIndex.toLowerCase() + " pnl: "}
+                                <div
+                                  className={`${
+                                    calculateChartPnl(data.value) > 0
+                                      ? "text-green-500"
+                                      : "text-red-500"
+                                  } pl-1`}
+                                >
+                                  {" "}
+                                  {calculateChartPnl(data.value)}
+                                  {"%"}
+                                </div>
+                              </div>
                             </div>
                           ))}
                       </div>

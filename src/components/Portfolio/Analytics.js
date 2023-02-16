@@ -233,7 +233,7 @@ export function Analyics(privacyFilter) {
                     {addCommaToNumberString(
                       countDigits(
                         calculatePositionPnlPercentage(position, false)
-                      ) < 3
+                      ) <= 3
                         ? calculatePositionPnlPercentage(position, true)
                         : parseInt(
                             calculatePositionPnlPercentage(position, false)
