@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
+import TickerPriceChart from "../TickerPriceChart";
 import { addCommaToNumberString, maskNumber } from "./CryptoPortfolio";
 
 export function calculatePnl(data) {
@@ -27,6 +28,8 @@ export function countDigits(num) {
   return digits.length; // Return the length of the extracted digits
 }
 
+// let symbolChartData = []
+
 export function Analyics(privacyFilter) {
   const {
     nomicsTickers,
@@ -35,17 +38,15 @@ export function Analyics(privacyFilter) {
     portfolioPositions,
     getAllTickerDailyPnLs,
     positionTickerPnLLists,
+    getTickerPriceChart
   } = useCryptoOracle();
   const { tickerList } = useFirestore();
-
-  //   console.log(filterDataByDateRange(portfolioValueHistory, "1D"));
-
-  // const [pnl1D, setPnl1D] = useState("");
-  // const [pnl1W, setPnl1W] = useState("");
-  // const [pnl1M, setPnl1M] = useState("");
-  // const [pnl1Y, setPnl1Y] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortAscending, setSortAscending] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedSymbol, setSelectedSymbol] = useState("")
+  // const [symbolChartData, setSymbolChartData] = useState([])
+
 
   const handleHeaderClick = (header) => {
     if (sortBy === header) {
@@ -135,12 +136,24 @@ export function Analyics(privacyFilter) {
     return positionPnl;
   }
 
+  function showTickerChart(symbol){
+    getTickerPriceChart(symbol)
+    setSelectedSymbol(symbol)
+    setShowModal(true)
+  }
+
   useEffect(() => {}, [privacyFilter]);
 
   return (
     <div className="pb-4 sm:pb-0 text-white ">
       <div className="flex flex-col sm:gap-4 text-sm">
         <div className="flex flex-col items-center">
+        {showModal && (
+                <TickerPriceChart
+                  coinData={positionTickerPnLLists.find(obj => obj.id === selectedSymbol)}
+                  setShowModal={setShowModal}
+                />
+              )}
           <table className="text-sm sm:text-base sm:w-full min-w-full overflow-x-auto">
             <thead>
               <tr className="bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 text-white">
@@ -182,12 +195,14 @@ export function Analyics(privacyFilter) {
             <tbody>
               {sortedPositions.map((position, index) => (
                 <tr
-                  className={`${
+                  className={`hover:cursor-pointer hover:animate-pulse ${
                     index === sortedPositions.length - 1
                       ? ""
                       : "border-b border-gray-300"
                   }`}
                   key={position.symbol}
+                  onClick={() => showTickerChart(position.symbol)}
+                  
                 >
                   <td className="py-1">
                     {formatSymbol(tickerList[position.symbol])}

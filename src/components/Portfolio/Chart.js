@@ -31,6 +31,7 @@ export function findMaxValue(data) {
 }
 
 export function findMinValue(data) {
+  // console.log(data);
   let lowest = data[0].value;
   data.map((item) => {
     if (parseInt(item.value * 1.0) < lowest) {
@@ -38,6 +39,53 @@ export function findMinValue(data) {
     }
   });
   return lowest;
+}
+
+export function formatDate(date) {
+  let formattedDate;
+  let momentDate = moment(date, "YYYY-MM-DD HH:mm:ss"); //parse the date in this format
+  if (!momentDate.isValid()) {
+    return "Invalid Date";
+  }
+
+  switch (dateIndex) {
+    case "24HR":
+      let today = moment().startOf("day");
+      if (momentDate.isSame(today, "day")) {
+        formattedDate = momentDate.format("h:mm A");
+      } else if (momentDate.isSame(today.subtract(1, "days"), "day")) {
+        formattedDate = "Yesterday " + momentDate.format("h:mm A");
+      }
+      break;
+    case "1HR":
+      let oneHourAgo = moment().subtract(1, "hours");
+      if (momentDate.isAfter(oneHourAgo)) {
+        formattedDate = momentDate.format("h:mm A");
+      } else {
+        formattedDate = momentDate.format("MMMM Do, h:mm A");
+      }
+      break;
+    case "12HR":
+      let twelveHoursAgo = moment().subtract(12, "hours");
+      if (momentDate.isAfter(twelveHoursAgo)) {
+        formattedDate = momentDate.format("h:mm A");
+      } else {
+        formattedDate = momentDate.format("MMMM Do, h:mm A");
+      }
+      break;
+    case "1W":
+      formattedDate = momentDate.format("ddd h:mm A");
+      break;
+    case "1M":
+      formattedDate = momentDate.format("MMMM Do");
+      break;
+    case "1Y":
+      formattedDate = momentDate.format("MMMM Do, YYYY");
+      break;
+    default:
+      formattedDate = momentDate.format();
+  }
+  return formattedDate;
 }
 
 let dateIndex = "24HR";
@@ -87,52 +135,7 @@ export default function Chart({ privacyFilter }) {
     //   console.log(data);
   }
 
-  function formatDate(date) {
-    let formattedDate;
-    let momentDate = moment(date, "YYYY-MM-DD HH:mm:ss"); //parse the date in this format
-    if (!momentDate.isValid()) {
-      return "Invalid Date";
-    }
-
-    switch (dateIndex) {
-      case "24HR":
-        let today = moment().startOf("day");
-        if (momentDate.isSame(today, "day")) {
-          formattedDate = momentDate.format("h:mm A");
-        } else if (momentDate.isSame(today.subtract(1, "days"), "day")) {
-          formattedDate = "Yesterday " + momentDate.format("h:mm A");
-        }
-        break;
-      case "1HR":
-        let oneHourAgo = moment().subtract(1, "hours");
-        if (momentDate.isAfter(oneHourAgo)) {
-          formattedDate = momentDate.format("h:mm A");
-        } else {
-          formattedDate = momentDate.format("MMMM Do, h:mm A");
-        }
-        break;
-      case "12HR":
-        let twelveHoursAgo = moment().subtract(12, "hours");
-        if (momentDate.isAfter(twelveHoursAgo)) {
-          formattedDate = momentDate.format("h:mm A");
-        } else {
-          formattedDate = momentDate.format("MMMM Do, h:mm A");
-        }
-        break;
-      case "1W":
-        formattedDate = momentDate.format("ddd h:mm A");
-        break;
-      case "1M":
-        formattedDate = momentDate.format("MMMM Do");
-        break;
-      case "1Y":
-        formattedDate = momentDate.format("MMMM Do, YYYY");
-        break;
-      default:
-        formattedDate = momentDate.format();
-    }
-    return formattedDate;
-  }
+  
 
   return (
     <>

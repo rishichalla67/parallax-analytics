@@ -154,11 +154,6 @@ export default function CryptoPortfolio() {
     }
   });
 
-  // const portfolioValueRef = useRef(null);
-  // useEffect(() => {
-  //   portfolioValueRef.current.classList.add("animate-pulse");
-  // }, []);
-  // const constraintsRef = useRef(null);
   if (!activeUser.id) {
     return (
       <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900"></div>

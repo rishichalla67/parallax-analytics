@@ -35,6 +35,7 @@ export function CryptoProvider({ children }) {
   const [currentChartDateRange, setCurrentChartDateRange] = useState("24HR");
   const [error, setError] = useState("");
   const [positionTickerPnLLists, setPositionTickerPnLLists] = useState([]);
+  const [symbolChartData, setSymbolChartData] = useState([])
 
   useEffect(() => {
     refreshOraclePrices();
@@ -67,25 +68,40 @@ export function CryptoProvider({ children }) {
     fetch(
       `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${positionSymbolList.join(
         ","
-      )}&sparkline=false&price_change_percentage=24h`
+      )}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d`
     )
       .then((response) => response.json())
       .then((searchResponse) => {
         const positionTickerPnLLists = searchResponse.map(
           (searchResponseObject) => {
-            return {
-              id: searchResponseObject.id,
-              price_change_24h: searchResponseObject.price_change_24h,
-              price_change_percentage_24h:
-                searchResponseObject.price_change_percentage_24h,
-            };
+            return searchResponseObject
+            
           }
         );
         setPositionTickerPnLLists(positionTickerPnLLists);
       });
   }
 
-  function searchCoinGeckoAPI(ticker) {
+  function getTickerPriceChart(symbol) {
+    fetch(
+      `https://api.coingecko.com/api/v3/coins/${symbol}/market_chart?vs_currency=usd&days=max`
+    )
+      .then((response) => response.json())
+      .then((searchResponse) => {
+        setSymbolChartData(convertArray(searchResponse.prices))
+      });
+
+    // fetch(
+    //   `https://api.coingecko.com/api/v3/coins/${symbol}/market_chart?vs_currency=usd&days=90`
+    // )
+    //   .then((response) => response.json())
+    //   .then((searchResponse) => {
+    //     console.log(searchResponse)
+    //     // setPositionTickerPnLLists(positionTickerPnLLists);
+    //   });
+  }
+
+  async function searchCoinGeckoAPI(ticker) {
     fetch(`https://api.coingecko.com/api/v3/search?query=${ticker}`)
       .then((response) => response.json())
       .then((searchResponse) => {
@@ -187,6 +203,11 @@ export function CryptoProvider({ children }) {
     return filteredData;
   }
 
+  function convertArray(arr) {
+    return arr.map(([date, value]) => ({ date, value }));
+  }
+  
+
   function calculatePortfolioValue(portfolio) {
     let totalSum = 0;
     let positionsList = [];
@@ -253,6 +274,8 @@ export function CryptoProvider({ children }) {
     positionTickerPnLLists,
     getAllTickerDailyPnLs,
     positionTickerPnLLists,
+    getTickerPriceChart,
+    symbolChartData
   };
 
   return (
