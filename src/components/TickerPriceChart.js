@@ -64,11 +64,6 @@ export default function TickerPriceChart ({ coinData, setShowModal }){
                                 <td className="text-md text-white">Current Price:</td>
                                 <td className={`text-sm text-white`}>{coinData.current_price ? `$${addCommaToNumberString(coinData.current_price.toFixed(2))}` : "-"}</td>
                             </tr>
-
-                            <tr>
-                                <td className="text-md text-white">Current Price:</td>
-                                <td className={`text-sm text-white`}>{coinData.current_price ? `$${addCommaToNumberString(coinData.current_price.toFixed(2))}` : "-"}</td>
-                                </tr>
                                 <tr>
                                 <td className="text-md text-white">Market Cap:</td>
                                 <td className={`text-sm text-white`}>{coinData.market_cap ? `$${addCommaToNumberString(coinData.market_cap.toLocaleString())}` : "-"}</td>
