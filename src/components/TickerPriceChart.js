@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { useCryptoOracle } from "../contexts/CryptoContext";
 import { addCommaToNumberString } from './Portfolio/CryptoPortfolio';
@@ -10,6 +10,15 @@ export default function TickerPriceChart ({ coinData, setShowModal }){
       } = useCryptoOracle();
       const [open, setOpen] = useState(true);
 
+      useEffect(() => {
+        const script = document.createElement('script');
+        script.src = 'https://widgets.coingecko.com/coingecko-coin-price-chart-widget.js';
+        script.async = true;
+        document.body.appendChild(script);
+        return () => {
+          document.body.removeChild(script);
+        }
+      }, []);
 
     
   return (
@@ -55,6 +64,12 @@ export default function TickerPriceChart ({ coinData, setShowModal }){
             <p className="text-sm text-gray-300 opacity-65 border-b">
                 Last updated at {new Date(coinData.last_updated).toLocaleTimeString([], {hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true})}
             </p>
+            <coingecko-coin-price-chart-widget
+      currency="usd"
+      coin-id={coinData.id}
+      locale="en"
+      height="300"
+    ></coingecko-coin-price-chart-widget>
 
                 <div className="flex flex-col md:flex-row gap-4 pt-2">
                     <div className="flex flex-col gap-2">
