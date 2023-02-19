@@ -79,6 +79,17 @@ export default function CryptoPortfolio() {
   }, []);
 
   useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://widgets.coingecko.com/coingecko-coin-price-marquee-widget.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       refreshOraclePrices();
     }, 300000);
@@ -165,6 +176,7 @@ export default function CryptoPortfolio() {
     }
   });
 
+
   if (!activeUser.id) {
     return (
       <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900"></div>
@@ -177,7 +189,7 @@ export default function CryptoPortfolio() {
       <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
         <div className="text-white grid place-items-center">
           {activeUser.portfolioID ? (
-            <div className="bg-black w-full sm:min-w-95% md:max-w-5xl rounded-lg border border-sky-500 shadow-lg items-center ">
+            <div className="bg-black max-w-[26rem] w-full sm:min-w-95% md:max-w-5xl rounded-lg border border-sky-500 shadow-lg items-center ">
               <div className="flex justify-center px-4 py-1 sm:px-6"></div>
               {error && (
                 <div role="alert">
@@ -211,6 +223,16 @@ export default function CryptoPortfolio() {
                   setSuccessMessage={setSuccessMessage}
                 />
               )}
+              <div className="">
+                <coingecko-coin-price-marquee-widget
+                  coin-ids={portfolioPositions.map(position => position.symbol).join(",")}
+                  currency="usd"
+                  background-color="#000000"
+                  locale="en"
+                  font-color="#ffffff"
+                  onClick={(e) => e.preventDefault()}
+                />
+              </div>
 
               <div className="flex justify-center pl-20 sm:pl-24 pb-2">
                 <h3 className="pt-3 sm:pt-1 flex grow flex-col text-4xl sm:text-5xl leading-6 font-small sm:font-medium">

@@ -64,21 +64,21 @@ export default function TickerPriceChart ({ coinData, setShowModal }){
             <p className="text-sm text-gray-300 opacity-65 border-b">
                 Last updated at {new Date(coinData.last_updated).toLocaleTimeString([], {hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true})}
             </p>
+            
             <coingecko-coin-price-chart-widget
-      currency="usd"
-      coin-id={coinData.id}
-      locale="en"
-      height="300"
-    ></coingecko-coin-price-chart-widget>
+                currency="usd"
+                coin-id={coinData.id}
+                locale="en"
+                height="225"
+                onClick={(e) => e.preventDefault()}
+            ></coingecko-coin-price-chart-widget>
+
 
                 <div className="flex flex-col md:flex-row gap-4 pt-2">
                     <div className="flex flex-col gap-2">
                     <table className="table-auto">
                         <tbody>
-                            <tr>
-                                <td className="text-md text-white">Current Price:</td>
-                                <td className={`text-sm text-white`}>{coinData.current_price ? `$${addCommaToNumberString(coinData.current_price.toFixed(2))}` : "-"}</td>
-                            </tr>
+                            
                                 <tr>
                                 <td className="text-md text-white">Market Cap:</td>
                                 <td className={`text-sm text-white`}>{coinData.market_cap ? `$${addCommaToNumberString(coinData.market_cap.toLocaleString())}` : "-"}</td>
