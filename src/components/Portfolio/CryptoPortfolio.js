@@ -18,11 +18,22 @@ export function calculatePositionValue(nomicsTickers, position) {
   }
 }
 
-export function addCommaToNumberString(numberString) {
-  let parts = numberString.toString().split(".");
-  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  return parts.join(".");
+export function addCommaToNumberString(number) {
+  if (number === null) {
+    return '-';
+  }
+
+  let numberString = number.toString();
+  if (numberString.indexOf(".") !== -1) {
+    let parts = numberString.split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
+  } else {
+    return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
 }
+
+
 
 export function maskNumber(input) {
   if (typeof input === "number")

@@ -10,6 +10,8 @@ export function useCryptoOracle() {
   return useContext(CryptoContext);
 }
 
+const cache = {};
+
 export function CryptoProvider({ children }) {
   const {
     activeUser,
@@ -82,24 +84,42 @@ export function CryptoProvider({ children }) {
       });
   }
 
-  function getTickerPriceChart(symbol) {
-    fetch(
-      `https://api.coingecko.com/api/v3/coins/${symbol}/market_chart?vs_currency=usd&days=max`
-    )
-      .then((response) => response.json())
-      .then((searchResponse) => {
-        setSymbolChartData(convertArray(searchResponse.prices))
-      });
+ 
 
-    // fetch(
-    //   `https://api.coingecko.com/api/v3/coins/${symbol}/market_chart?vs_currency=usd&days=90`
-    // )
-    //   .then((response) => response.json())
-    //   .then((searchResponse) => {
-    //     console.log(searchResponse)
-    //     // setPositionTickerPnLLists(positionTickerPnLLists);
-    //   });
+function getTickerPriceChart(symbol) {
+  const headers = new Headers();
+  headers.append('Access-Control-Allow-Origin', '*');
+  // Check if the symbol data is already in the cache and not expired
+  if (cache[symbol] && Date.now() - cache[symbol].timestamp < 5 * 60 * 1000) {
+    // Return the cached data
+    return Promise.resolve(cache[symbol].data);
   }
+  
+  // If the data is not in the cache or has expired, fetch it from the API
+  return fetch(
+    `https://api.coingecko.com/api/v3/coins/${symbol}/market_chart?vs_currency=usd&days=max`,
+    {
+      method: 'GET',
+      headers: headers,
+      mode: 'cors',
+      cache: 'default',
+    }
+  )
+    .then((response) => response.json())
+    .then((searchResponse) => {
+      // Convert the response data to the required format
+      const chartData = convertArray(searchResponse.prices);
+      
+      // Store the data in the cache with a timestamp
+      cache[symbol] = {
+        data: chartData,
+        timestamp: Date.now()
+      };
+      
+      // Return the data
+      return chartData;
+    });
+}
 
   async function searchCoinGeckoAPI(ticker) {
     fetch(`https://api.coingecko.com/api/v3/search?query=${ticker}`)
