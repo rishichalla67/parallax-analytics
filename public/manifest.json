@@ -7,6 +7,9 @@
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
+  "serviceworker": {
+    "src": "../service-worker.js"
+  },
   "icons": [
     {
       "src": "maskable_icon_x192.png",
