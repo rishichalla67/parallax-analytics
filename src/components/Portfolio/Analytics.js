@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
 import TickerPriceChart from "./TickerPriceChart";
@@ -46,7 +46,19 @@ export function Analyics(privacyFilter) {
   const [showModal, setShowModal] = useState(false);
   const [selectedSymbol, setSelectedSymbol] = useState("")
   // const [symbolChartData, setSymbolChartData] = useState([])
+  const cachedTickerPriceChart = useCachedTickerPriceChart(positionTickerPnLLists, selectedSymbol);
 
+  function useCachedTickerPriceChart(positionTickerPnLLists, selectedSymbol) {
+    return useMemo(() => {
+      const coinData = positionTickerPnLLists.find(obj => obj.id === selectedSymbol);
+      return (
+        <TickerPriceChart
+          coinData={coinData}
+          setShowModal={setShowModal}
+        />
+      );
+    }, [positionTickerPnLLists, selectedSymbol]);
+  }
 
   const handleHeaderClick = (header) => {
     if (sortBy === header) {
@@ -148,12 +160,7 @@ export function Analyics(privacyFilter) {
     <div className="pb-4 sm:pb-0 text-white ">
       <div className="flex flex-col sm:gap-4 text-sm">
         <div className="flex flex-col items-center">
-        {showModal && (
-                <TickerPriceChart
-                  coinData={positionTickerPnLLists.find(obj => obj.id === selectedSymbol)}
-                  setShowModal={setShowModal}
-                />
-              )}
+        {showModal && cachedTickerPriceChart}
           <table className="text-sm sm:text-base sm:w-full min-w-full overflow-x-auto">
             <thead>
               <tr className="bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 text-white">

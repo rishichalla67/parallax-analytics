@@ -18,16 +18,22 @@ export function TradingViewWidget({ selectedTicker}) {
   useEffect(() => {
     onLoadScriptRef.current = createWidget;
 
-    if (!tvScriptLoadingPromise) {
-      tvScriptLoadingPromise = new Promise((resolve) => {
-        const script = document.createElement('script');
-        script.id = 'tradingview-widget-loading-script';
-        script.src = 'https://s3.tradingview.com/tv.js';
-        script.type = 'text/javascript';
-        script.onload = resolve;
+    const cachedScript = document.getElementById('tradingview-widget-script');
 
-        document.head.appendChild(script);
-      });
+    if (cachedScript) {
+        onLoadScriptRef.current();
+      } else {
+        if (!tvScriptLoadingPromise) {
+          tvScriptLoadingPromise = new Promise((resolve) => {
+            const script = document.createElement('script');
+            script.id = 'tradingview-widget-loading-script';
+            script.src = 'https://s3.tradingview.com/tv.js';
+            script.type = 'text/javascript';
+            script.onload = resolve;
+    
+            document.head.appendChild(script);
+          });
+        }
     }
 
     tvScriptLoadingPromise.then(() => onLoadScriptRef.current && onLoadScriptRef.current());
@@ -83,28 +89,39 @@ export function TradingViewWidget({ selectedTicker}) {
 
 export default function TickerPriceChart ({ coinData, setShowModal }){
     const { tickersNotInTradingView, tickersInTradingView, addTickerToNotInTradingView, addTickerToInTradingView } = useFirestore();
+    const [buttonsClicked, setButtonsClicked] = useState(false);
     const {
         positionTickerPnLLists
       } = useCryptoOracle();
       const [open, setOpen] = useState(true);
 
       useEffect(() => {
-          if((tickersInTradingView.includes(coinData.symbol) || !tickersNotInTradingView.includes(coinData.symbol))){
-            const script = document.createElement('script');
-            script.src = 'https://widgets.coingecko.com/coingecko-coin-price-chart-widget.js';
-            script.async = true;
-            document.body.appendChild(script);
-            return () => {
-              document.body.removeChild(script);
-            }
-          }
-      }, []);
+  const cachedScript = document.getElementById('coingecko-widget');
+  
+  if (cachedScript) {
+    document.body.appendChild(cachedScript);
+    return () => {};
+  }
+
+  const script = document.createElement('script');
+  script.id = 'coingecko-widget';
+  script.src = 'https://widgets.coingecko.com/coingecko-coin-price-chart-widget.js';
+  script.async = true;
+  document.body.appendChild(script);
+
+  return () => {
+    document.body.removeChild(script);
+  };
+}, []);
+
 
       function onYesButtonClicked(){
         addTickerToInTradingView(coinData.symbol)
+        setButtonsClicked(true);
       }
       function onNoButtonClicked(){
         addTickerToNotInTradingView(coinData.symbol)
+        setButtonsClicked(true);
       }
 
   return (
@@ -159,19 +176,21 @@ export default function TickerPriceChart ({ coinData, setShowModal }){
                 height="225"
                 onClick={(e) => e.preventDefault()}
             ></coingecko-coin-price-chart-widget>}
-            {(!tickersInTradingView.includes(coinData.symbol) && !tickersNotInTradingView.includes(coinData.symbol)) && <div className="text-sm text-gray-300 mt-2 flex flex-col items-center justify-center">
+            {(!buttonsClicked && !tickersInTradingView.includes(coinData.symbol) && !tickersNotInTradingView.includes(coinData.symbol)) && (
+                <div className="text-sm text-gray-300 mt-2 flex flex-col items-center justify-center">
                 <div className="mb-2">
                     Does this chart work? Your feedback would help others
                 </div>
                 <div className="flex">
-                    <button className="text-black bg-slate-400 rounded-l-lg py-2 px-4" onClick={() => {onYesButtonClicked()}}>
+                    <button className="text-black bg-slate-400 rounded-l-lg py-2 px-4" onClick={onYesButtonClicked}>
                     Yes
                     </button>
-                    <button className="text-black bg-slate-400 rounded-r-lg py-2 px-4 ml-1" onClick={() => {onNoButtonClicked()}}>
+                    <button className="text-black bg-slate-400 rounded-r-lg py-2 px-4 ml-1" onClick={onNoButtonClicked}>
                     No
                     </button>
                 </div>
-            </div>}
+                </div>
+            )}
 
                 <div className="flex flex-col md:flex-row gap-4 pt-2">
                     <div className="flex flex-col gap-2">
