@@ -124,9 +124,9 @@ export default function UpdatePosition({
               <Dialog.Panel className="flex h-full  justify-center transform overflow-hidden rounded-lg bg-black text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                 <form className={`h-full p-4 md:mt-8 mx-8`} action="#">
                   <div className="text-white rounded-md shadow-sm -space-y-px">
-                    <h3 className="flex justify-center text-2xl font-bold text-sky-400">{`Edit ${
-                      tickerList[selectedPosition.symbol]
-                    } Position`}</h3>
+                    <h3 className="flex justify-center text-2xl font-bold text-sky-400">{`Update ${
+                      tickerList[selectedPosition.symbol].charAt(0).toUpperCase() + tickerList[selectedPosition.symbol].slice(1)
+                    } Position Details`}</h3>
                     <div className="pt-2 ">
                       <h3 className="flex align-content-left font-semibold">
                         Quantity
@@ -215,7 +215,7 @@ export default function UpdatePosition({
                         } text-black font-bold w-2/5 py-2 px-4 rounded`}
                         disabled={!checked}
                       >
-                        Delete Position
+                        Delete
                       </button>
                     </div>
                     <div className="flex justify-center space-x-5 py-4 px-2 min-h-90%">
@@ -232,7 +232,7 @@ export default function UpdatePosition({
                           } text-black font-bold py-2 px-4 rounded`}
                           disabled={disable}
                         >
-                          Save
+                          Update
                         </button>
                       </div>
                       <div className="pt-2 pb-2">
@@ -244,7 +244,7 @@ export default function UpdatePosition({
                             setDisable(true);
                           }}
                         >
-                          Cancel
+                          Close
                         </button>
                       </div>
                     </div>
