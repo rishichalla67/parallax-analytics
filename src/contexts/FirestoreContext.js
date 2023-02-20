@@ -28,6 +28,8 @@ export function FirestoreProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [allPortfolioIds, setAllPortfolioIds] = useState([]);
   const [tickerList, setTickerList] = useState([]);
+  const [tickersNotInTradingView, setTickersNotInTradingView] = useState([]);
+  const [tickersInTradingView, setTickersInTradingView] = useState([]);
 
   const dbPortfolioCollection = db.collection("portfolios");
   const tickerListDocRef = doc(db, "portfolios", "tickerList");
@@ -40,6 +42,7 @@ export function FirestoreProvider({ children }) {
     if (allPortfolioIds.length === 0) {
       getPortfolioIds();
       getPortfolioTickerList();
+      // getPortfolioTickerTradingViewLists();
     }
 
     setLoading(false);
@@ -95,6 +98,8 @@ export function FirestoreProvider({ children }) {
     const tickerList = await getDoc(tickerListDocRef);
     if (tickerList.exists()) {
       setTickerList(tickerList.data().tickerList);
+      setTickersNotInTradingView(tickerList.data().tickersNotInTradingView);
+      setTickersInTradingView(tickerList.data().tickersInTradingView);
       return tickerList.data().tickerList;
     }
   }
@@ -107,6 +112,26 @@ export function FirestoreProvider({ children }) {
       });
     }
   }
+
+  async function addTickerToNotInTradingView(ticker) {
+    if (!tickersNotInTradingView.includes(ticker)) {
+      console.log(`Added ${ticker} to NOT in tradingView`);
+      await updateDoc(tickerListDocRef, {
+        tickersNotInTradingView: arrayUnion(ticker)
+      });
+    }
+    
+  }
+
+  async function addTickerToInTradingView(ticker) {
+    if (!tickersInTradingView.includes(ticker)) {
+      console.log(`Added ${ticker} to IN tradingView`);
+      await updateDoc(tickerListDocRef, {
+        tickersInTradingView: arrayUnion(ticker)
+      });
+    }
+  }
+  
 
   async function getPortfolio(portfolioId) {
     const docRef = doc(db, "portfolios", portfolioId);
@@ -269,7 +294,11 @@ export function FirestoreProvider({ children }) {
     updatePosition,
     fetchAllUsers,
     getCurrentDate,
-    recordPortfolioPositionValues
+    recordPortfolioPositionValues,
+    addTickerToNotInTradingView,
+    tickersInTradingView,
+    tickersNotInTradingView,
+    addTickerToInTradingView
   };
 
   return (

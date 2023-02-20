@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
-import TickerPriceChart from "../TickerPriceChart";
+import TickerPriceChart from "./TickerPriceChart";
 import { addCommaToNumberString, maskNumber } from "./CryptoPortfolio";
 
 export function calculatePnl(data) {

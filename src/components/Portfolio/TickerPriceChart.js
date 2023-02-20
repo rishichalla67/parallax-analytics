@@ -1,26 +1,112 @@
-import { Fragment, useState, useEffect } from 'react'
+import { Fragment, useState, useEffect, useRef } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { useCryptoOracle } from "../contexts/CryptoContext";
-import { addCommaToNumberString } from './Portfolio/CryptoPortfolio';
+import { useCryptoOracle } from "../../contexts/CryptoContext";
+import { addCommaToNumberString } from './CryptoPortfolio';
+import { useFirestore } from "../../contexts/FirestoreContext";
+
+
+// TradingViewWidget.jsx
+let tvScriptLoadingPromise;
+
+export function TradingViewWidget({ selectedTicker}) {
+  const onLoadScriptRef = useRef();
+  const [width, setWidth] = useState(window.innerWidth * 0.9);
+  const [height, setHeight] = useState(window.innerHeight * 0.5);
+  
+
+
+  useEffect(() => {
+    onLoadScriptRef.current = createWidget;
+
+    if (!tvScriptLoadingPromise) {
+      tvScriptLoadingPromise = new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.id = 'tradingview-widget-loading-script';
+        script.src = 'https://s3.tradingview.com/tv.js';
+        script.type = 'text/javascript';
+        script.onload = resolve;
+
+        document.head.appendChild(script);
+      });
+    }
+
+    tvScriptLoadingPromise.then(() => onLoadScriptRef.current && onLoadScriptRef.current());
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      onLoadScriptRef.current = null;
+      window.removeEventListener('resize', handleResize);
+    };
+
+    function createWidget() {
+        const symbol = `BINANCE:${selectedTicker}USDT`;
+      
+        if (document.getElementById('tradingview_f7702') && 'TradingView' in window) {
+          const widget = new window.TradingView.widget({
+            width,
+            height,
+            symbol,
+            timezone: "Etc/UTC",
+            theme: "dark",
+            style: "9",
+            locale: "en",
+            toolbar_bg: "#f1f3f6",
+            enable_publishing: false,
+            hide_legend: true,
+            withdateranges: true,
+            range: "1D",
+            allow_symbol_change: true,
+            save_image: false,
+            details: true,
+            studies: ["STD;EMA"],
+            container_id: "tradingview_f7702"
+          });
+        }
+      }
+
+    function handleResize() {
+      setWidth(window.innerWidth * 0.9);
+      setHeight(window.innerHeight * 0.5);
+    }
+  }, [selectedTicker, width, height]);
+
+  return (
+    <div className='tradingview-widget-container'>
+      <div id='tradingview_f7702' />
+      
+    </div>
+  );
+}
+
 
 
 export default function TickerPriceChart ({ coinData, setShowModal }){
+    const { tickersNotInTradingView, tickersInTradingView, addTickerToNotInTradingView, addTickerToInTradingView } = useFirestore();
     const {
         positionTickerPnLLists
       } = useCryptoOracle();
       const [open, setOpen] = useState(true);
 
       useEffect(() => {
-        const script = document.createElement('script');
-        script.src = 'https://widgets.coingecko.com/coingecko-coin-price-chart-widget.js';
-        script.async = true;
-        document.body.appendChild(script);
-        return () => {
-          document.body.removeChild(script);
-        }
+          if((tickersInTradingView.includes(coinData.symbol) || !tickersNotInTradingView.includes(coinData.symbol))){
+            const script = document.createElement('script');
+            script.src = 'https://widgets.coingecko.com/coingecko-coin-price-chart-widget.js';
+            script.async = true;
+            document.body.appendChild(script);
+            return () => {
+              document.body.removeChild(script);
+            }
+          }
       }, []);
 
-    
+      function onYesButtonClicked(){
+        addTickerToInTradingView(coinData.symbol)
+      }
+      function onNoButtonClicked(){
+        addTickerToNotInTradingView(coinData.symbol)
+      }
+
   return (
     <Transition show={open} as={Fragment}>
   <Dialog
@@ -28,10 +114,10 @@ export default function TickerPriceChart ({ coinData, setShowModal }){
     className="fixed inset-0 z-10 overflow-y-auto"
     onClose={() => setShowModal(false)}
   >
-    <div className="min-h-screen px-4 text-center">
+    {tickersNotInTradingView && <div className="min-h-screen px-4 text-center">
       <Dialog.Overlay className="fixed inset-0 bg-black opacity-80" />
 
-      <div className="inline-block mt-20  align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full md:w-6/12">
+      <div className="inline-block mt-6 align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full md:w-9/12 ">
         <div className="bg-slate-700 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="flex items-center justify-between">
                 <div className="flex items-center flex-1">
@@ -64,15 +150,28 @@ export default function TickerPriceChart ({ coinData, setShowModal }){
             <p className="text-sm text-gray-300 opacity-65 border-b">
                 Last updated at {new Date(coinData.last_updated).toLocaleTimeString([], {hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true})}
             </p>
-            
+            {(tickersInTradingView.includes(coinData.symbol) || !tickersNotInTradingView.includes(coinData.symbol)) ? <TradingViewWidget selectedTicker={coinData.symbol} onClick={(e) => e.preventDefault()}/> 
+            :
             <coingecko-coin-price-chart-widget
                 currency="usd"
                 coin-id={coinData.id}
                 locale="en"
                 height="225"
                 onClick={(e) => e.preventDefault()}
-            ></coingecko-coin-price-chart-widget>
-
+            ></coingecko-coin-price-chart-widget>}
+            {(!tickersInTradingView.includes(coinData.symbol) && !tickersNotInTradingView.includes(coinData.symbol)) && <div className="text-sm text-gray-300 mt-2 flex flex-col items-center justify-center">
+                <div className="mb-2">
+                    Does this chart work? Your feedback would help others
+                </div>
+                <div className="flex">
+                    <button className="text-black bg-slate-400 rounded-l-lg py-2 px-4" onClick={() => {onYesButtonClicked()}}>
+                    Yes
+                    </button>
+                    <button className="text-black bg-slate-400 rounded-r-lg py-2 px-4 ml-1" onClick={() => {onNoButtonClicked()}}>
+                    No
+                    </button>
+                </div>
+            </div>}
 
                 <div className="flex flex-col md:flex-row gap-4 pt-2">
                     <div className="flex flex-col gap-2">
@@ -135,7 +234,7 @@ export default function TickerPriceChart ({ coinData, setShowModal }){
                 </div>
               </div>
             </div>
-          </div>
+          </div>}
         </Dialog>
       </Transition>
     )
