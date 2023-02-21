@@ -20,7 +20,7 @@ export function calculatePositionValue(nomicsTickers, position) {
 
 export function addCommaToNumberString(number) {
   if (number === null) {
-    return '-';
+    return "-";
   }
 
   let numberString = number.toString();
@@ -32,8 +32,6 @@ export function addCommaToNumberString(number) {
     return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 }
-
-
 
 export function maskNumber(input) {
   if (typeof input === "number")
@@ -79,8 +77,9 @@ export default function CryptoPortfolio() {
   }, []);
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://widgets.coingecko.com/coingecko-coin-price-marquee-widget.js';
+    const script = document.createElement("script");
+    script.src =
+      "https://widgets.coingecko.com/coingecko-coin-price-marquee-widget.js";
     script.async = true;
     document.body.appendChild(script);
 
@@ -92,7 +91,7 @@ export default function CryptoPortfolio() {
   useEffect(() => {
     const interval = setInterval(() => {
       refreshOraclePrices();
-    }, 300000);
+    }, 1200000);
 
     return () => {
       clearInterval(interval);
@@ -176,7 +175,6 @@ export default function CryptoPortfolio() {
     }
   });
 
-
   if (!activeUser.id) {
     return (
       <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900"></div>
@@ -225,7 +223,9 @@ export default function CryptoPortfolio() {
               )}
               <div className="">
                 <coingecko-coin-price-marquee-widget
-                  coin-ids={portfolioPositions.map(position => position.symbol).join(",")}
+                  coin-ids={portfolioPositions
+                    .map((position) => position.symbol)
+                    .join(",")}
                   currency="usd"
                   background-color="#000000"
                   locale="en"
