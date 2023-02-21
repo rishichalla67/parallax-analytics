@@ -607,16 +607,6 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
                     <div className="grid gap-4 grid-cols-2 lg:grid-cols-4 pt-2">
                       <div className="bg-gray-800 p-4 rounded-lg shadow">
                         <div className="text-sm font-medium text-gray-400 mb-2">
-                          Market Cap
-                        </div>
-                        <div className="text-lg font-bold text-white">
-                          {coinData.market_cap
-                            ? `$${abbreviateNumber(coinData.market_cap)}`
-                            : "-"}
-                        </div>
-                      </div>
-                      <div className="bg-gray-800 p-4 rounded-lg shadow">
-                        <div className="text-sm font-medium text-gray-400 mb-2">
                           Market Cap Rank
                         </div>
                         <div className="text-lg font-bold text-white">
@@ -629,10 +619,21 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
                       </div>
                       <div className="bg-gray-800 p-4 rounded-lg shadow">
                         <div className="text-sm font-medium text-gray-400 mb-2">
+                          Market Cap
+                        </div>
+                        <div className="text-lg font-bold text-white">
+                          {coinData.market_cap
+                            ? `$${abbreviateNumber(coinData.market_cap)}`
+                            : "-"}
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-800 p-4 rounded-lg shadow">
+                        <div className="text-sm font-medium text-gray-400 mb-2">
                           24h MCap Change
                         </div>
                         <div
-                          className={`text-sm ${
+                          className={`text-lg font-bold ${
                             coinData.market_cap_change_percentage_24h
                               ? coinData.market_cap_change_percentage_24h < 0
                                 ? "text-red-500"
@@ -676,7 +677,7 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
                           Circulating/Max Supply
                         </div>
                         <div
-                          className={`text-sm ${
+                          className={`text-lg font-bold ${
                             coinData.circulating_supply && coinData.max_supply
                               ? coinData.circulating_supply /
                                   coinData.max_supply >
