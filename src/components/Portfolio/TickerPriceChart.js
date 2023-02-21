@@ -126,6 +126,42 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
     setButtonsClicked(true);
   }
 
+  function abbreviateNumber(num) {
+    const abbreviations = [
+      { scale: 1e12, label: " trillion" },
+      { scale: 1e9, label: " billion" },
+      { scale: 1e6, label: " million" },
+      { scale: 1e3, label: "k" },
+      { scale: 1, label: "" },
+    ];
+
+    // Convert the input to a number if it's a string
+    num = Number(num);
+
+    // Find the appropriate abbreviation for the scale of the number
+    let abbreviation;
+    for (let i = 0; i < abbreviations.length; i++) {
+      if (num >= abbreviations[i].scale) {
+        abbreviation = abbreviations[i];
+        break;
+      }
+    }
+
+    // Calculate the rounded and abbreviated number
+    const scale = abbreviation.scale;
+    const label = abbreviation.label;
+    const roundedNum = Math.floor(num / scale);
+    const remainingDigits = Math.floor(num % scale);
+    let formattedNumber = roundedNum;
+    if (remainingDigits > 0) {
+      const decimalDigits = Math.floor(remainingDigits / (scale / 100));
+      formattedNumber += "." + decimalDigits;
+    }
+    formattedNumber += label;
+
+    return formattedNumber;
+  }
+
   return (
     <Transition show={open} as={Fragment}>
       <Dialog
@@ -226,9 +262,7 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
                           <td className="text-md text-white">Market Cap:</td>
                           <td className={`text-sm text-white`}>
                             {coinData.market_cap
-                              ? `$${addCommaToNumberString(
-                                  coinData.market_cap.toLocaleString()
-                                )}`
+                              ? `$${abbreviateNumber(coinData.market_cap)}`
                               : "-"}
                           </td>
                         </tr>
@@ -250,7 +284,7 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
                           </td>
                           <td className={`text-sm text-white`}>
                             {coinData.fully_diluted_valuation
-                              ? `$${addCommaToNumberString(
+                              ? `$${abbreviateNumber(
                                   coinData.fully_diluted_valuation
                                 )}`
                               : "-"}
@@ -260,7 +294,7 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
                           <td className="text-md text-white">Total Supply:</td>
                           <td className={`text-sm text-white`}>
                             {coinData.total_supply
-                              ? addCommaToNumberString(
+                              ? abbreviateNumber(
                                   coinData.total_supply.toFixed(2)
                                 )
                               : "-"}
