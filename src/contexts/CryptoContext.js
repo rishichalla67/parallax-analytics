@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext, useState, useCallback } from "react";
 import { useFirestore } from "../contexts/FirestoreContext";
 import { PricePoint } from "../Classes/PricePoint";
 import moment from "moment";
@@ -44,7 +44,7 @@ export function CryptoProvider({ children }) {
     // getPortfolioData();
   }, []);
 
-  async function refreshOraclePrices() {
+  const refreshOraclePrices = useCallback(async () => {
     let tickerList = await getPortfolioTickerList();
     tickerList = Object.keys(tickerList);
     setNomicsTickers([]);
@@ -59,7 +59,7 @@ export function CryptoProvider({ children }) {
         setNomicsTickers(tickers);
         setLoading(false);
       });
-  }
+  }, [setNomicsTickers, setLoading]);
 
   function getAllTickerDailyPnLs(positions) {
     const positionSymbolList = [];

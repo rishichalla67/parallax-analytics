@@ -97,7 +97,7 @@ export default function CryptoPortfolio() {
       clearInterval(interval);
       clearTimeout(timer);
     };
-  }, []);
+  }, [refreshOraclePrices]);
 
   useEffect(() => {
     filterDataByDateRange(portfolioValueHistory, currentChartDateRange, true);
