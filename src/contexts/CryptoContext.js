@@ -37,7 +37,7 @@ export function CryptoProvider({ children }) {
   const [currentChartDateRange, setCurrentChartDateRange] = useState("24HR");
   const [error, setError] = useState("");
   const [positionTickerPnLLists, setPositionTickerPnLLists] = useState([]);
-  const [symbolChartData, setSymbolChartData] = useState([])
+  const [symbolChartData, setSymbolChartData] = useState([]);
 
   useEffect(() => {
     refreshOraclePrices();
@@ -70,67 +70,67 @@ export function CryptoProvider({ children }) {
     fetch(
       `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${positionSymbolList.join(
         ","
-      )}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d`
+      )}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d%2C14d%2C30d%2C200d%2C1y`
     )
       .then((response) => response.json())
       .then((searchResponse) => {
         const positionTickerPnLLists = searchResponse.map(
           (searchResponseObject) => {
-            return searchResponseObject
-            
+            return searchResponseObject;
           }
         );
+        console.log(positionTickerPnLLists);
         setPositionTickerPnLLists(positionTickerPnLLists);
       });
   }
 
-const cache = new Map();
-const CACHE_MAX_SIZE = 100; // Maximum number of cached items
-const CACHE_EXPIRATION_TIME = 5 * 60 * 1000; 
+  const cache = new Map();
+  const CACHE_MAX_SIZE = 100; // Maximum number of cached items
+  const CACHE_EXPIRATION_TIME = 5 * 60 * 1000;
 
-function getTickerPriceChart(symbol) {
-  const headers = new Headers();
-  headers.append('Access-Control-Allow-Origin', '*');
+  function getTickerPriceChart(symbol) {
+    const headers = new Headers();
+    headers.append("Access-Control-Allow-Origin", "*");
 
-  // Check if the symbol data is in the cache and has not expired
-  const cachedItem = cache.get(symbol);
-  if (cachedItem && Date.now() < cachedItem.expirationTime) {
-    // Return the cached data
-    return Promise.resolve(cachedItem.data);
-  }
-
-  // If the data is not in the cache or has expired, fetch it from the API
-  return fetch(
-    `https://api.coingecko.com/api/v3/coins/${symbol}/market_chart?vs_currency=usd&days=max`,
-    {
-      method: 'GET',
-      headers: headers,
-      mode: 'cors',
-      cache: 'default',
+    // Check if the symbol data is in the cache and has not expired
+    const cachedItem = cache.get(symbol);
+    if (cachedItem && Date.now() < cachedItem.expirationTime) {
+      // Return the cached data
+      return Promise.resolve(cachedItem.data);
     }
-  )
-    .then((response) => response.json())
-    .then((searchResponse) => {
-      // Convert the response data to the required format
-      const chartData = convertArray(searchResponse.prices);
 
-      // Store the data in the cache with an expiration time
-      const expirationTime = Date.now() + CACHE_EXPIRATION_TIME;
-      cache.set(symbol, {
-        data: chartData,
-        expirationTime: expirationTime
-      });
-
-      // Prune the cache if it has exceeded the maximum size
-      if (cache.size > CACHE_MAX_SIZE) {
-        const oldestSymbol = cache.keys().next().value;
-        cache.delete(oldestSymbol);
+    // If the data is not in the cache or has expired, fetch it from the API
+    return fetch(
+      `https://api.coingecko.com/api/v3/coins/${symbol}/market_chart?vs_currency=usd&days=max`,
+      {
+        method: "GET",
+        headers: headers,
+        mode: "cors",
+        cache: "default",
       }
+    )
+      .then((response) => response.json())
+      .then((searchResponse) => {
+        // Convert the response data to the required format
+        const chartData = convertArray(searchResponse.prices);
 
-      // Return the data
-      return chartData;
-    });
-}
+        // Store the data in the cache with an expiration time
+        const expirationTime = Date.now() + CACHE_EXPIRATION_TIME;
+        cache.set(symbol, {
+          data: chartData,
+          expirationTime: expirationTime,
+        });
+
+        // Prune the cache if it has exceeded the maximum size
+        if (cache.size > CACHE_MAX_SIZE) {
+          const oldestSymbol = cache.keys().next().value;
+          cache.delete(oldestSymbol);
+        }
+
+        // Return the data
+        return chartData;
+      });
+  }
 
   async function searchCoinGeckoAPI(ticker) {
     fetch(`https://api.coingecko.com/api/v3/search?query=${ticker}`)
@@ -237,7 +237,6 @@ function getTickerPriceChart(symbol) {
   function convertArray(arr) {
     return arr.map(([date, value]) => ({ date, value }));
   }
-  
 
   function calculatePortfolioValue(portfolio) {
     let totalSum = 0;
@@ -304,9 +303,8 @@ function getTickerPriceChart(symbol) {
     currentChartDateRange,
     positionTickerPnLLists,
     getAllTickerDailyPnLs,
-    positionTickerPnLLists,
     getTickerPriceChart,
-    symbolChartData
+    symbolChartData,
   };
 
   return (

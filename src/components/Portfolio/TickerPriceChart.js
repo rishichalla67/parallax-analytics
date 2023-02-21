@@ -67,7 +67,7 @@ export function TradingViewWidget({ selectedTicker }) {
           allow_symbol_change: true,
           save_image: false,
           details: true,
-          studies: ["STD;Bollinger_Bands", "STD;Ichimoku%1Cloud", "STD;RSI"],
+          studies: ["STD;Bollinger_Bands", "STD;Ichimoku%1Cloud"],
           container_id: "tradingview_f7702",
         });
       }
@@ -173,7 +173,7 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
           <div className="min-h-screen px-4 text-center">
             <Dialog.Overlay className="fixed inset-0 bg-black opacity-80" />
 
-            <div className="inline-block mt-6 align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full md:w-9/12 ">
+            <div className="inline-block mt-6 align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full md:w-11/12 ">
               <div className="bg-slate-700 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center flex-1">
@@ -254,9 +254,12 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
                     </div>
                   )}
 
-                <div className="flex flex-col md:flex-row gap-4 pt-2">
-                  <div className="flex flex-col gap-2">
-                    <table className="table-auto">
+                <div className="flex flex-col md:flex-col gap-4 pt-2">
+                  <div
+                    className="flex flex-col gap-2 "
+                    style={{ overflowX: "auto" }}
+                  >
+                    {/* <table className="table-auto">
                       <tbody>
                         <tr>
                           <td className="text-md text-white">Market Cap:</td>
@@ -449,7 +452,296 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
                           </td>
                         </tr>
                       </tbody>
-                    </table>
+                    </table> */}
+                    <div style={{ overflowX: "auto" }}>
+                      <table className="w-full">
+                        <thead>
+                          <tr className="px-4 py-2 text-white flex-grow">
+                            <th></th>
+                            <th className="text-center">1h</th>
+                            <th className="text-center">24h</th>
+                            <th className="text-center">7d</th>
+                            <th className="text-center">14d</th>
+                            <th className="text-center">30d</th>
+                            <th className="text-center">200d</th>
+                            <th className="text-center">1y</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          <tr>
+                            <td className="text-center border text-xs px-4 sm:py-2 sm:text-md sm:font-medium text-gray-400">
+                              Price Change
+                            </td>
+                            <td
+                              className={`text-center border px-4 sm:py-2 text-sm ${
+                                coinData.price_change_percentage_1h_in_currency
+                                  ? coinData.price_change_percentage_1h_in_currency <
+                                    0
+                                    ? "text-red-500"
+                                    : "text-green-500"
+                                  : ""
+                              }`}
+                            >
+                              {coinData.price_change_percentage_1h_in_currency
+                                ? addCommaToNumberString(
+                                    coinData.price_change_percentage_1h_in_currency.toFixed(
+                                      2
+                                    )
+                                  ) + "%"
+                                : "-"}
+                            </td>
+                            <td
+                              className={`text-center border px-4 sm:py-2 text-sm ${
+                                coinData.price_change_percentage_24h_in_currency
+                                  ? coinData.price_change_percentage_24h_in_currency <
+                                    0
+                                    ? "text-red-500"
+                                    : "text-green-500"
+                                  : ""
+                              }`}
+                            >
+                              {coinData.price_change_percentage_24h_in_currency
+                                ? addCommaToNumberString(
+                                    coinData.price_change_percentage_24h_in_currency.toFixed(
+                                      2
+                                    )
+                                  ) + "%"
+                                : "-"}
+                            </td>
+                            <td
+                              className={`text-center border px-4 sm:py-2 text-sm ${
+                                coinData.price_change_percentage_7d_in_currency
+                                  ? coinData.price_change_percentage_7d_in_currency <
+                                    0
+                                    ? "text-red-500"
+                                    : "text-green-500"
+                                  : ""
+                              }`}
+                            >
+                              {coinData.price_change_percentage_7d_in_currency
+                                ? addCommaToNumberString(
+                                    coinData.price_change_percentage_7d_in_currency.toFixed(
+                                      2
+                                    )
+                                  ) + "%"
+                                : "-"}
+                            </td>
+                            <td
+                              className={`text-center border px-4 sm:py-2 text-sm ${
+                                coinData.price_change_percentage_14d_in_currency
+                                  ? coinData.price_change_percentage_14d_in_currency <
+                                    0
+                                    ? "text-red-500"
+                                    : "text-green-500"
+                                  : ""
+                              }`}
+                            >
+                              {coinData.price_change_percentage_14d_in_currency
+                                ? addCommaToNumberString(
+                                    coinData.price_change_percentage_14d_in_currency.toFixed(
+                                      2
+                                    )
+                                  ) + "%"
+                                : "-"}
+                            </td>
+                            <td
+                              className={`text-center border px-4 sm:py-2 text-sm ${
+                                coinData.price_change_percentage_30d_in_currency
+                                  ? coinData.price_change_percentage_30d_in_currency <
+                                    0
+                                    ? "text-red-500"
+                                    : "text-green-500"
+                                  : ""
+                              }`}
+                            >
+                              {coinData.price_change_percentage_30d_in_currency
+                                ? addCommaToNumberString(
+                                    coinData.price_change_percentage_30d_in_currency.toFixed(
+                                      2
+                                    )
+                                  ) + "%"
+                                : "-"}
+                            </td>
+                            <td
+                              className={`text-center border px-4 sm:py-2 text-sm ${
+                                coinData.price_change_percentage_200d_in_currency
+                                  ? coinData.price_change_percentage_200d_in_currency <
+                                    0
+                                    ? "text-red-500"
+                                    : "text-green-500"
+                                  : ""
+                              }`}
+                            >
+                              {coinData.price_change_percentage_200d_in_currency
+                                ? addCommaToNumberString(
+                                    coinData.price_change_percentage_200d_in_currency.toFixed(
+                                      2
+                                    )
+                                  ) + "%"
+                                : "-"}
+                            </td>
+                            <td
+                              className={`text-center border px-4 sm:py-2 text-sm ${
+                                coinData.price_change_percentage_1y_in_currency
+                                  ? coinData.price_change_percentage_1y_in_currency <
+                                    0
+                                    ? "text-red-500"
+                                    : "text-green-500"
+                                  : ""
+                              }`}
+                            >
+                              {coinData.price_change_percentage_1y_in_currency
+                                ? addCommaToNumberString(
+                                    coinData.price_change_percentage_1y_in_currency.toFixed(
+                                      2
+                                    )
+                                  ) + "%"
+                                : "-"}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <div className="grid gap-4 grid-cols-2 lg:grid-cols-4 pt-2">
+                      <div className="bg-gray-800 p-4 rounded-lg shadow">
+                        <div className="text-sm font-medium text-gray-400 mb-2">
+                          Market Cap
+                        </div>
+                        <div className="text-lg font-bold text-white">
+                          {coinData.market_cap
+                            ? `$${abbreviateNumber(coinData.market_cap)}`
+                            : "-"}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 p-4 rounded-lg shadow">
+                        <div className="text-sm font-medium text-gray-400 mb-2">
+                          Market Cap Rank
+                        </div>
+                        <div className="text-lg font-bold text-white">
+                          {coinData.market_cap_rank
+                            ? `#${addCommaToNumberString(
+                                coinData.market_cap_rank
+                              )}`
+                            : "-"}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 p-4 rounded-lg shadow">
+                        <div className="text-sm font-medium text-gray-400 mb-2">
+                          24h MCap Change
+                        </div>
+                        <div
+                          className={`text-sm ${
+                            coinData.market_cap_change_percentage_24h
+                              ? coinData.market_cap_change_percentage_24h < 0
+                                ? "text-red-500"
+                                : "text-green-500"
+                              : ""
+                          }`}
+                        >
+                          {coinData.market_cap_change_percentage_24h
+                            ? addCommaToNumberString(
+                                coinData.market_cap_change_percentage_24h.toFixed(
+                                  2
+                                )
+                              ) + "%"
+                            : "-"}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 p-4 rounded-lg shadow">
+                        <div className="text-sm font-medium text-gray-400 mb-2">
+                          FDV
+                        </div>
+                        <div className="text-lg font-bold text-white">
+                          {coinData.fully_diluted_valuation
+                            ? `$${abbreviateNumber(
+                                coinData.fully_diluted_valuation
+                              )}`
+                            : "-"}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 p-4 rounded-lg shadow">
+                        <div className="text-sm font-medium text-gray-400 mb-2">
+                          Total Supply
+                        </div>
+                        <div className="text-lg font-bold text-white">
+                          {coinData.total_supply
+                            ? abbreviateNumber(coinData.total_supply.toFixed(2))
+                            : "-"}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 p-4 rounded-lg shadow">
+                        <div className="text-sm font-medium text-gray-400 mb-2">
+                          Circulating/Max Supply
+                        </div>
+                        <div
+                          className={`text-sm ${
+                            coinData.circulating_supply && coinData.max_supply
+                              ? coinData.circulating_supply /
+                                  coinData.max_supply >
+                                0.8
+                                ? "text-green-500"
+                                : coinData.circulating_supply /
+                                    coinData.max_supply <
+                                  0.2
+                                ? "text-red-500"
+                                : "text-yellow-500"
+                              : "text-gray-500"
+                          }`}
+                        >
+                          {coinData.circulating_supply && coinData.max_supply
+                            ? addCommaToNumberString(
+                                (
+                                  coinData.circulating_supply /
+                                  coinData.max_supply
+                                ).toFixed(2)
+                              )
+                            : "-"}
+                        </div>
+                      </div>
+                      <div className="bg-gray-800 p-4 rounded-lg shadow">
+                        <div class="mb-2">
+                          <div class="text-sm font-medium text-gray-400">
+                            All-Time High
+                          </div>
+                          <div class="text-xs text-gray-400">% from ATH</div>
+                        </div>
+
+                        <div className="text-lg font-bold text-white">
+                          $
+                          {coinData.ath
+                            ? addCommaToNumberString(coinData.ath.toFixed(2))
+                            : "-"}
+                        </div>
+                        <div
+                          className={`text-sm ${
+                            coinData.ath_change_percentage
+                              ? coinData.ath_change_percentage < 0
+                                ? "text-red-500"
+                                : "text-green-500"
+                              : ""
+                          }`}
+                        >
+                          {coinData.ath_change_percentage
+                            ? addCommaToNumberString(
+                                coinData.ath_change_percentage.toFixed(2)
+                              ) + "%"
+                            : "-"}
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-800 p-4 rounded-lg shadow">
+                        <div className="text-sm font-medium text-gray-400 mb-2">
+                          Total Volume
+                        </div>
+                        <div className={`text-lg font-bold text-white`}>
+                          {coinData.total_volume
+                            ? abbreviateNumber(coinData.total_volume.toFixed(2))
+                            : "-"}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
