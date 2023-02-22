@@ -173,7 +173,7 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
           <div className="min-h-screen px-4 text-center">
             <Dialog.Overlay className="fixed inset-0 bg-black opacity-80" />
 
-            <div className="inline-block mt-6 align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full md:w-11/12 ">
+            <div className="inline-block mt-2 align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full md:w-11/12 ">
               <div className="bg-slate-700 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center flex-1">
