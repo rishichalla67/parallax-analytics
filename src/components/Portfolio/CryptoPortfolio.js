@@ -175,6 +175,44 @@ export default function CryptoPortfolio() {
     }
   });
 
+  function formatLastUpdateAtDate(timestamp) {
+    const date = new Date(timestamp * 1000); // Multiply by 1000 to convert seconds to milliseconds
+    const now = new Date();
+
+    // Check if the date is today
+    if (date.toDateString() === now.toDateString()) {
+      return date.toLocaleString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      });
+    }
+
+    // Check if the date is yesterday
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    if (date.toDateString() === yesterday.toDateString()) {
+      return (
+        "Yesterday, " +
+        date.toLocaleString("en-US", {
+          hour: "numeric",
+          minute: "numeric",
+          hour12: true,
+        })
+      );
+    }
+
+    // Otherwise, return the full date and time
+    return date.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    });
+  }
+
   if (!activeUser.id) {
     return (
       <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900"></div>
@@ -247,7 +285,7 @@ export default function CryptoPortfolio() {
                   >{`$${maskNumber(portfolioValue)}`}</div>
                   {filteredPortfolioValueHistory.length > 0 && (
                     <div
-                      className={`pl-2 pt-4 text-lg sm:pl-3 pb-1 leading-6 ${
+                      className={`pl-2 sm:pt-3 pt-3 text-lg sm:pl-3 pb-1 leading-6 ${
                         calculatePnl(filteredPortfolioValueHistory) > 0
                           ? "text-green-400"
                           : "text-red-500"
@@ -283,6 +321,17 @@ export default function CryptoPortfolio() {
                              // Get the Pnl as a percentage
                              calculatePnl(filteredPortfolioValueHistory)
                            }%)`}
+                      <div>
+                        {portfolioPositions[0]?.symbol && (
+                          <p className="text-xs text-gray-300 opacity-50 pt-1">
+                            Last updated:{" "}
+                            {formatLastUpdateAtDate(
+                              nomicsTickers[portfolioPositions[0]?.symbol]
+                                ?.last_updated_at
+                            )}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   )}
                 </h3>
@@ -428,6 +477,9 @@ export default function CryptoPortfolio() {
                               {sortBy === "value" &&
                                 (sortAscending ? "↑" : "↓")}
                             </th>
+                            {/* <th className="px-2 py-2 text-[.65rem] opacity-60">
+                              Last updated
+                            </th> */}
                           </tr>
                         </thead>
                         <tbody>
@@ -472,11 +524,18 @@ export default function CryptoPortfolio() {
                                         )
                                       )}`}
                                 </td>
+                                {/* <td className="px-4 py-2 text-[.65rem] opacity-40">
+                                  {formatLastUpdateAtDate(
+                                    nomicsTickers[position.symbol]
+                                      ?.last_updated_at
+                                  )}
+                                </td> */}
                               </tr>
                             );
                           })}
                         </tbody>
                       </table>
+
                       <div className="py-5 ">
                         <button
                           className="bg-sky-500 hover:bg-sky-700 text-black font-bold py-2 px-4 rounded"
