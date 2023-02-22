@@ -96,6 +96,43 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
   const [buttonsClicked, setButtonsClicked] = useState(false);
   const { positionTickerPnLLists } = useCryptoOracle();
   const [open, setOpen] = useState(true);
+  const [showRatio, setShowRatio] = useState(true);
+
+  let content;
+  if (showRatio) {
+    content =
+      coinData.circulating_supply && coinData.max_supply ? (
+        <div
+          className={`text-lg font-bold ${
+            coinData.circulating_supply / coinData.max_supply > 0.8
+              ? "text-green-500"
+              : coinData.circulating_supply / coinData.max_supply < 0.2
+              ? "text-red-500"
+              : "text-yellow-500"
+          }`}
+        >
+          {addCommaToNumberString(
+            (coinData.circulating_supply / coinData.max_supply).toFixed(2)
+          )}
+        </div>
+      ) : (
+        <div className="text-white">-</div>
+      );
+  } else {
+    content =
+      coinData.circulating_supply && coinData.max_supply ? (
+        <div className="text-lg font-bold text-white">
+          {addCommaToNumberString(coinData.circulating_supply.toFixed(0))} /{" "}
+          {addCommaToNumberString(coinData.max_supply)}
+        </div>
+      ) : (
+        <div className="text-white">-</div>
+      );
+  }
+
+  function handleCMSClick() {
+    setShowRatio(!showRatio);
+  }
 
   useEffect(() => {
     const cachedScript = document.getElementById("coingecko-widget");
@@ -124,6 +161,27 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
   function onNoButtonClicked() {
     addTickerToNotInTradingView(coinData.symbol);
     setButtonsClicked(true);
+  }
+
+  function NumberToggle({ value, sectionName }) {
+    const [abbreviated, setAbbreviated] = useState(true);
+
+    function handleClick() {
+      setAbbreviated(!abbreviated);
+    }
+
+    const displayValue = abbreviated
+      ? abbreviateNumber(value)
+      : value.toLocaleString();
+
+    return (
+      <div className="bg-gray-800 p-4 rounded-lg shadow" onClick={handleClick}>
+        <div className="text-sm font-medium text-gray-400 mb-2">
+          {sectionName}
+        </div>
+        <div className="text-lg font-bold text-white">{displayValue}</div>
+      </div>
+    );
   }
 
   function abbreviateNumber(num) {
@@ -617,15 +675,12 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
                             : "-"}
                         </div>
                       </div>
-                      <div className="bg-gray-800 p-4 rounded-lg shadow">
-                        <div className="text-sm font-medium text-gray-400 mb-2">
-                          Market Cap
-                        </div>
-                        <div className="text-lg font-bold text-white">
-                          {coinData.market_cap
-                            ? `$${abbreviateNumber(coinData.market_cap)}`
-                            : "-"}
-                        </div>
+
+                      <div>
+                        <NumberToggle
+                          value={coinData.market_cap}
+                          sectionName={"Market Cap"}
+                        />
                       </div>
 
                       <div className="bg-gray-800 p-4 rounded-lg shadow">
@@ -650,56 +705,34 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
                             : "-"}
                         </div>
                       </div>
-                      <div className="bg-gray-800 p-4 rounded-lg shadow">
-                        <div className="text-sm font-medium text-gray-400 mb-2">
-                          FDV
-                        </div>
-                        <div className="text-lg font-bold text-white">
-                          {coinData.fully_diluted_valuation
-                            ? `$${abbreviateNumber(
-                                coinData.fully_diluted_valuation
-                              )}`
-                            : "-"}
-                        </div>
+
+                      <div>
+                        <NumberToggle
+                          value={coinData.fully_diluted_valuation}
+                          sectionName={"FDV"}
+                        />
                       </div>
-                      <div className="bg-gray-800 p-4 rounded-lg shadow">
-                        <div className="text-sm font-medium text-gray-400 mb-2">
-                          Total Supply
-                        </div>
-                        <div className="text-lg font-bold text-white">
-                          {coinData.total_supply
-                            ? abbreviateNumber(coinData.total_supply.toFixed(2))
-                            : "-"}
-                        </div>
+
+                      <div>
+                        <NumberToggle
+                          value={coinData.total_supply}
+                          sectionName={"Total Supply"}
+                        />
                       </div>
-                      <div className="bg-gray-800 p-4 rounded-lg shadow">
+                      <div>
+                        <NumberToggle
+                          value={coinData.total_volume}
+                          sectionName={"Total Volume"}
+                        />
+                      </div>
+                      <div
+                        className="bg-gray-800 p-4 rounded-lg shadow"
+                        onClick={handleCMSClick}
+                      >
                         <div className="text-sm font-medium text-gray-400 mb-2">
                           Circulating/Max Supply
                         </div>
-                        <div
-                          className={`text-lg font-bold ${
-                            coinData.circulating_supply && coinData.max_supply
-                              ? coinData.circulating_supply /
-                                  coinData.max_supply >
-                                0.8
-                                ? "text-green-500"
-                                : coinData.circulating_supply /
-                                    coinData.max_supply <
-                                  0.2
-                                ? "text-red-500"
-                                : "text-yellow-500"
-                              : "text-gray-500"
-                          }`}
-                        >
-                          {coinData.circulating_supply && coinData.max_supply
-                            ? addCommaToNumberString(
-                                (
-                                  coinData.circulating_supply /
-                                  coinData.max_supply
-                                ).toFixed(2)
-                              )
-                            : "-"}
-                        </div>
+                        {content}
                       </div>
                       <div className="bg-gray-800 p-4 rounded-lg shadow">
                         <div class="mb-2">
@@ -728,17 +761,6 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
                             ? addCommaToNumberString(
                                 coinData.ath_change_percentage.toFixed(2)
                               ) + "%"
-                            : "-"}
-                        </div>
-                      </div>
-
-                      <div className="bg-gray-800 p-4 rounded-lg shadow">
-                        <div className="text-sm font-medium text-gray-400 mb-2">
-                          Total Volume
-                        </div>
-                        <div className={`text-lg font-bold text-white`}>
-                          {coinData.total_volume
-                            ? abbreviateNumber(coinData.total_volume.toFixed(2))
                             : "-"}
                         </div>
                       </div>
