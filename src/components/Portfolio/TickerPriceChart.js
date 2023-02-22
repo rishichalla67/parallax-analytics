@@ -9,7 +9,7 @@ let tvScriptLoadingPromise;
 
 export function TradingViewWidget({ selectedTicker }) {
   const onLoadScriptRef = useRef();
-  const [width, setWidth] = useState(window.innerWidth * 0.9);
+  const [width, setWidth] = useState(window.innerWidth * 0.98);
   const [height, setHeight] = useState(window.innerHeight * 0.5);
 
   useEffect(() => {
@@ -175,7 +175,10 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
       : value.toLocaleString();
 
     return (
-      <div className="bg-gray-800 p-4 rounded-lg shadow" onClick={handleClick}>
+      <div
+        className="bg-gray-800 p-4 rounded-lg shadow hover:cursor-pointer"
+        onClick={handleClick}
+      >
         <div className="text-sm font-medium text-gray-400 mb-2">
           {sectionName}
         </div>
@@ -206,8 +209,8 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
     }
 
     // Calculate the rounded and abbreviated number
-    const scale = abbreviation.scale;
-    const label = abbreviation.label;
+    const scale = abbreviation?.scale;
+    const label = abbreviation?.label;
     const roundedNum = Math.floor(num / scale);
     const remainingDigits = Math.floor(num % scale);
     let formattedNumber = roundedNum;
@@ -232,9 +235,9 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
             <Dialog.Overlay className="fixed inset-0 bg-black opacity-80" />
 
             <div className="inline-block mt-2 align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full md:w-11/12 ">
-              <div className="bg-slate-700 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div className="bg-slate-700 px-[.25rem] pt-2 pb-4 sm:p-6 sm:pb-4">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center flex-1">
+                  <div className="flex items-center flex-1 pl-2">
                     <img
                       src={coinData.image}
                       alt={coinData.name}
@@ -264,7 +267,7 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
                     </svg>
                   </button>
                 </div>
-                <p className="text-sm text-gray-300 opacity-65 border-b">
+                <p className="text-sm text-gray-300 opacity-65 border-b pl-2">
                   Last updated at{" "}
                   {new Date(coinData.last_updated).toLocaleTimeString([], {
                     hour: "numeric",
@@ -726,7 +729,7 @@ export default function TickerPriceChart({ coinData, setShowModal }) {
                         />
                       </div>
                       <div
-                        className="bg-gray-800 p-4 rounded-lg shadow"
+                        className="bg-gray-800 p-4 rounded-lg shadow hover:cursor-pointer"
                         onClick={handleCMSClick}
                       >
                         <div className="text-sm font-medium text-gray-400 mb-2">
