@@ -47,7 +47,7 @@ const OpenAI = () => {
     let formattedText = text;
 
     // Add line breaks for paragraphs
-    formattedText = formattedText.replace(/(\r\n|\n|\r)/gm, "");
+    formattedText = formattedText.replace(/(\r\n|\n|\r)/gm, "<div></div>");
 
     // Add syntax highlighting for code snippets
     formattedText = formattedText.replace(
@@ -73,7 +73,7 @@ const OpenAI = () => {
           headers: {
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+            Authorization: `Bearer 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`,
           },
         }
       );
@@ -90,7 +90,7 @@ const OpenAI = () => {
   return (
     <>
       <Nav />
-      <div className="p-4 min-h-screen bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
+      <div className="p-4 h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
         <h1 className="text-2xl font-bold text-white mb-4">Ask Anything...</h1>
         <form onSubmit={handleSubmit}>
           <textarea
@@ -133,13 +133,13 @@ const OpenAI = () => {
         {outputText && (
           <div className="mt-8">
             <label className="block font-bold text-white mb-2">Response:</label>
-            <div className="relative max-h-72 overflow-y-auto">
+            <div className="max-h-fit max-w-fit overflow-auto">
               <p
-                className="p-2 rounded-lg bg-gray-800 text-white text-left"
+                className="min-w-fit p-2 rounded-lg bg-gray-800 text-white text-left"
                 dangerouslySetInnerHTML={{ __html: outputText }}
               />
               <button
-                className="hover:bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 bg-slate-500 absolute top-0 right-0 p-2 text-white"
+                className="hover:bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 bg-slate-500 w-full top-0 right-0 p-2 text-white"
                 onClick={() => copyToClipboard(outputText)}
               >
                 Copy
