@@ -73,7 +73,7 @@ const OpenAI = () => {
           headers: {
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json",
-            Authorization: `Bearer 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`,
+            Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
           },
         }
       );
