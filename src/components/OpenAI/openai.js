@@ -133,13 +133,13 @@ const OpenAI = () => {
         {outputText && (
           <div className="mt-8">
             <label className="block font-bold text-white mb-2">Response:</label>
-            <div className="relative">
+            <div className="relative max-h-72 overflow-y-auto">
               <p
                 className="p-2 rounded-lg bg-gray-800 text-white text-left"
                 dangerouslySetInnerHTML={{ __html: outputText }}
               />
               <button
-                className="hover:bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 bg-slate-500 top-0 right-0 p-2 text-white"
+                className="hover:bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 bg-slate-500 absolute top-0 right-0 p-2 text-white"
                 onClick={() => copyToClipboard(outputText)}
               >
                 Copy
@@ -147,6 +147,7 @@ const OpenAI = () => {
             </div>
           </div>
         )}
+
         {error && (
           <div className="mt-8 text-red-500">
             An error occurred: {error.message}
