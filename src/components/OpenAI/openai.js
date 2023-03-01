@@ -66,8 +66,7 @@ const OpenAI = () => {
       const response = await axios.post(
         "https://api.openai.com/v1/chat/completions",
         {
-          prompt: inputText,
-          max_tokens: 2048,
+          messages: [{ role: "user", content: inputText }],
           model: "gpt-3.5-turbo",
         },
         {
