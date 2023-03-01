@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Nav from '../Nav';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Nav from "../Nav";
 
 const OpenAI = () => {
-  const [inputText, setInputText] = useState('');
-  const [outputText, setOutputText] = useState('');
+  const [inputText, setInputText] = useState("");
+  const [outputText, setOutputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -13,8 +13,8 @@ const OpenAI = () => {
   };
 
   const clearInput = (event) => {
-        setInputText('')
-  }
+    setInputText("");
+  };
 
   const copyToClipboard = (text) => {
     const textArea = document.createElement("textarea");
@@ -45,13 +45,16 @@ const OpenAI = () => {
 
   const formatResponse = (text) => {
     let formattedText = text;
-    
+
     // Add line breaks for paragraphs
     formattedText = formattedText.replace(/(\r\n|\n|\r)/gm, "<div/><div/>");
-  
+
     // Add syntax highlighting for code snippets
-    formattedText = formattedText.replace(/```(.*?)```/g, "<pre><code>$1</code></pre>");
-  
+    formattedText = formattedText.replace(
+      /```(.*?)```/g,
+      "<pre><code>$1</code></pre>"
+    );
+
     return formattedText;
   };
 
@@ -61,17 +64,17 @@ const OpenAI = () => {
     setError(null);
     try {
       const response = await axios.post(
-        'https://api.openai.com/v1/completions',
+        "https://api.openai.com/v1/completions",
         {
           prompt: inputText,
           max_tokens: 2048,
-          model: "text-davinci-003"
+          model: "gpt-3.5-turbo",
         },
         {
           headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
           },
         }
       );
@@ -85,8 +88,8 @@ const OpenAI = () => {
 
   return (
     <>
-        <Nav/>
-        <div className="p-4 h-screen bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
+      <Nav />
+      <div className="p-4 h-screen bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
         <h1 className="text-2xl font-bold text-white mb-4">Ask Anything...</h1>
         <form onSubmit={handleSubmit}>
           <textarea
@@ -99,14 +102,17 @@ const OpenAI = () => {
               }
             }}
           />
-          {!isLoading && <div><button
-            className="bg-red-200 hover:bg-blue-700 text-black font-bold py-2 px-4 mt-4 rounded-full"
-            type="submit"
-            disabled={isLoading}
-            >
-            Submit
-            </button>
-          </div>}
+          {!isLoading && (
+            <div>
+              <button
+                className="bg-red-200 hover:bg-blue-700 text-black font-bold py-2 px-4 mt-4 rounded-full"
+                type="submit"
+                disabled={isLoading}
+              >
+                Submit
+              </button>
+            </div>
+          )}
 
           {isLoading && (
             <div className="mt-8 flex items-center justify-center">
@@ -118,35 +124,34 @@ const OpenAI = () => {
         </form>
 
         <button
-            className="bg-green-200 hover:bg-blue-700 text-black font-bold py-2 px-4 mt-4 rounded-full"
-            onClick={clearInput}
-            >
-            Clear Input
-            </button>
-            {outputText && (
-              <div className="mt-8">
-                <label className="block font-bold text-white mb-2">Response:</label>
-                <div className="relative">
-                  
-                  <p 
-                    className="p-2 rounded-lg bg-gray-800 text-white text-left"
-                    dangerouslySetInnerHTML={{__html: outputText}}
-                  />
-                  <button
-                    className="hover:bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 bg-slate-500 top-0 right-0 p-2 text-white"
-                    onClick={() => copyToClipboard(outputText)}
-                  >
-                    Copy
-                  </button>
-                </div>
-              </div>
-            )}
-        {error && (
-            <div className="mt-8 text-red-500">
-            An error occurred: {error.message}
+          className="bg-green-200 hover:bg-blue-700 text-black font-bold py-2 px-4 mt-4 rounded-full"
+          onClick={clearInput}
+        >
+          Clear Input
+        </button>
+        {outputText && (
+          <div className="mt-8">
+            <label className="block font-bold text-white mb-2">Response:</label>
+            <div className="relative">
+              <p
+                className="p-2 rounded-lg bg-gray-800 text-white text-left"
+                dangerouslySetInnerHTML={{ __html: outputText }}
+              />
+              <button
+                className="hover:bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 bg-slate-500 top-0 right-0 p-2 text-white"
+                onClick={() => copyToClipboard(outputText)}
+              >
+                Copy
+              </button>
             </div>
+          </div>
         )}
-        </div>
+        {error && (
+          <div className="mt-8 text-red-500">
+            An error occurred: {error.message}
+          </div>
+        )}
+      </div>
     </>
   );
 };
