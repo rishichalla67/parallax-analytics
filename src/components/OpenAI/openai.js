@@ -78,7 +78,7 @@ const OpenAI = () => {
         }
       );
       const formattedResponse = formatResponse(
-        response.choices[0].message.content
+        response.data.choices[0].message.content
       );
       setOutputText(formattedResponse);
     } catch (error) {
