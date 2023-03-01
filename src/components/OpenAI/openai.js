@@ -64,7 +64,7 @@ const OpenAI = () => {
     setError(null);
     try {
       const response = await axios.post(
-        "https://api.openai.com/v1/completions",
+        "https://api.openai.com/v1/chat/completions",
         {
           prompt: inputText,
           max_tokens: 2048,
