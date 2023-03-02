@@ -90,7 +90,7 @@ const OpenAI = () => {
   return (
     <>
       <Nav />
-      <div className="p-4 h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
+      <div className="p-4 min-h-full h-screen bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900">
         <h1 className="text-2xl font-bold text-white mb-4">Ask Anything...</h1>
         <form onSubmit={handleSubmit}>
           <textarea
