@@ -8,6 +8,7 @@ const OpenAI = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [unformattedResponse, setUnformattedResponse] = useState("");
   const [selectedOption, setSelectedOption] = useState({
     category: "Finance",
@@ -72,6 +73,14 @@ const OpenAI = () => {
       prompt: "As a therapy expert, you have extensive knowledge and experience in helping individuals with mental health concerns, including anxiety, depression, trauma, addiction, and other psychological disorders. You are also skilled in providing guidance on coping strategies, stress management, self-care, and building resilience. Additionally, you can offer support and advice for those navigating interpersonal relationships, including romantic relationships, family dynamics, and workplace interactions. With your expertise in evidence-based therapy approaches, you can help individuals develop the tools and skills they need to overcome their challenges and improve their overall well-being."
     },
     {
+      category: "Pets",
+      prompt: "You are a pet expert who can offer guidance on various topics related to pet care, health, and behavior. With your expertise in animal nutrition, you can provide advice on the best diet for pets of different ages, breeds, and health conditions. You can also offer guidance on preventive care, such as vaccinations, parasite control, and dental hygiene. Additionally, you can provide advice on how to address common pet behavior issues, such as separation anxiety, aggression, and house training. Whether it's through one-on-one consultations, group seminars, or online resources, you can help pet owners provide the best possible care for their furry companions."
+    },
+    {
+      category: "Cooking",
+      prompt: "You are a cooking expert who can offer guidance on a wide range of culinary topics, including ingredient selection, cooking techniques, recipe development, and meal planning. With your expertise in nutrition and dietary restrictions, you can provide advice on how to create healthy, flavorful meals that meet specific dietary needs. Additionally, you can offer guidance on how to stock a pantry, choose the right kitchen equipment, and develop time management skills for efficient meal preparation. Whether it's through one-on-one cooking lessons, group workshops, or online resources, you can help people discover the joy of cooking and develop their skills in the kitchen."
+    },        
+    {
       category: "Career",
       prompt: "You are a career expert who can help individuals navigate the job market, build their personal brand, and achieve their professional goals.",
     },
@@ -114,6 +123,8 @@ const OpenAI = () => {
   
   ];
 
+  
+
   const formatResponse = (text) => {
     let formattedText = text;
 
@@ -134,6 +145,7 @@ const OpenAI = () => {
   
   const handleClick = async (e) => {
     handleAddMessage({ role: "user", content: inputValue });
+    setIsSending(true);
     await handleSubmit(e);
   };
 
@@ -175,7 +187,8 @@ const OpenAI = () => {
       setUnformattedResponse(response.data.choices[0].message.content);
       setOutputText(formattedResponse);
       setChatLog([...chatLog, newMessage, {role: response.data.choices[0].message.role, content: response.data.choices[0].message.content}]);
-      console.log([...chatLog, newMessage, {role: response.data.choices[0].message.role, content: response.data.choices[0].message.content}])
+      console.log([...chatLog, newMessage, {role: response.data.choices[0].message.role, content: response.data.choices[0].message.content}]);
+      setIsSending(false)
     } catch (error) {
       setError(error);
     }
@@ -189,6 +202,7 @@ const chatLogRef = useRef(null);
   useEffect(() => {
     chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
   }, [chatLog]);
+  
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -236,30 +250,31 @@ const chatLogRef = useRef(null);
           </div>
 
           {isOpen && (
-            <div
-              className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-slate-600 text-white ring-1 ring-black ring-opacity-5 focus:outline-none"
-              role="menu"
-              aria-orientation="vertical"
-              aria-labelledby="options-menu"
-            >
-              <div className="py-1" role="none">
-                {prompts.map((option) => (
-                  <div
-                    key={option.category}
-                    className="flex items-center px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
-                    role="menuitem"
-                    onClick={() => {
-                      setSelectedOption(option);
-                      setIsOpen(false);
-                    }}
-                  >
-                    <div className="rounded-full bg-gray-200 mr-2 h-2 w-2"></div>
-                    <span className="flex-1">{option.category}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+  <div
+    className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-slate-600 text-white ring-1 ring-black ring-opacity-5 focus:outline-none max-h-60 overflow-y-auto"
+    role="menu"
+    aria-orientation="vertical"
+    aria-labelledby="options-menu"
+  >
+    <div className="py-1" role="none">
+      {prompts.map((option) => (
+        <div
+          key={option.category}
+          className="flex items-center px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
+          role="menuitem"
+          onClick={() => {
+            setSelectedOption(option);
+            setIsOpen(false);
+          }}
+        >
+          <div className="rounded-full bg-gray-200 mr-2 h-2 w-2"></div>
+          <span className="flex-1">{option.category}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
         </div>
       <div className="mx-2 bg-gray-900 p-4 md:p-8 lg:p-12 flex flex-col justify-between h-[80dvh] sm:h-[90dvh]" >
     <div className="h-90% overflow-y-auto" ref={chatLogRef}>
@@ -296,12 +311,18 @@ const chatLogRef = useRef(null);
   onChange={handleInputChange}
 />
 
-      <button
-        className="bg-blue-500 text-white px-4 py-2 rounded-lg mr-2 text-sm sm:text-base lg:text-lg"
-        onClick={handleClick}
-      >
-        Send
-      </button>
+{isSending ? (
+            <div className="p-2 rounded-lg bg-gray-700 max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl">
+              <span className="animate-pulse">...</span>
+            </div>
+          ) : (
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg mr-2 text-sm sm:text-base lg:text-lg"
+              onClick={handleClick}
+            >
+              Send
+            </button>
+          )}
       
     </div>
   </div>
