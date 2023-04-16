@@ -305,6 +305,7 @@ export function CryptoProvider({ children }) {
     getAllTickerDailyPnLs,
     getTickerPriceChart,
     symbolChartData,
+    positionTickerPnLLists,
   };
 
   return (

@@ -137,6 +137,7 @@ export function FirestoreProvider({ children }) {
     const docRef = doc(db, "portfolios", portfolioId);
     const portfolio = await getDoc(docRef);
     if (portfolio.exists()) {
+      console.log(portfolio.data());
       return portfolio.data();
     }
   }

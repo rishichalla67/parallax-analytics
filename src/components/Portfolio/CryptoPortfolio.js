@@ -68,6 +68,7 @@ export default function CryptoPortfolio() {
     currentChartDateRange,
     filterDataByDateRange,
     getTickerDailyPnL,
+    positionTickerPnLLists
   } = useCryptoOracle();
   const { activeUser, tickerList, fetchAllUsers } = useFirestore();
 
@@ -122,32 +123,6 @@ export default function CryptoPortfolio() {
       setSortAscending(true);
     }
   };
-
-  // const sortedPositions = [...portfolioPositions].sort((a, b) => {
-  //   if (sortBy === "crypto") {
-  //     if (sortOrder === "asc") {
-  //       return formatSymbol(tickerList[a.symbol]).localeCompare(
-  //         formatSymbol(tickerList[b.symbol])
-  //       );
-  //     } else {
-  //       return formatSymbol(tickerList[b.symbol]).localeCompare(
-  //         formatSymbol(tickerList[a.symbol])
-  //       );
-  //     }
-  //   } else {
-  //     if (sortOrder === "asc") {
-  //       return (
-  //         calculatePositionValue(nomicsTickers, a) -
-  //         calculatePositionValue(nomicsTickers, b)
-  //       );
-  //     } else {
-  //       return (
-  //         calculatePositionValue(nomicsTickers, b) -
-  //         calculatePositionValue(nomicsTickers, a)
-  //       );
-  //     }
-  //   }
-  // });
 
   const sortedPositions = [...portfolioPositions].sort((a, b) => {
     switch (sortBy) {
@@ -458,32 +433,31 @@ export default function CryptoPortfolio() {
                               onClick={() => handleSort("crypto")}
                             >
                               Crypto{" "}
-                              {sortBy === "crypto" &&
-                                (sortAscending ? "(A-Z)" : "(Z-A)")}
+                              {sortBy === "crypto" && (sortAscending ? "(A-Z)" : "(Z-A)")}
                             </th>
                             <th
                               className="px-4 py-2 hover:animate-pulse hover:cursor-pointer"
                               onClick={() => handleSort("quantity")}
                             >
                               Quantity{" "}
-                              {sortBy === "quantity" &&
-                                (sortAscending ? "↑" : "↓")}
+                              {sortBy === "quantity" && (sortAscending ? "↑" : "↓")}
                             </th>
                             <th
                               className="px-4 py-2 hover:animate-pulse hover:cursor-pointer"
                               onClick={() => handleSort("value")}
                             >
                               Value{" "}
-                              {sortBy === "value" &&
-                                (sortAscending ? "↑" : "↓")}
+                              {sortBy === "value" && (sortAscending ? "↑" : "↓")}
                             </th>
-                            {/* <th className="px-2 py-2 text-[.65rem] opacity-60">
-                              Last updated
-                            </th> */}
                           </tr>
                         </thead>
                         <tbody>
                           {sortedPositions.map((position) => {
+                            const assetInfo = positionTickerPnLLists.find(
+                              (asset) => asset.id === position.symbol
+                            );
+                            const image = assetInfo?.image || '';
+                            
                             return (
                               <tr
                                 key={`${position.symbol}-${position.quantity}-${position.type}`}
@@ -494,8 +468,14 @@ export default function CryptoPortfolio() {
                                 }}
                               >
                                 <td className="px-4 py-2">
-                                  {formatSymbol(tickerList[position.symbol])}
+                                  <div className="flex items-center justify-center">
+                                    {image && (
+                                      <img src={image} alt={position.symbol} className="w-6 h-6 mr-2" />
+                                    )}
+                                    {formatSymbol(tickerList[position.symbol])}
+                                  </div>
                                 </td>
+
                                 <td className="py-1 sm:px-4 sm:py-2">
                                   {position.symbol === "bitcoin"
                                     ? privacyFilter.privacyFilter
@@ -524,12 +504,6 @@ export default function CryptoPortfolio() {
                                         )
                                       )}`}
                                 </td>
-                                {/* <td className="px-4 py-2 text-[.65rem] opacity-40">
-                                  {formatLastUpdateAtDate(
-                                    nomicsTickers[position.symbol]
-                                      ?.last_updated_at
-                                  )}
-                                </td> */}
                               </tr>
                             );
                           })}
@@ -548,6 +522,8 @@ export default function CryptoPortfolio() {
                       </div>
                     </>
                   )}
+
+
 
                   {/* Tab Index of 2 === Positions Table */}
                   {tabIndex === 2 && (

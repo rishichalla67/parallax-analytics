@@ -219,7 +219,7 @@ export function Analyics(privacyFilter) {
                   </td>
                   <td className="py-1 sm:px-4 sm:py-2">
                     $
-                    {position.avgCost % 10 < 4
+                    {Math.floor(position.avgCost) <= 1000
                       ? position.avgCost
                       : parseInt(position.avgCost)}
                   </td>
