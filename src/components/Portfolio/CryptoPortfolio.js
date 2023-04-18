@@ -52,8 +52,8 @@ export default function CryptoPortfolio() {
 
   const [editPositions, setEditPositions] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [sortBy, setSortBy] = useState("crypto");
-  const [sortAscending, setSortAscending] = useState(true);
+  const [sortBy, setSortBy] = useState("value");
+  const [sortAscending, setSortAscending] = useState(false);
 
   const {
     nomicsTickers,
@@ -68,7 +68,7 @@ export default function CryptoPortfolio() {
     currentChartDateRange,
     filterDataByDateRange,
     getTickerDailyPnL,
-    positionTickerPnLLists
+    positionTickerPnLLists,
   } = useCryptoOracle();
   const { activeUser, tickerList, fetchAllUsers } = useFirestore();
 
@@ -433,21 +433,24 @@ export default function CryptoPortfolio() {
                               onClick={() => handleSort("crypto")}
                             >
                               Crypto{" "}
-                              {sortBy === "crypto" && (sortAscending ? "(A-Z)" : "(Z-A)")}
+                              {sortBy === "crypto" &&
+                                (sortAscending ? "(A-Z)" : "(Z-A)")}
                             </th>
                             <th
                               className="px-4 py-2 hover:animate-pulse hover:cursor-pointer"
                               onClick={() => handleSort("quantity")}
                             >
                               Quantity{" "}
-                              {sortBy === "quantity" && (sortAscending ? "↑" : "↓")}
+                              {sortBy === "quantity" &&
+                                (sortAscending ? "↑" : "↓")}
                             </th>
                             <th
                               className="px-4 py-2 hover:animate-pulse hover:cursor-pointer"
                               onClick={() => handleSort("value")}
                             >
                               Value{" "}
-                              {sortBy === "value" && (sortAscending ? "↑" : "↓")}
+                              {sortBy === "value" &&
+                                (sortAscending ? "↑" : "↓")}
                             </th>
                           </tr>
                         </thead>
@@ -456,8 +459,8 @@ export default function CryptoPortfolio() {
                             const assetInfo = positionTickerPnLLists.find(
                               (asset) => asset.id === position.symbol
                             );
-                            const image = assetInfo?.image || '';
-                            
+                            const image = assetInfo?.image || "";
+
                             return (
                               <tr
                                 key={`${position.symbol}-${position.quantity}-${position.type}`}
@@ -470,7 +473,11 @@ export default function CryptoPortfolio() {
                                 <td className="px-4 py-2">
                                   <div className="flex items-center justify-center">
                                     {image && (
-                                      <img src={image} alt={position.symbol} className="w-6 h-6 mr-2" />
+                                      <img
+                                        src={image}
+                                        alt={position.symbol}
+                                        className="w-6 h-6 mr-2"
+                                      />
                                     )}
                                     {formatSymbol(tickerList[position.symbol])}
                                   </div>
@@ -522,8 +529,6 @@ export default function CryptoPortfolio() {
                       </div>
                     </>
                   )}
-
-
 
                   {/* Tab Index of 2 === Positions Table */}
                   {tabIndex === 2 && (
