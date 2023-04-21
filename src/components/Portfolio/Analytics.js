@@ -12,7 +12,6 @@ export function calculatePnl(data) {
       100
     ).toFixed(2);
   }
-  //   console.log(data);
 }
 
 export function formatSymbol(str) {
@@ -33,29 +32,28 @@ export function countDigits(num) {
 export function Analyics(privacyFilter) {
   const {
     nomicsTickers,
-    portfolioValueHistory,
-    filterDataByDateRange,
     portfolioPositions,
-    getAllTickerDailyPnLs,
     positionTickerPnLLists,
-    getTickerPriceChart
+    getTickerPriceChart,
   } = useCryptoOracle();
   const { tickerList } = useFirestore();
-  const [sortBy, setSortBy] = useState("");
-  const [sortAscending, setSortAscending] = useState(true);
+  const [sortBy, setSortBy] = useState("pnl");
+  const [sortAscending, setSortAscending] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [selectedSymbol, setSelectedSymbol] = useState("")
+  const [selectedSymbol, setSelectedSymbol] = useState("");
   // const [symbolChartData, setSymbolChartData] = useState([])
-  const cachedTickerPriceChart = useCachedTickerPriceChart(positionTickerPnLLists, selectedSymbol);
+  const cachedTickerPriceChart = useCachedTickerPriceChart(
+    positionTickerPnLLists,
+    selectedSymbol
+  );
 
   function useCachedTickerPriceChart(positionTickerPnLLists, selectedSymbol) {
     return useMemo(() => {
-      const coinData = positionTickerPnLLists.find(obj => obj.id === selectedSymbol);
+      const coinData = positionTickerPnLLists.find(
+        (obj) => obj.id === selectedSymbol
+      );
       return (
-        <TickerPriceChart
-          coinData={coinData}
-          setShowModal={setShowModal}
-        />
+        <TickerPriceChart coinData={coinData} setShowModal={setShowModal} />
       );
     }, [positionTickerPnLLists, selectedSymbol]);
   }
@@ -148,10 +146,10 @@ export function Analyics(privacyFilter) {
     return positionPnl;
   }
 
-  function showTickerChart(symbol){
-    getTickerPriceChart(symbol)
-    setSelectedSymbol(symbol)
-    setShowModal(true)
+  function showTickerChart(symbol) {
+    getTickerPriceChart(symbol);
+    setSelectedSymbol(symbol);
+    setShowModal(true);
   }
 
   useEffect(() => {}, [privacyFilter]);
@@ -160,7 +158,7 @@ export function Analyics(privacyFilter) {
     <div className="pb-4 sm:pb-0 text-white ">
       <div className="flex flex-col sm:gap-4 text-sm">
         <div className="flex flex-col items-center">
-        {showModal && cachedTickerPriceChart}
+          {showModal && cachedTickerPriceChart}
           <table className="text-sm sm:text-base sm:w-full min-w-full overflow-x-auto">
             <thead>
               <tr className="bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 text-white">
@@ -209,7 +207,6 @@ export function Analyics(privacyFilter) {
                   }`}
                   key={position.symbol}
                   onClick={() => showTickerChart(position.symbol)}
-                  
                 >
                   <td className="py-1">
                     {formatSymbol(tickerList[position.symbol])}
