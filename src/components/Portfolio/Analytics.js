@@ -146,6 +146,18 @@ export function Analyics(privacyFilter) {
     return positionPnl;
   }
 
+  function calculate24HrPositionPnl(selectedPosition) {
+    let delta = findSymbolPrice(selectedPosition.symbol) / 100;
+    if (delta !== null) {
+      let value = (
+        nomicsTickers[selectedPosition.symbol].usd * selectedPosition.quantity
+      ).toFixed(2);
+
+      return (delta * value).toFixed(2);
+    }
+    return null;
+  }
+
   function showTickerChart(symbol) {
     getTickerPriceChart(symbol);
     setSelectedSymbol(symbol);
@@ -212,23 +224,39 @@ export function Analyics(privacyFilter) {
                     {formatSymbol(tickerList[position.symbol])}
                   </td>
                   <td className="py-1 sm:px-4 sm:py-2">
-                    ${nomicsTickers[position.symbol].usd}
+                    $
+                    {addCommaToNumberString(nomicsTickers[position.symbol].usd)}
                   </td>
                   <td className="py-1 sm:px-4 sm:py-2">
                     $
-                    {Math.floor(position.avgCost) <= 1000
-                      ? position.avgCost
-                      : parseInt(position.avgCost)}
+                    {addCommaToNumberString(
+                      Math.floor(position.avgCost) <= 1000
+                        ? position.avgCost
+                        : parseInt(position.avgCost)
+                    )}
                   </td>
-                  <td
-                    className={`py-1 sm:px-4 sm:py-2 ${
-                      findSymbolPrice(position.symbol) < 0
-                        ? "text-red-500"
-                        : "text-green-500"
-                    }`}
-                  >
-                    {findSymbolPrice(position.symbol).toFixed(2)}%
+                  <td className="py-1 sm:px-4 sm:py-2">
+                    <div className={``}>
+                      $
+                      {addCommaToNumberString(
+                        calculate24HrPositionPnl(position)
+                      )}
+                    </div>
+                    <div
+                      className={`${
+                        findSymbolPrice(position.symbol) < 0
+                          ? "text-red-500"
+                          : "text-green-500"
+                      }`}
+                    >
+                      (
+                      {addCommaToNumberString(
+                        findSymbolPrice(position.symbol).toFixed(2)
+                      )}
+                      %)
+                    </div>
                   </td>
+
                   <td
                     className={`py-1 sm:px-4 sm:py-2 ${
                       calculatePositionPnlPercentage(position, false).includes(
@@ -241,7 +269,7 @@ export function Analyics(privacyFilter) {
                         : "text-green-500"
                     }`}
                   >
-                    <div>
+                    <div className="text-white">
                       {privacyFilter.privacyFilter
                         ? maskNumber(calculatePositionPnl(position))
                         : addCommaToNumberString(

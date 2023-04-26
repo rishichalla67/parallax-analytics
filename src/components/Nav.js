@@ -42,12 +42,6 @@ export default function Nav() {
       current: currentTab,
       onClick: setCurrentTab("Portfolio"),
     },
-    // {
-    //   name: "Profile",
-    //   href: "/profile",
-    //   current: currentTab,
-    //   onClick: setCurrentTab("Profile"),
-    // },
     {
       name: "OpenAI",
       href: "/openai",
