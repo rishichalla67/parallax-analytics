@@ -457,6 +457,22 @@ export default function CryptoPortfolio() {
                         Analytics
                       </button>
                     </li>
+                    <li className="mr-2">
+                      <button
+                        onClick={() => {
+                          setTabIndex(3);
+                        }}
+                        data-bs-toggle="tooltip"
+                        title="Swap any coin seamlessly"
+                        className={`inline-block p-4 ${
+                          tabIndex !== 3
+                            ? "rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                            : "text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
+                        }`}
+                      >
+                        Swap
+                      </button>
+                    </li>
                   </ul>
 
                   {/* Tab Index of 1 === Positions Table */}
@@ -572,6 +588,20 @@ export default function CryptoPortfolio() {
                     <>
                       <div className="w-full sm:text-lg ">
                         <Analyics privacyFilter={privacyFilter} />
+                      </div>
+                    </>
+                  )}
+                  {tabIndex === 3 && (
+                    <>
+                      <div className="flex justify-center w-full py-2">
+                        <iframe
+                          id="simpleswap-frame"
+                          name="SimpleSwap Widget"
+                          width="400%"
+                          height="340px"
+                          src="https://simpleswap.io/widget/a676253b-7475-4ff2-948c-5347c2ab4689"
+                          frameborder="0"
+                        ></iframe>
                       </div>
                     </>
                   )}
