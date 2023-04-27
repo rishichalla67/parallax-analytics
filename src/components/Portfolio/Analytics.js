@@ -2,7 +2,11 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
 import TickerPriceChart from "./TickerPriceChart";
-import { addCommaToNumberString, maskNumber } from "./CryptoPortfolio";
+import {
+  addCommaToNumberString,
+  maskNumber,
+  findSymbolPrice,
+} from "./CryptoPortfolio";
 
 export function calculatePnl(data) {
   if (data[0].value) {
@@ -93,8 +97,10 @@ export function Analyics(privacyFilter) {
           : calculatePositionPnl(b, false) - calculatePositionPnl(a, false);
       case "24hrDelta":
         return sortAscending
-          ? findSymbolPrice(a.symbol) - findSymbolPrice(b.symbol)
-          : findSymbolPrice(b.symbol) - findSymbolPrice(a.symbol);
+          ? findSymbolPrice(a.symbol, positionTickerPnLLists) -
+              findSymbolPrice(b.symbol, positionTickerPnLLists)
+          : findSymbolPrice(b.symbol, positionTickerPnLLists) -
+              findSymbolPrice(a.symbol, positionTickerPnLLists);
       default:
         return 0;
     }
@@ -116,15 +122,15 @@ export function Analyics(privacyFilter) {
     return positionPnl;
   }
 
-  function findSymbolPrice(symbol) {
-    for (let i = 0; i < positionTickerPnLLists.length; i++) {
-      const obj = positionTickerPnLLists[i];
-      if (obj.id === symbol) {
-        return obj.price_change_percentage_24h;
-      }
-    }
-    return null; // Return null if symbol is not found
-  }
+  // function findSymbolPrice(symbol) {
+  //   for (let i = 0; i < positionTickerPnLLists.length; i++) {
+  //     const obj = positionTickerPnLLists[i];
+  //     if (obj.id === symbol) {
+  //       return obj.price_change_percentage_24h;
+  //     }
+  //   }
+  //   return null; // Return null if symbol is not found
+  // }
 
   function calculatePositionPnlPercentage(position, forDisplay) {
     let positionPnl = "Need Avg Price";
@@ -147,7 +153,8 @@ export function Analyics(privacyFilter) {
   }
 
   function calculate24HrPositionPnl(selectedPosition) {
-    let delta = findSymbolPrice(selectedPosition.symbol) / 100;
+    let delta =
+      findSymbolPrice(selectedPosition.symbol, positionTickerPnLLists) / 100;
     if (delta !== null) {
       let value = (
         nomicsTickers[selectedPosition.symbol].usd * selectedPosition.quantity
@@ -256,14 +263,20 @@ export function Analyics(privacyFilter) {
                       </div>
                       <div
                         className={`${
-                          findSymbolPrice(position.symbol) < 0
+                          findSymbolPrice(
+                            position.symbol,
+                            positionTickerPnLLists
+                          ) < 0
                             ? "text-red-500"
                             : "text-green-500"
                         }`}
                       >
                         (
                         {addCommaToNumberString(
-                          findSymbolPrice(position.symbol).toFixed(2)
+                          findSymbolPrice(
+                            position.symbol,
+                            positionTickerPnLLists
+                          ).toFixed(2)
                         )}
                         %)
                       </div>

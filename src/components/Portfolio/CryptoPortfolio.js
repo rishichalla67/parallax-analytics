@@ -41,15 +41,27 @@ export function maskNumber(input) {
   else return "Invalid Input";
 }
 
+export function findSymbolPrice(symbol, positionTickerPnLLists) {
+  for (let i = 0; i < positionTickerPnLLists.length; i++) {
+    const obj = positionTickerPnLLists[i];
+    if (obj.id === symbol) {
+      return obj.price_change_percentage_24h;
+    }
+  }
+  return null; // Return null if symbol is not found
+}
+
 export default function CryptoPortfolio() {
   let timer = 0;
 
   const [tabIndex, setTabIndex] = useState(1);
 
   const [error, setError] = useState("");
+  const [isIframeLoaded, setIsIframeLoaded] = useState(false);
   const [selectedPosition, setSelectedPosition] = useState();
   const [successMessage, setSuccessMessage] = useState("");
   const [privacyFilter, setPrivacyFilter] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const [editPositions, setEditPositions] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -116,6 +128,17 @@ export default function CryptoPortfolio() {
       }, 10000);
     }
   };
+
+  useEffect(() => {
+    if (!isIframeLoaded) {
+      const progressInterval = setInterval(() => {
+        setProgress((prevProgress) =>
+          prevProgress >= 100 ? 0 : prevProgress + 10
+        );
+      }, 200);
+      return () => clearInterval(progressInterval);
+    }
+  }, [isIframeLoaded]);
 
   const toggleSettings = () => {
     console.log("showSettings");
@@ -461,6 +484,7 @@ export default function CryptoPortfolio() {
                       <button
                         onClick={() => {
                           setTabIndex(3);
+                          setIsIframeLoaded(false);
                         }}
                         data-bs-toggle="tooltip"
                         title="Swap any coin seamlessly"
@@ -593,7 +617,23 @@ export default function CryptoPortfolio() {
                   )}
                   {tabIndex === 3 && (
                     <>
-                      <div className="flex justify-center w-full py-2">
+                      {!isIframeLoaded && (
+                        <div className="inset-3 flex items-center justify-center">
+                          <div className="w-full max-w-md mx-auto p-4">
+                            <div className="bg-gray-200 h-4 rounded-full">
+                              <div
+                                className="h-4 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 rounded-full"
+                                style={{ width: `${progress}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      <div
+                        className={`flex justify-center w-full py-2 ${
+                          !isIframeLoaded ? "opacity-0" : "opacity-100"
+                        }`}
+                      >
                         <iframe
                           id="simpleswap-frame"
                           name="SimpleSwap Widget"
@@ -601,6 +641,7 @@ export default function CryptoPortfolio() {
                           height="400rem"
                           src="https://simpleswap.io/widget/a676253b-7475-4ff2-948c-5347c2ab4689"
                           frameborder="0"
+                          onLoad={() => setIsIframeLoaded(true)}
                         ></iframe>
                       </div>
                     </>
