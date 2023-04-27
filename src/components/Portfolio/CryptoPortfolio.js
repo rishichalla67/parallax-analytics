@@ -597,8 +597,8 @@ export default function CryptoPortfolio() {
                         <iframe
                           id="simpleswap-frame"
                           name="SimpleSwap Widget"
-                          width="400%"
-                          height="340px"
+                          width="100%"
+                          height="400rem"
                           src="https://simpleswap.io/widget/a676253b-7475-4ff2-948c-5347c2ab4689"
                           frameborder="0"
                         ></iframe>
