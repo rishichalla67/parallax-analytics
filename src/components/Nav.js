@@ -42,12 +42,12 @@ export default function Nav() {
       current: currentTab,
       onClick: setCurrentTab("Portfolio"),
     },
-    {
-      name: "OpenAI",
-      href: "/openai",
-      current: currentTab,
-      onClick: setCurrentTab("OpenAI"),
-    },
+    // {
+    //   name: "OpenAI",
+    //   href: "/openai",
+    //   current: currentTab,
+    //   onClick: setCurrentTab("OpenAI"),
+    // },
     {
       name: "Sign out",
       href: "/login",
