@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
+import OpenAi from "../OpenAI/openai";
 
 import Nav from "../Nav.js";
 import { Analyics, calculatePnl, formatSymbol } from "./Analytics";
@@ -497,6 +498,22 @@ export default function CryptoPortfolio() {
                         Swap
                       </button>
                     </li>
+                    <li className="mr-2">
+                      <button
+                        onClick={() => {
+                          setTabIndex(4);
+                        }}
+                        data-bs-toggle="tooltip"
+                        title="Chat with a powerful AI assistant powered by OpenAI"
+                        className={`inline-block p-4 ${
+                          tabIndex !== 4
+                            ? "rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                            : "text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
+                        }`}
+                      >
+                        AI
+                      </button>
+                    </li>
                   </ul>
 
                   {/* Tab Index of 1 === Positions Table */}
@@ -644,6 +661,11 @@ export default function CryptoPortfolio() {
                           onLoad={() => setIsIframeLoaded(true)}
                         ></iframe>
                       </div>
+                    </>
+                  )}
+                  {tabIndex === 4 && (
+                    <>
+                      <OpenAi />
                     </>
                   )}
                 </div>
