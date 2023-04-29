@@ -178,14 +178,6 @@ const OpenAI = () => {
           content: response.data.choices[0].message.content,
         },
       ]);
-      console.log([
-        ...chatLog,
-        newMessage,
-        {
-          role: response.data.choices[0].message.role,
-          content: response.data.choices[0].message.content,
-        },
-      ]);
       setIsSending(false);
     } catch (error) {
       setError(error);
@@ -197,7 +189,7 @@ const OpenAI = () => {
     chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
     setLoadingChatLog([
       ...chatLog,
-      { role: "loading", content: "Thinking..." },
+      { role: "loading", content: "Thinking... this may take some time" },
     ]);
   }, [chatLog]);
 
@@ -211,7 +203,7 @@ const OpenAI = () => {
       <div className="flex flex-col items-center justify-center min-h-screen w-full bg-slate-800">
         <div className="w-full p-4 bg-black rounded shadow">
           <div className="flex flex-col h-full">
-            <div className="flex-grow mb-4 min-h-[50vh] bg-slate-800 rounded-lg">
+            <div className="flex-grow mb-4 min-h-[20vh] md:min-h-[35vh] bg-slate-800 rounded-lg">
               <div
                 className="overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
                 ref={chatLogRef}
