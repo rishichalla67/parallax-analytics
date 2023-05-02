@@ -11,6 +11,7 @@ const OpenAI = ({ chatLog, setChatLog }) => {
   const [loadingChatLog, setLoadingChatLog] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const chatLogRef = useRef(null);
+  const [chatModel, setChatModel] = useState("gpt-4");
   const [selectedOption, setSelectedOption] = useState({
     category: "General",
     prompt:
@@ -160,7 +161,7 @@ const OpenAI = ({ chatLog, setChatLog }) => {
         "https://api.openai.com/v1/chat/completions",
         {
           messages: messages,
-          model: "gpt-4",
+          model: chatModel,
           top_p: 0.1,
         },
         {
@@ -298,6 +299,18 @@ const OpenAI = ({ chatLog, setChatLog }) => {
                       {prompt.category} Expert
                     </option>
                   ))}
+                </select>
+              </div>
+              <div className="mb-2 sm:mb-0 sm:ml-2">
+                <select
+                  className="w-full p-2 border bg-black border-gray-300 rounded text-white"
+                  value={chatModel}
+                  onChange={(e) => {
+                    setChatModel(e.target.value);
+                  }}
+                >
+                  <option value="gpt-4">Quality Response</option>
+                  <option value="gpt-3.5-turbo">Fast Response</option>
                 </select>
               </div>
               <div className="mb-2 sm:mb-0 sm:ml-2">
