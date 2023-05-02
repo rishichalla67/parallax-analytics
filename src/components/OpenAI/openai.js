@@ -11,7 +11,7 @@ const OpenAI = ({ chatLog, setChatLog }) => {
   const [loadingChatLog, setLoadingChatLog] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const chatLogRef = useRef(null);
-  const [chatModel, setChatModel] = useState("gpt-4");
+  const [chatModel, setChatModel] = useState("gpt-3.5-turbo");
   const [selectedOption, setSelectedOption] = useState({
     category: "General",
     prompt:
@@ -309,8 +309,8 @@ const OpenAI = ({ chatLog, setChatLog }) => {
                     setChatModel(e.target.value);
                   }}
                 >
-                  <option value="gpt-4">Quality Response</option>
                   <option value="gpt-3.5-turbo">Fast Response</option>
+                  <option value="gpt-4">Quality Response</option>
                 </select>
               </div>
               <div className="mb-2 sm:mb-0 sm:ml-2">
