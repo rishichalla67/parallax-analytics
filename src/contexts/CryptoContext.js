@@ -79,7 +79,6 @@ export function CryptoProvider({ children }) {
             return searchResponseObject;
           }
         );
-        console.log(positionTickerPnLLists);
         setPositionTickerPnLLists(positionTickerPnLLists);
       });
   }

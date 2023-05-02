@@ -10,7 +10,7 @@ import {
   setDoc,
   arrayUnion,
   arrayRemove,
-  FieldValue
+  FieldValue,
 } from "firebase/firestore";
 
 const FirestoreContext = React.createContext();
@@ -20,7 +20,6 @@ export function useFirestore() {
 }
 
 export function FirestoreProvider({ children }) {
-
   const { currentUser } = useAuth();
   const [activeUser, setActiveUser] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
@@ -106,7 +105,7 @@ export function FirestoreProvider({ children }) {
 
   async function addTicker(ticker) {
     if (!tickerList[ticker.apiSymbol]) {
-      console.log(ticker);
+      // console.log(ticker);
       await updateDoc(tickerListDocRef, {
         [`tickerList.${ticker.apiSymbol}`]: ticker.displayName,
       });
@@ -115,36 +114,34 @@ export function FirestoreProvider({ children }) {
 
   async function addTickerToNotInTradingView(ticker) {
     if (!tickersNotInTradingView.includes(ticker)) {
-      console.log(`Added ${ticker} to NOT in tradingView`);
+      // console.log(`Added ${ticker} to NOT in tradingView`);
       await updateDoc(tickerListDocRef, {
-        tickersNotInTradingView: arrayUnion(ticker)
+        tickersNotInTradingView: arrayUnion(ticker),
       });
     }
-    
   }
 
   async function addTickerToInTradingView(ticker) {
     if (!tickersInTradingView.includes(ticker)) {
-      console.log(`Added ${ticker} to IN tradingView`);
+      // console.log(`Added ${ticker} to IN tradingView`);
       await updateDoc(tickerListDocRef, {
-        tickersInTradingView: arrayUnion(ticker)
+        tickersInTradingView: arrayUnion(ticker),
       });
     }
   }
-  
 
   async function getPortfolio(portfolioId) {
     const docRef = doc(db, "portfolios", portfolioId);
     const portfolio = await getDoc(docRef);
     if (portfolio.exists()) {
-      console.log(portfolio.data());
+      // console.log(portfolio.data());
       return portfolio.data();
     }
   }
 
   async function addPosition(position, portfolioName) {
     const portfolioPositionsRef = doc(db, "portfolios", portfolioName);
-    console.log(position)
+    // console.log(position)
     await updateDoc(portfolioPositionsRef, {
       positions: arrayUnion(position),
     });
@@ -197,38 +194,38 @@ export function FirestoreProvider({ children }) {
     }
   }
 
-  async function recordPortfolioPositionValues(positions, positionValues ,portfolioName){
+  async function recordPortfolioPositionValues(
+    positions,
+    positionValues,
+    portfolioName
+  ) {
     // const portfolioPositionsRef = doc(db, "portfolios", portfolioName);
-    let portfolioPositionsRef = db.collection('portfolios').doc(portfolioName);
-    positions.forEach(position => {
-      positionValues.forEach(positionValue => {
-        if(position.symbol+position.quantity+position.type === positionValue.id){
-          console.log(`Position: ${position.symbol}`)
+    let portfolioPositionsRef = db.collection("portfolios").doc(portfolioName);
+    positions.forEach((position) => {
+      positionValues.forEach((positionValue) => {
+        if (
+          position.symbol + position.quantity + position.type ===
+          positionValue.id
+        ) {
+          // console.log(`Position: ${position.symbol}`)
           let positionValueHistory = position.valueHistory;
-          
-          positionValueHistory.push(PricePoint(getCurrentDate(), positionValue.value))
+
+          positionValueHistory.push(
+            PricePoint(getCurrentDate(), positionValue.value)
+          );
           let updatedPosition = {
-              quantity: position.quantity,
-              symbol: position.symbol,
-              type: position.type,
-              valueHistory: positionValueHistory
-            }
-          const response = portfolioPositionsRef.update("positions", FieldValue.arrayUnion(updatedPosition))
-          console.log(response)
-          // updateDoc(portfolioPositionsRef, updatedPosition)
-          // updateDoc(portfolioPositionsRef, {
-          //   positions: arrayUnion({
-          //     quantity: position.quantity,
-          //     symbol: position.symbol,
-          //     type: position.type,
-          //     valueHistory: positionValueHistory
-          //   }),
-          // });
+            quantity: position.quantity,
+            symbol: position.symbol,
+            type: position.type,
+            valueHistory: positionValueHistory,
+          };
+          const response = portfolioPositionsRef.update(
+            "positions",
+            FieldValue.arrayUnion(updatedPosition)
+          );
         }
-      })
-      
-    })
-    
+      });
+    });
   }
 
   // USER FUNCTIONALITY
@@ -299,7 +296,7 @@ export function FirestoreProvider({ children }) {
     addTickerToNotInTradingView,
     tickersInTradingView,
     tickersNotInTradingView,
-    addTickerToInTradingView
+    addTickerToInTradingView,
   };
 
   return (

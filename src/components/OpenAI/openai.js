@@ -182,7 +182,7 @@ const OpenAI = ({ chatLog, setChatLog }) => {
       ]);
       setIsSending(false);
     } catch (error) {
-      setError(error);
+      setError(error.response.data.error);
     }
     setIsLoading(false);
   };
@@ -210,6 +210,17 @@ const OpenAI = ({ chatLog, setChatLog }) => {
                 className="overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
                 ref={chatLogRef}
               >
+                {error && (
+                  <div role="alert">
+                    <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+                      {error.type}
+                    </div>
+                    <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+                      <p>{error.message}</p>
+                      <p>Please Refresh</p>
+                    </div>
+                  </div>
+                )}
                 {!isSending &&
                   chatLog.map((message, index) => (
                     <div
@@ -220,12 +231,14 @@ const OpenAI = ({ chatLog, setChatLog }) => {
                           : "text-left text-white"
                       }`}
                     >
-                      <div>
-                        <span className="text-sky-300">
+                      <div className="w-full">
+                        <div className="text-sky-300 max-w-full break-words inline-block whitespace-pre-wrap">
                           {message?.name?.replace(/_/g, " ")}
                           {message?.name && ": "}
-                        </span>
-                        <span>{message.content}</span>
+                        </div>
+                        <p className="whitespace-pre-wrap break-words">
+                          {message.content}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -240,12 +253,14 @@ const OpenAI = ({ chatLog, setChatLog }) => {
                           : "text-left text-white"
                       }`}
                     >
-                      <div>
-                        <span className="text-sky-300">
+                      <div className="w-full">
+                        <div className="text-sky-300 max-w-full break-words inline-block whitespace-pre-wrap">
                           {message?.name?.replace(/_/g, " ")}
                           {message?.name && ": "}
-                        </span>
-                        <span>{message.content}</span>
+                        </div>
+                        <p className="whitespace-pre-wrap break-words">
+                          {message.content}
+                        </p>
                       </div>
                     </div>
                   ))}
