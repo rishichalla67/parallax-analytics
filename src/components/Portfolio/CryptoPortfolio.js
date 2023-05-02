@@ -69,6 +69,7 @@ export default function CryptoPortfolio() {
   const [sortBy, setSortBy] = useState("value");
   const [sortAscending, setSortAscending] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [chatLog, setChatLog] = useState([]);
 
   const {
     nomicsTickers,
@@ -665,7 +666,7 @@ export default function CryptoPortfolio() {
                   )}
                   {tabIndex === 4 && (
                     <>
-                      <OpenAi />
+                      <OpenAi chatLog={chatLog} setChatLog={setChatLog} />
                     </>
                   )}
                 </div>

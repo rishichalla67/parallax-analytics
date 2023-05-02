@@ -1,16 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import Nav from "../Nav";
 
-const OpenAI = () => {
-  const [inputText, setInputText] = useState("");
+const OpenAI = ({ chatLog, setChatLog }) => {
   const [outputText, setOutputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [unformattedResponse, setUnformattedResponse] = useState("");
-  const [chatLog, setChatLog] = useState([]);
+  // const [chatLog, setChatLog] = useState([]);
   const [loadingChatLog, setLoadingChatLog] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const chatLogRef = useRef(null);
@@ -143,7 +140,10 @@ const OpenAI = () => {
     setInputValue("");
     setIsLoading(true);
     setError(null);
-    const newMessage = { role: "user", content: inputValue };
+    const newMessage = {
+      role: "user",
+      content: inputValue,
+    };
     const promptMessage = {
       role: "system",
       content: `${selectedOption.prompt}`,
@@ -156,6 +156,7 @@ const OpenAI = () => {
         {
           messages: messages,
           model: "gpt-4",
+          top_p: 0.1,
         },
         {
           headers: {
@@ -176,6 +177,7 @@ const OpenAI = () => {
         {
           role: response.data.choices[0].message.role,
           content: response.data.choices[0].message.content,
+          name: selectedOption.category + "_Expert",
         },
       ]);
       setIsSending(false);
@@ -214,13 +216,17 @@ const OpenAI = () => {
                       key={index}
                       className={`mb-2 p-2 rounded-lg ${
                         message.role === "user"
-                          ? "text-right text-sky-500"
+                          ? "text-right text-sky-300"
                           : "text-left text-white"
                       }`}
                     >
-                      <div
-                        dangerouslySetInnerHTML={{ __html: message.content }}
-                      ></div>
+                      <div>
+                        <span className="text-sky-300">
+                          {message?.name?.replace(/_/g, " ")}
+                          {message?.name && ": "}
+                        </span>
+                        <span>{message.content}</span>
+                      </div>
                     </div>
                   ))}
 
@@ -230,13 +236,17 @@ const OpenAI = () => {
                       key={index}
                       className={`mb-2 p-2 rounded-lg ${
                         message.role === "user"
-                          ? "text-right text-sky-500"
+                          ? "text-right text-sky-300"
                           : "text-left text-white"
                       }`}
                     >
-                      <div
-                        dangerouslySetInnerHTML={{ __html: message.content }}
-                      ></div>
+                      <div>
+                        <span className="text-sky-300">
+                          {message?.name?.replace(/_/g, " ")}
+                          {message?.name && ": "}
+                        </span>
+                        <span>{message.content}</span>
+                      </div>
                     </div>
                   ))}
               </div>
@@ -249,7 +259,6 @@ const OpenAI = () => {
                   placeholder="Type your message here..."
                   value={inputValue}
                   onChange={handleInputChange}
-                  disabled={isSending}
                 />
               </div>
               <div className="mb-2 sm:mb-0 sm:ml-2">
