@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { LightningBoltIcon as LightningBoltIconOutlined } from "@heroicons/react/outline";
+import { LightningBoltIcon as LightningBoltIconFilled } from "@heroicons/react/solid";
 
 const OpenAI = ({ chatLog, setChatLog }) => {
   const [outputText, setOutputText] = useState("");
@@ -12,6 +14,7 @@ const OpenAI = ({ chatLog, setChatLog }) => {
   const [inputValue, setInputValue] = useState("");
   const chatLogRef = useRef(null);
   const [chatModel, setChatModel] = useState("gpt-3.5-turbo");
+  const [boltFilled, setBoltFilled] = useState(true);
   const [selectedOption, setSelectedOption] = useState({
     category: "General",
     prompt:
@@ -115,6 +118,15 @@ const OpenAI = ({ chatLog, setChatLog }) => {
         "You are a writing expert who can offer guidance on various types of writing, including creative writing, academic writing, business writing, and technical writing. Always give a TLDR unless asked not elaborate or explain in any way, but dont say that it is a TLDR in the response. ",
     },
   ];
+
+  const toggleChatModel = () => {
+    if (chatModel === "gpt-3.5-turbo") {
+      setChatModel("gpt-4");
+    } else {
+      setChatModel("gpt-3.5-turbo");
+    }
+    setBoltFilled(!boltFilled);
+  };
 
   const formatResponse = (text) => {
     let formattedText = text;
@@ -231,7 +243,7 @@ const OpenAI = ({ chatLog, setChatLog }) => {
                   chatLog.map((message, index) => (
                     <div
                       key={index}
-                      className={`mb-2 p-2 rounded-lg ${
+                      className={`mb-1 p-2 rounded-lg ${
                         message.role === "user"
                           ? "text-right text-sky-300"
                           : "text-left text-white"
@@ -253,7 +265,7 @@ const OpenAI = ({ chatLog, setChatLog }) => {
                   loadingChatLog.map((message, index) => (
                     <div
                       key={index}
-                      className={`mb-2 p-2 rounded-lg ${
+                      className={`mb-1 p-2 rounded-lg ${
                         message.role === "user"
                           ? "text-right text-sky-300"
                           : "text-left text-white"
@@ -282,37 +294,40 @@ const OpenAI = ({ chatLog, setChatLog }) => {
                   onChange={handleInputChange}
                 />
               </div>
-              <div className="mb-2 sm:mb-0 sm:ml-2">
-                <select
-                  className="w-full p-2 border bg-black border-gray-300 rounded text-white"
-                  value={selectedOption.category}
-                  onChange={(e) => {
-                    const option = prompts.find(
-                      (prompt) => prompt.category === e.target.value
-                    );
-                    setSelectedOption(option);
-                    // setChatLog([]);
-                  }}
-                >
-                  {prompts.map((prompt, index) => (
-                    <option key={index} value={prompt.category}>
-                      {prompt.category} Expert
-                    </option>
-                  ))}
-                </select>
+              <div className="flex flex-wrap items-center">
+                <div className="mb-2 sm:mb-0 sm:mx-2">
+                  <select
+                    className="w-full p-2 border bg-black border-gray-300 rounded text-white"
+                    value={selectedOption.category}
+                    onChange={(e) => {
+                      const option = prompts.find(
+                        (prompt) => prompt.category === e.target.value
+                      );
+                      setSelectedOption(option);
+                      // setChatLog([]);
+                    }}
+                  >
+                    {prompts.map((prompt, index) => (
+                      <option key={index} value={prompt.category}>
+                        {prompt.category} Expert
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-2 sm:mb-0 ml-2 sm:hidden">
+                  <select
+                    className="w-full p-2 border bg-black border-gray-300 rounded text-white"
+                    value={chatModel}
+                    onChange={(e) => {
+                      setChatModel(e.target.value);
+                    }}
+                  >
+                    <option value="gpt-3.5-turbo">Fast Response</option>
+                    <option value="gpt-4">Quality Response</option>
+                  </select>
+                </div>
               </div>
-              <div className="mb-2 sm:mb-0 sm:ml-2">
-                <select
-                  className="w-full p-2 border bg-black border-gray-300 rounded text-white"
-                  value={chatModel}
-                  onChange={(e) => {
-                    setChatModel(e.target.value);
-                  }}
-                >
-                  <option value="gpt-3.5-turbo">Fast Response</option>
-                  <option value="gpt-4">Quality Response</option>
-                </select>
-              </div>
+
               <div className="mb-2 sm:mb-0 sm:ml-2">
                 <button
                   className="w-full px-4 py-2 text-white bg-blue-600 rounded-r"
@@ -321,6 +336,23 @@ const OpenAI = ({ chatLog, setChatLog }) => {
                 >
                   {isSending ? "Sending..." : "Send"}
                 </button>
+              </div>
+              <div className="pb-2 mb-2 sm:mb-0 sm:ml-2 sm:flex items-center justify-center hidden ">
+                {chatModel === "gpt-3.5-turbo" ? (
+                  <LightningBoltIconFilled
+                    data-bs-toggle="tooltip"
+                    title="GPT-3.5-turbo model"
+                    className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 cursor-pointer text-green-400"
+                    onClick={toggleChatModel}
+                  />
+                ) : (
+                  <LightningBoltIconOutlined
+                    data-bs-toggle="tooltip"
+                    title="GPT-4-turbo model"
+                    className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 cursor-pointer text-gray-300"
+                    onClick={toggleChatModel}
+                  />
+                )}
               </div>
             </form>
           </div>
