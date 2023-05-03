@@ -340,9 +340,9 @@ const OpenAI = ({ chatLog, setChatLog }) => {
                 </div>
               </div>
 
-              <div className="mb-2 sm:mb-0 sm:ml-2">
+              <div className=" mb-1 sm:mb-0 sm:ml-1">
                 <button
-                  className="w-full px-4 py-2 text-white bg-blue-600 rounded-r"
+                  className="w-full px-4 py-2.5 text-white bg-purple-900 rounded text-bold"
                   type="submit"
                   disabled={isSending}
                 >

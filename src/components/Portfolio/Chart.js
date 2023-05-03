@@ -135,8 +135,6 @@ export default function Chart({ privacyFilter }) {
     //   console.log(data);
   }
 
-  
-
   return (
     <>
       <div className="justify-end flex">
