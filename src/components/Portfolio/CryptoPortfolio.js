@@ -449,8 +449,8 @@ export default function CryptoPortfolio() {
               </div>
 
               {!editPositions ? (
-                <div className="flex flex-col justify-center px-4 pt-2 sm:px-6">
-                  <ul className="flex -mt-5 sm:-mt-0 flex-wrap text-lg md:text-xl font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
+                <div className="flex flex-col justify-center px-3 pt-2 sm:px-6">
+                  <ul className="flex -mt-5 sm:-mt-0 flex-wrap text-md md:text-xl font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
                     <li className="mr-2">
                       <button
                         onClick={() => {
