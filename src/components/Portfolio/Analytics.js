@@ -41,7 +41,7 @@ export function Analyics(privacyFilter) {
     getTickerPriceChart,
   } = useCryptoOracle();
   const { tickerList } = useFirestore();
-  const [sortBy, setSortBy] = useState("pnl");
+  const [sortBy, setSortBy] = useState("24hrDelta");
   const [sortAscending, setSortAscending] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedSymbol, setSelectedSymbol] = useState("");
