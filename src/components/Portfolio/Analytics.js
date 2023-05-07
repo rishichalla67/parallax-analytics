@@ -39,13 +39,13 @@ export function Analyics(privacyFilter) {
     portfolioPositions,
     positionTickerPnLLists,
     getTickerPriceChart,
+    portfolioValue,
   } = useCryptoOracle();
   const { tickerList } = useFirestore();
   const [sortBy, setSortBy] = useState("24hrDelta");
   const [sortAscending, setSortAscending] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedSymbol, setSelectedSymbol] = useState("");
-  // const [symbolChartData, setSymbolChartData] = useState([])
   const cachedTickerPriceChart = useCachedTickerPriceChart(
     positionTickerPnLLists,
     selectedSymbol
@@ -135,9 +135,7 @@ export function Analyics(privacyFilter) {
   function calculateTotalPositionPnL() {
     let totalPositionPnl = 0;
     sortedPositions.map((position) => {
-      totalPositionPnl += parseFloat(
-        calculatePositionPnlPercentage(position, false)
-      );
+      totalPositionPnl += parseFloat(calculatePositionPnl(position, false));
     });
     return totalPositionPnl;
   }
@@ -165,8 +163,6 @@ export function Analyics(privacyFilter) {
     if (forDisplay) {
       positionPnl = positionPnl + "%";
     }
-
-    // console.log(`${position.symbol}: ${(positionPnl % 10).toFixed(2)}`);
     return positionPnl;
   }
 
@@ -340,7 +336,7 @@ export function Analyics(privacyFilter) {
             </tbody>
             <tfoot>
               <tr className="border-t border-gray-300">
-                <td className="py-1 sm:px-4 sm:py-2 font-bold">Totals:</td>
+                <td className=" font-bold">Total</td>
                 <td className="py-1 sm:px-4 sm:py-2"></td>
                 <td className="py-1 sm:px-4 sm:py-2"></td>
                 <td
@@ -350,7 +346,20 @@ export function Analyics(privacyFilter) {
                       : "text-green-500"
                   }`}
                 >
-                  ${calculateTotal24HrPnL().toFixed(2)}
+                  <div className="text-slate-200">
+                    $
+                    {privacyFilter.privacyFilter
+                      ? maskNumber(calculateTotal24HrPnL().toFixed(2))
+                      : addCommaToNumberString(
+                          calculateTotal24HrPnL().toFixed(2)
+                        )}
+                  </div>
+                  (
+                  {(
+                    (calculateTotal24HrPnL() / parseFloat(portfolioValue)) *
+                    100
+                  ).toFixed(2)}
+                  %)
                 </td>
                 <td
                   className={`py-1 sm:px-4 sm:py-2 font-bold ${
@@ -359,7 +368,20 @@ export function Analyics(privacyFilter) {
                       : "text-green-500"
                   }`}
                 >
-                  ${calculateTotalPositionPnL().toFixed(2)}
+                  <div className="text-slate-200">
+                    $
+                    {privacyFilter.privacyFilter
+                      ? maskNumber(calculateTotalPositionPnL().toFixed(2))
+                      : addCommaToNumberString(
+                          calculateTotalPositionPnL().toFixed(2)
+                        )}
+                  </div>
+                  (
+                  {(
+                    (calculateTotalPositionPnL() / parseFloat(portfolioValue)) *
+                    100
+                  ).toFixed(2)}
+                  %)
                 </td>
               </tr>
             </tfoot>
