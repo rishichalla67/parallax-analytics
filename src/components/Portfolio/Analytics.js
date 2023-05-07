@@ -350,7 +350,7 @@ export function Analyics(privacyFilter) {
                       : "text-green-500"
                   }`}
                 >
-                  {calculateTotal24HrPnL()}
+                  ${calculateTotal24HrPnL().toFixed(2)}
                 </td>
                 <td
                   className={`py-1 sm:px-4 sm:py-2 font-bold ${
@@ -359,7 +359,7 @@ export function Analyics(privacyFilter) {
                       : "text-green-500"
                   }`}
                 >
-                  {calculateTotalPositionPnL()}
+                  ${calculateTotalPositionPnL().toFixed(2)}
                 </td>
               </tr>
             </tfoot>
