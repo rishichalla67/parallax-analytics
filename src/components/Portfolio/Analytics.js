@@ -132,6 +132,24 @@ export function Analyics(privacyFilter) {
   //   return null; // Return null if symbol is not found
   // }
 
+  function calculateTotalPositionPnL() {
+    let totalPositionPnl = 0;
+    sortedPositions.map((position) => {
+      totalPositionPnl += parseFloat(
+        calculatePositionPnlPercentage(position, false)
+      );
+    });
+    return totalPositionPnl;
+  }
+
+  function calculateTotal24HrPnL() {
+    let total24HrPnl = 0;
+    sortedPositions.map((position) => {
+      total24HrPnl += parseFloat(calculate24HrPositionPnl(position));
+    });
+    return total24HrPnl;
+  }
+
   function calculatePositionPnlPercentage(position, forDisplay) {
     let positionPnl = "Need Avg Price";
     if (position.avgCost === "") {
@@ -224,100 +242,127 @@ export function Analyics(privacyFilter) {
                 );
                 const image = assetInfo?.image || "";
                 return (
-                  <tr
-                    className={`hover:cursor-pointer hover:animate-pulse ${
-                      index === sortedPositions.length - 1
-                        ? ""
-                        : "border-b border-gray-300"
-                    }`}
-                    key={position.symbol}
-                    onClick={() => showTickerChart(position.symbol)}
-                  >
-                    <td className="py-1 flex items-center justify-center pt-3 sm:pt-5">
-                      <img
-                        src={image}
-                        alt={position.symbol}
-                        className="w-6 h-6 mr-2"
-                      />
-                    </td>
-                    <td className="py-1 sm:px-4 sm:py-2">
-                      $
-                      {addCommaToNumberString(
-                        nomicsTickers[position.symbol].usd
-                      )}
-                    </td>
-                    <td className="py-1 sm:px-4 sm:py-2">
-                      $
-                      {addCommaToNumberString(
-                        Math.floor(position.avgCost) <= 1000
-                          ? position.avgCost
-                          : parseInt(position.avgCost)
-                      )}
-                    </td>
-                    <td className="py-1 sm:px-4 sm:py-2">
-                      <div className={``}>
+                  <>
+                    <tr
+                      className={`hover:cursor-pointer hover:animate-pulse ${
+                        index === sortedPositions.length - 1
+                          ? ""
+                          : "border-b border-gray-300"
+                      }`}
+                      key={position.symbol}
+                      onClick={() => showTickerChart(position.symbol)}
+                    >
+                      <td className="py-1 flex items-center justify-center pt-3 sm:pt-5">
+                        <img
+                          src={image}
+                          alt={position.symbol}
+                          className="w-6 h-6 mr-2"
+                        />
+                      </td>
+                      <td className="py-1 sm:px-4 sm:py-2">
                         $
                         {addCommaToNumberString(
-                          calculate24HrPositionPnl(position)
+                          nomicsTickers[position.symbol].usd
                         )}
-                      </div>
-                      <div
-                        className={`${
-                          findSymbolPrice(
-                            position.symbol,
-                            positionTickerPnLLists
-                          ) < 0
+                      </td>
+                      <td className="py-1 sm:px-4 sm:py-2">
+                        $
+                        {addCommaToNumberString(
+                          Math.floor(position.avgCost) <= 1000
+                            ? position.avgCost
+                            : parseInt(position.avgCost)
+                        )}
+                      </td>
+                      <td className="py-1 sm:px-4 sm:py-2">
+                        <div className={``}>
+                          $
+                          {addCommaToNumberString(
+                            calculate24HrPositionPnl(position)
+                          )}
+                        </div>
+                        <div
+                          className={`${
+                            findSymbolPrice(
+                              position.symbol,
+                              positionTickerPnLLists
+                            ) < 0
+                              ? "text-red-500"
+                              : "text-green-500"
+                          }`}
+                        >
+                          (
+                          {addCommaToNumberString(
+                            findSymbolPrice(
+                              position.symbol,
+                              positionTickerPnLLists
+                            ).toFixed(2)
+                          )}
+                          %)
+                        </div>
+                      </td>
+
+                      <td
+                        className={`py-1 sm:px-4 sm:py-2 ${
+                          calculatePositionPnlPercentage(
+                            position,
+                            false
+                          ).includes("-")
                             ? "text-red-500"
+                            : calculatePositionPnl(position, true) ===
+                              "Need Avg Price"
+                            ? "text-gray-600"
                             : "text-green-500"
                         }`}
                       >
+                        <div className="text-white">
+                          {privacyFilter.privacyFilter
+                            ? maskNumber(calculatePositionPnl(position))
+                            : addCommaToNumberString(
+                                calculatePositionPnl(position, true)
+                              )}
+                        </div>
                         (
                         {addCommaToNumberString(
-                          findSymbolPrice(
-                            position.symbol,
-                            positionTickerPnLLists
-                          ).toFixed(2)
+                          countDigits(
+                            calculatePositionPnlPercentage(position, false)
+                          ) <= 3
+                            ? calculatePositionPnlPercentage(position, true)
+                            : parseInt(
+                                calculatePositionPnlPercentage(position, false)
+                              ) + "%"
                         )}
-                        %)
-                      </div>
-                    </td>
-
-                    <td
-                      className={`py-1 sm:px-4 sm:py-2 ${
-                        calculatePositionPnlPercentage(
-                          position,
-                          false
-                        ).includes("-")
-                          ? "text-red-500"
-                          : calculatePositionPnl(position, true) ===
-                            "Need Avg Price"
-                          ? "text-gray-600"
-                          : "text-green-500"
-                      }`}
-                    >
-                      <div className="text-white">
-                        {privacyFilter.privacyFilter
-                          ? maskNumber(calculatePositionPnl(position))
-                          : addCommaToNumberString(
-                              calculatePositionPnl(position, true)
-                            )}
-                      </div>
-                      (
-                      {addCommaToNumberString(
-                        countDigits(
-                          calculatePositionPnlPercentage(position, false)
-                        ) <= 3
-                          ? calculatePositionPnlPercentage(position, true)
-                          : parseInt(
-                              calculatePositionPnlPercentage(position, false)
-                            ) + "%"
-                      )}
-                      )
-                    </td>
-                  </tr>
+                        )
+                      </td>
+                    </tr>
+                  </>
                 );
               })}
             </tbody>
+            <tfoot>
+              <tr className="border-t border-gray-300">
+                <td className="py-1 sm:px-4 sm:py-2 font-bold">Totals:</td>
+                <td className="py-1 sm:px-4 sm:py-2"></td>
+                <td className="py-1 sm:px-4 sm:py-2"></td>
+                <td
+                  className={`py-1 sm:px-4 sm:py-2 font-bold ${
+                    calculateTotal24HrPnL() < 0
+                      ? "text-red-500"
+                      : "text-green-500"
+                  }`}
+                >
+                  {calculateTotal24HrPnL()}
+                </td>
+                <td
+                  className={`py-1 sm:px-4 sm:py-2 font-bold ${
+                    calculateTotalPositionPnL() < 0
+                      ? "text-red-500"
+                      : "text-green-500"
+                  }`}
+                >
+                  {calculateTotalPositionPnL()}
+                </td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>
