@@ -4,7 +4,7 @@ import { useFirestore } from "../../contexts/FirestoreContext";
 import OpenAi from "../OpenAI/openai";
 
 import Nav from "../Nav.js";
-import { Analyics, calculatePnl, formatSymbol } from "./Analytics";
+import { Analyics, calculateDateBasedPnl, formatSymbol } from "./Analytics";
 import UpdatePosition from "./UpdatePosition";
 import NewPortfolio from "./NewPortfolio";
 import AddPosition from "./AddPosition";
@@ -300,7 +300,7 @@ export default function CryptoPortfolio() {
                   {filteredPortfolioValueHistory.length > 0 && (
                     <div
                       className={`pl-2 sm:pt-3 pt-3 text-lg sm:pl-3 pb-1 leading-6 ${
-                        calculatePnl(filteredPortfolioValueHistory) > 0
+                        calculateDateBasedPnl(filteredPortfolioValueHistory) > 0
                           ? "text-green-400"
                           : "text-red-500"
                       } `}
@@ -310,7 +310,9 @@ export default function CryptoPortfolio() {
                         privacyFilter
                           ? maskNumber(
                               (
-                                (calculatePnl(filteredPortfolioValueHistory) /
+                                (calculateDateBasedPnl(
+                                  filteredPortfolioValueHistory
+                                ) /
                                   100) *
                                 filteredPortfolioValueHistory[
                                   filteredPortfolioValueHistory.length - 1
@@ -321,7 +323,9 @@ export default function CryptoPortfolio() {
                             )
                           : addCommaToNumberString(
                               (
-                                (calculatePnl(filteredPortfolioValueHistory) /
+                                (calculateDateBasedPnl(
+                                  filteredPortfolioValueHistory
+                                ) /
                                   100) *
                                 filteredPortfolioValueHistory[
                                   filteredPortfolioValueHistory.length - 1
@@ -333,7 +337,9 @@ export default function CryptoPortfolio() {
                       }
                            (${
                              // Get the Pnl as a percentage
-                             calculatePnl(filteredPortfolioValueHistory)
+                             calculateDateBasedPnl(
+                               filteredPortfolioValueHistory
+                             )
                            }%)`}
                       <div>
                         {portfolioPositions[0]?.symbol && (
@@ -522,7 +528,7 @@ export default function CryptoPortfolio() {
                     <>
                       <table className="table-auto w-full bg-black text-white">
                         <thead>
-                          <tr className="bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 text-white">
+                          <tr className="bg-gradient-to-r from-indigo-900 to-indigo-900 text-white">
                             <th
                               className="px-4 py-2 hover:animate-pulse hover:cursor-pointer"
                               onClick={() => handleSort("crypto")}

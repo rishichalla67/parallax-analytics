@@ -8,7 +8,7 @@ import {
   findSymbolPrice,
 } from "./CryptoPortfolio";
 
-export function calculatePnl(data) {
+export function calculateDateBasedPnl(data) {
   if (data[0].value) {
     return (
       ((data[data.length - 1].value - data[0].value) /
@@ -194,37 +194,37 @@ export function Analyics(privacyFilter) {
           {showModal && cachedTickerPriceChart}
           <table className="text-sm sm:text-base sm:w-full min-w-full overflow-x-auto">
             <thead>
-              <tr className="bg-gradient-to-r from-indigo-900 via-indigo-3500 to-indigo-900 text-white">
+              <tr className="bg-indigo-900 text-white">
                 <th
-                  className="px-2 py-1 sm:px-4 sm:py-2  hover:animate-pulse hover:cursor-pointer"
+                  className="px-2 py-1 sm:px-4   hover:animate-pulse hover:cursor-pointer"
                   onClick={() => handleHeaderClick("symbol")}
                 >
                   Symbol{" "}
                   {sortBy === "symbol" && (sortAscending ? "(A-Z)" : "(Z-A)")}
                 </th>
                 <th
-                  className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer"
+                  className="px-2 py-1 sm:px-4  hover:animate-pulse hover:cursor-pointer"
                   onClick={() => handleHeaderClick("currentPrice")}
                 >
                   Current Price{" "}
                   {sortBy === "currentPrice" && (sortAscending ? "↑" : "↓")}
                 </th>
                 <th
-                  className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer"
+                  className="px-2 py-1 sm:px-4  hover:animate-pulse hover:cursor-pointer"
                   onClick={() => handleHeaderClick("avgPrice")}
                 >
                   Avg Price{" "}
                   {sortBy === "avgPrice" && (sortAscending ? "↑" : "↓")}
                 </th>
                 <th
-                  className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer"
+                  className="px-2 py-1 sm:px-4  hover:animate-pulse hover:cursor-pointer"
                   onClick={() => handleHeaderClick("24hrDelta")}
                 >
                   Position 24hr Δ{" "}
                   {sortBy === "24hrDelta" && (sortAscending ? "↑" : "↓")}
                 </th>
                 <th
-                  className="px-2 py-1 sm:px-4 sm:py-2 hover:animate-pulse hover:cursor-pointer"
+                  className="px-2 py-1 sm:px-4  hover:animate-pulse hover:cursor-pointer"
                   onClick={() => handleHeaderClick("pnl")}
                 >
                   Position PnL {sortBy === "pnl" && (sortAscending ? "↑" : "↓")}
@@ -255,13 +255,13 @@ export function Analyics(privacyFilter) {
                           className="w-6 h-6 mr-2"
                         />
                       </td>
-                      <td className="py-1 sm:px-4 sm:py-2">
+                      <td className="py-1 sm:px-4 ">
                         $
                         {addCommaToNumberString(
                           nomicsTickers[position.symbol].usd
                         )}
                       </td>
-                      <td className="py-1 sm:px-4 sm:py-2">
+                      <td className="py-1 sm:px-4 ">
                         $
                         {addCommaToNumberString(
                           Math.floor(position.avgCost) <= 1000
@@ -269,7 +269,7 @@ export function Analyics(privacyFilter) {
                             : parseInt(position.avgCost)
                         )}
                       </td>
-                      <td className="py-1 sm:px-4 sm:py-2">
+                      <td className="py-1 sm:px-4 ">
                         <div className={``}>
                           $
                           {addCommaToNumberString(
@@ -298,7 +298,7 @@ export function Analyics(privacyFilter) {
                       </td>
 
                       <td
-                        className={`py-1 sm:px-4 sm:py-2 ${
+                        className={`py-1 sm:px-4  ${
                           calculatePositionPnlPercentage(
                             position,
                             false
@@ -335,12 +335,12 @@ export function Analyics(privacyFilter) {
               })}
             </tbody>
             <tfoot>
-              <tr className="border-t border-gray-300">
-                <td className=" font-bold">Total</td>
+              <tr className="border-t border-gray-300 bg-indigo-900">
+                <td className="left-1 font-bold">Total</td>
                 <td className="py-1 sm:px-4 sm:py-2"></td>
                 <td className="py-1 sm:px-4 sm:py-2"></td>
                 <td
-                  className={`py-1 sm:px-4 sm:py-2 font-bold ${
+                  className={`py-1 sm:px-4 font-bold ${
                     calculateTotal24HrPnL() < 0
                       ? "text-red-500"
                       : "text-green-500"
@@ -362,7 +362,7 @@ export function Analyics(privacyFilter) {
                   %)
                 </td>
                 <td
-                  className={`py-1 sm:px-4 sm:py-2 font-bold ${
+                  className={`py-1 sm:px-4 font-bold ${
                     calculateTotalPositionPnL() < 0
                       ? "text-red-500"
                       : "text-green-500"

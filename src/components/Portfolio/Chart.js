@@ -16,7 +16,7 @@ import {
   Tooltip,
 } from "recharts";
 import { addCommaToNumberString } from "./CryptoPortfolio";
-import { calculatePnl } from "./Analytics";
+import { calculateDateBasedPnl } from "./Analytics";
 
 const moment = require("moment");
 
@@ -291,7 +291,7 @@ export default function Chart({ privacyFilter }) {
                   type="monotone"
                   dataKey="value"
                   stroke={`${
-                    calculatePnl(filteredPortfolioValueHistory) > 0
+                    calculateDateBasedPnl(filteredPortfolioValueHistory) > 0
                       ? "#00FF7F"
                       : "#B90E0A"
                   }`}
