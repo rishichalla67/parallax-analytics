@@ -456,7 +456,7 @@ export default function CryptoPortfolio() {
 
               {!editPositions ? (
                 <div className="flex flex-col justify-center px-3 pt-2 sm:px-6">
-                  <ul className="flex -mt-5 sm:-mt-0 flex-wrap text-md md:text-xl font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
+                  <ul className="flex -mt-5 sm:-mt-0 flex-wrap text-sm md:text-xl font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
                     <li className="mr-2">
                       <button
                         onClick={() => {
@@ -518,7 +518,7 @@ export default function CryptoPortfolio() {
                             : "text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
                         }`}
                       >
-                        Chat
+                        Trending
                       </button>
                     </li>
                   </ul>
