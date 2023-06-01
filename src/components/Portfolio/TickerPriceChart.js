@@ -45,8 +45,12 @@ export function TradingViewWidget({ selectedTicker }) {
     };
 
     function createWidget() {
-      const symbol = `BINANCE:${selectedTicker}USDT`;
-
+      let symbol = "";
+      if (selectedTicker === "kuji") {
+        symbol = `MEXC:${selectedTicker}USDT`;
+      } else {
+        symbol = `BINANCE:${selectedTicker}USDT`;
+      }
       if (
         document.getElementById("tradingview_f7702") &&
         "TradingView" in window
