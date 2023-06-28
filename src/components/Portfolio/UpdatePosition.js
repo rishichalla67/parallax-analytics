@@ -9,6 +9,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
 import { Position } from "../../Classes/Position";
+import { evaluate, exp } from "mathjs";
 
 export default function UpdatePosition({
   selectedPosition,
@@ -18,6 +19,7 @@ export default function UpdatePosition({
   const [disable, setDisable] = useState(true);
   const [checked, setChecked] = useState(false);
   const [open, setOpen] = useState(true);
+  const [quantity, setQuantity] = useState(null);
   const updateQuantityRef = useRef();
   const updateTypeRef = useRef();
   const updateAvgCostRef = useRef();
@@ -33,7 +35,24 @@ export default function UpdatePosition({
   const { activeUser, removePositionFromFirebase, tickerList, updatePosition } =
     useFirestore();
 
-  function checkToDisable() {
+  const isValidExpression = (expression) => {
+    try {
+      evaluate(expression);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const evaluateExpression = (expression) => {
+    return evaluate(expression);
+  };
+
+  function checkToDisable(e) {
+    const expression = e.target.value.trim();
+    if (isValidExpression(expression)) {
+      setQuantity(evaluateExpression(expression));
+    }
     if (
       updateQuantityRef.current.value === "" &&
       updateTypeRef.current.value === "" &&
@@ -47,15 +66,15 @@ export default function UpdatePosition({
 
   async function updateSelectedPosition(e) {
     e.preventDefault();
-
-    console.log("Avg Cost", updateAvgCostRef.current.value);
     await updatePosition(
       selectedPosition,
       Position(
         selectedPosition.symbol,
         updateQuantityRef.current.value === ""
           ? selectedPosition.quantity
-          : updateQuantityRef.current.value,
+          : quantity === null
+          ? updateQuantityRef.current.value
+          : quantity,
         updateTypeRef.current.value === ""
           ? selectedPosition.type
           : updateTypeRef.current.value,
@@ -125,7 +144,10 @@ export default function UpdatePosition({
                 <form className={`h-full p-4 md:mt-8 mx-8`} action="#">
                   <div className="text-white rounded-md shadow-sm -space-y-px">
                     <h3 className="flex justify-center text-2xl font-bold text-sky-400">{`Update ${
-                      tickerList[selectedPosition.symbol].charAt(0).toUpperCase() + tickerList[selectedPosition.symbol].slice(1)
+                      tickerList[selectedPosition.symbol]
+                        .charAt(0)
+                        .toUpperCase() +
+                      tickerList[selectedPosition.symbol].slice(1)
                     } Position Details`}</h3>
                     <div className="pt-2 ">
                       <h3 className="flex align-content-left font-semibold">
@@ -237,7 +259,7 @@ export default function UpdatePosition({
                       </div>
                       <div className="pt-2 pb-2">
                         <button
-                          className="bg-red-500 hover:bg-red-700 text-black font-bold py-2 px-4 rounded"
+                          className="bg-slate-500 hover:bg-slate-300 text-black font-bold py-2 px-4 rounded"
                           onClick={() => {
                             setShowModal(false);
                             setChecked(false);
