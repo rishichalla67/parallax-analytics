@@ -44,14 +44,27 @@ export default function UpdatePosition({
     }
   };
 
+  const cleanInput = (input) => {
+    return input.replace(/,/g, "").replace(/\n/g, " ").replace(/\. /g, ".");
+  };
+
+  const splitInput = (input) => {
+    return input.split(/\s+/);
+  };
+
   const evaluateExpression = (expression) => {
     return evaluate(expression);
   };
 
   function checkToDisable(e) {
-    const expression = e.target.value.trim();
-    if (isValidExpression(expression)) {
-      setQuantity(evaluateExpression(expression));
+    const cleanedInput = cleanInput(e.target.value.trim());
+    const inputs = splitInput(cleanedInput);
+    let total = 0;
+    for (const input of inputs) {
+      if (isValidExpression(input)) {
+        total += evaluateExpression(input);
+        setQuantity(total);
+      }
     }
     if (
       updateQuantityRef.current.value === "" &&
