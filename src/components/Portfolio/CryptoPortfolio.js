@@ -21,7 +21,7 @@ export function calculatePositionValue(nomicsTickers, position) {
 }
 
 export function addCommaToNumberString(number) {
-  if (number === null) {
+  if (number === null || number === undefined) {
     return "-";
   }
 

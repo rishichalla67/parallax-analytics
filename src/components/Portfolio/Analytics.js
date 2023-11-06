@@ -291,7 +291,7 @@ export function Analyics(privacyFilter) {
                             findSymbolPrice(
                               position.symbol,
                               positionTickerPnLLists
-                            ).toFixed(2)
+                            )?.toFixed(2)
                           )}
                           %)
                         </div>
