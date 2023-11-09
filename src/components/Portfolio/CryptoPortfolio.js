@@ -34,7 +34,6 @@ export function addCommaToNumberString(number) {
     return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 }
-
 export function maskNumber(input) {
   if (typeof input === "number")
     return input.toString().replace(/[\d\.]/g, "*");
@@ -327,9 +326,7 @@ export default function CryptoPortfolio() {
                                   filteredPortfolioValueHistory
                                 ) /
                                   100) *
-                                filteredPortfolioValueHistory[
-                                  filteredPortfolioValueHistory.length - 1
-                                ].value
+                                filteredPortfolioValueHistory[0].value
                               )
                                 .toFixed(2)
                                 .toString()

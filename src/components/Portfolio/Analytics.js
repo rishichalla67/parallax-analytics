@@ -11,8 +11,7 @@ import {
 export function calculateDateBasedPnl(data) {
   if (data[0].value) {
     return (
-      ((data[data.length - 1].value - data[0].value) /
-        data[data.length - 1].value) *
+      ((data[data.length - 1].value - data[0].value) / data[0].value) *
       100
     ).toFixed(2);
   }
