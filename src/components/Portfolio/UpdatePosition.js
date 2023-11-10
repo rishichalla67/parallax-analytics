@@ -93,7 +93,7 @@ export default function UpdatePosition({
           : updateTypeRef.current.value,
         updateAvgCostRef.current.value === ""
           ? selectedPosition.avgCost
-          : parseFloat(updateAvgCostRef.current.value).toFixed(2)
+          : parseFloat(updateAvgCostRef.current.value)
       ),
       activeUser.portfolioID
     );
