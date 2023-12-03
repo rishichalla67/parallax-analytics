@@ -1,0 +1,72 @@
+{
+  "api": {
+    "cgPrices": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "CoinGeckoPrices"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "parallaxanalyticsc6399a1f"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
+  "function": {
+    "CoinGeckoPrices": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "parallaxanalyticsc6399a1f": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_CoinGeckoPrices_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "CoinGeckoPrices"
+        }
+      ]
+    },
+    "AMPLIFY_function_CoinGeckoPrices_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "CoinGeckoPrices"
+        }
+      ]
+    },
+    "AMPLIFY_function_parallaxanalyticsc6399a1f_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "parallaxanalyticsc6399a1f"
+        }
+      ]
+    },
+    "AMPLIFY_function_parallaxanalyticsc6399a1f_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "parallaxanalyticsc6399a1f"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-parallaxanalytics-dev-225117-authRole",
+      "UnauthRoleArn": "arn:aws:iam::536055824200:role/amplify-parallaxanalytics-dev-225117-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::536055824200:role/amplify-parallaxanalytics-dev-225117-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-parallaxanalytics-dev-225117-deployment",
+      "UnauthRoleName": "amplify-parallaxanalytics-dev-225117-unauthRole",
+      "StackName": "amplify-parallaxanalytics-dev-225117",
+      "StackId": "arn:aws:cloudformation:us-east-1:536055824200:stack/amplify-parallaxanalytics-dev-225117/37277e30-918f-11ee-ae92-0e01512a88eb",
+      "AmplifyAppId": "d14isr2m8wto2"
+    },
+    "categories": {
+      "function": {
+        "CoinGeckoPrices": {
+          "deploymentBucketName": "amplify-parallaxanalytics-dev-225117-deployment",
+          "s3Key": "amplify-builds/CoinGeckoPrices-30765546795a36656337-build.zip"
+        },
+        "parallaxanalyticsc6399a1f": {
+          "deploymentBucketName": "amplify-parallaxanalytics-dev-225117-deployment",
+          "s3Key": "amplify-builds/parallaxanalyticsc6399a1f-5a4a576953513363322b-build.zip"
+        }
+      },
+      "api": {
+        "cgPrices": {}
+      }
+    }
+  }
+}

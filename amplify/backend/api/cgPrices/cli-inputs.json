@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "paths": {
+    "/prices": {
+      "name": "/prices",
+      "lambdaFunction": "CoinGeckoPrices",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/tickerData": {
+      "name": "/tickerData",
+      "lambdaFunction": "parallaxanalyticsc6399a1f",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/tickerChartData": {
+      "name": "/tickerChartData",
+      "lambdaFunction": "CoinGeckoPrices",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/searchCoinGecko": {
+      "name": "/searchCoinGecko",
+      "lambdaFunction": "CoinGeckoPrices",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-parallaxanalytics-dev-225117-authRole",
+      "UnauthRoleArn": "arn:aws:iam::536055824200:role/amplify-parallaxanalytics-dev-225117-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::536055824200:role/amplify-parallaxanalytics-dev-225117-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-parallaxanalytics-dev-225117-deployment",
+      "UnauthRoleName": "amplify-parallaxanalytics-dev-225117-unauthRole",
+      "StackName": "amplify-parallaxanalytics-dev-225117",
+      "StackId": "arn:aws:cloudformation:us-east-1:536055824200:stack/amplify-parallaxanalytics-dev-225117/37277e30-918f-11ee-ae92-0e01512a88eb",
+      "AmplifyAppId": "d14isr2m8wto2"
+    }
+  },
+  "function": {
+    "CoinGeckoPrices": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "lastBuildTimeStamp": "2023-12-03T04:01:00.897Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2023-12-03T04:01:00.966Z",
+      "distZipFilename": "CoinGeckoPrices-30765546795a36656337-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-parallaxanalytics-dev-225117-deployment",
+        "s3Key": "amplify-builds/CoinGeckoPrices-30765546795a36656337-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-parallaxanalytics-dev-225117-deployment/amplify-cfn-templates/function/CoinGeckoPrices-cloudformation-template.json",
+        "logicalId": "functionCoinGeckoPrices"
+      },
+      "lastPushTimeStamp": "2023-12-03T04:03:07.673Z",
+      "output": {
+        "LambdaExecutionRoleArn": "arn:aws:iam::536055824200:role/parallaxanalyticsLambdaRole72ebb7b4-dev",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:lambda:us-east-1:536055824200:function:CoinGeckoPrices-dev",
+        "Name": "CoinGeckoPrices-dev",
+        "LambdaExecutionRole": "parallaxanalyticsLambdaRole72ebb7b4-dev"
+      },
+      "lastPushDirHash": "SQG6kKTve5OprB6F0HhR+vlIDzc="
+    },
+    "parallaxanalyticsc6399a1f": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "lastBuildTimeStamp": "2023-12-03T04:01:01.757Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2023-12-03T04:01:01.813Z",
+      "distZipFilename": "parallaxanalyticsc6399a1f-5a4a576953513363322b-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-parallaxanalytics-dev-225117-deployment",
+        "s3Key": "amplify-builds/parallaxanalyticsc6399a1f-5a4a576953513363322b-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-parallaxanalytics-dev-225117-deployment/amplify-cfn-templates/function/parallaxanalyticsc6399a1f-cloudformation-template.json",
+        "logicalId": "functionparallaxanalyticsc6399a1f"
+      },
+      "lastPushTimeStamp": "2023-12-03T04:03:07.673Z",
+      "output": {
+        "LambdaExecutionRoleArn": "arn:aws:iam::536055824200:role/parallaxanalyticsLambdaRole6ab203af-dev",
+        "Region": "us-east-1",
+        "Arn": "arn:aws:lambda:us-east-1:536055824200:function:parallaxanalyticsc6399a1f-dev",
+        "Name": "parallaxanalyticsc6399a1f-dev",
+        "LambdaExecutionRole": "parallaxanalyticsLambdaRole6ab203af-dev"
+      },
+      "lastPushDirHash": "6DXPibsTIT/Uu4zb1Xojs8KMV3k="
+    }
+  },
+  "api": {
+    "cgPrices": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "CoinGeckoPrices",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        },
+        {
+          "category": "function",
+          "resourceName": "parallaxanalyticsc6399a1f",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        }
+      ],
+      "lastPushTimeStamp": "2023-12-03T04:03:07.673Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-parallaxanalytics-dev-225117-deployment/amplify-cfn-templates/api/cgPrices-cloudformation-template.json",
+        "logicalId": "apicgPrices"
+      },
+      "output": {
+        "ApiName": "cgPrices",
+        "RootUrl": "https://skkutwqa95.execute-api.us-east-1.amazonaws.com/dev",
+        "ApiId": "skkutwqa95"
+      },
+      "lastPushDirHash": "OtcYTtqZfmbI0Urcdn7FqWhDdPU="
+    }
+  }
+}
