@@ -90,7 +90,6 @@ export default function CryptoPortfolio() {
   useEffect(() => {
     getPortfolioData();
     fetchAllUsers();
-    setIsIframeLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -211,18 +210,10 @@ export default function CryptoPortfolio() {
 
   if (!activeUser.id) {
     return (
-      <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900"></div>
-    );
-  }
-
-  if(!isIframeLoaded){
-    return(
-      <>
-        <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen">
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
         </div>
-      </>
-    )
+    );
   }
 
   return (
