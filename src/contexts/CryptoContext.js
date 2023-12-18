@@ -41,7 +41,7 @@ export function CryptoProvider({ children }) {
   const [symbolChartData, setSymbolChartData] = useState([]);
   
   //SWITCH TO "dev" WHEN TESTING LOCAL SERVER CHANGES
-  const env = "prod";
+  const env = "dev";
   const serverURL = env === "dev" ? "http://localhost:225" : "https://parallax-analytics.onrender.com";
 
 
@@ -116,7 +116,7 @@ export function CryptoProvider({ children }) {
 
     // If the data is not in the cache or has expired, fetch it from the API
     return fetch(
-      `${serverURL}/chartData?symbol=${symbol}`,
+      `https://api.coingecko.com/api/v3/coins/${symbol}/market_chart?vs_currency=usd&days=max`,
       {
         method: "GET",
         headers: headers,
@@ -148,7 +148,7 @@ export function CryptoProvider({ children }) {
   }
 
   async function searchCoinGeckoAPI(ticker) {
-    fetch(`${serverURL}/search?symbol=${ticker}`)
+    fetch(`https://api.coingecko.com/api/v3/search?query=${ticker}`)
       .then((response) => response.json())
       .then((searchResponse) => {
         setSearchResults(searchResponse.coins);
