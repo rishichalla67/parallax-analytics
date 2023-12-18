@@ -41,7 +41,7 @@ export function CryptoProvider({ children }) {
   const [symbolChartData, setSymbolChartData] = useState([]);
 
   //SWITCH TO "dev" WHEN TESTING LOCAL SERVER CHANGES
-  const env = "prod";
+  const env = "dev";
   const serverURL = env === "dev" ? "http://localhost:225" : "https://parallax-analytics.onrender.com";
 
 
@@ -56,10 +56,10 @@ export function CryptoProvider({ children }) {
     setLoading(true);
     
     fetch(
-      `${serverURL}/prices?symbols=${tickerList}`
-      // `https://api.coingecko.com/api/v3/simple/price?ids=${tickerList.join(
-      //   ","
-      // )}&vs_currencies=usd&include_last_updated_at=true`
+      // `${serverURL}/prices?symbols=${tickerList}`
+      `https://api.coingecko.com/api/v3/simple/price?ids=${tickerList.join(
+        ","
+      )}&vs_currencies=usd&include_last_updated_at=true`
     )
       .then((response) => {
         if (response.status === 429) {
@@ -89,10 +89,10 @@ export function CryptoProvider({ children }) {
     });
 
     fetch(
-      // `${serverURL}/symbolData?symbols=${positionSymbolList}`
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${positionSymbolList.join(
-        ","
-      )}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d%2C14d%2C30d%2C200d%2C1y`
+      `${serverURL}/symbolData?symbols=${positionSymbolList}`
+      // `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${positionSymbolList.join(
+      //   ","
+      // )}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d%2C14d%2C30d%2C200d%2C1y`
     )
       .then((response) => response.json())
       .then((searchResponse) => {
