@@ -1,5 +1,6 @@
 import React, {
   useState,
+  useEffect,
   useRef,
   useCallback,
   Fragment,
@@ -15,16 +16,34 @@ export default function AddPosition({
   setError,
   setSuccessMessage,
   setEditPositions,
+  getCurrentPrice, // Added prop function to get current price
 }) {
   const {
+    nomicsTickers,
+    refreshOraclePrices,
     searchCoinGeckoAPI,
     searchResults,
+    setRefreshAvailable,
+    refreshAvailable,
+    portfolioValue,
+    setPortfolioValue,
+    getPortfolioData,
+    portfolioValueHistory,
     portfolioPositions,
+    filteredPortfolioValueHistory,
+    setCurrentChartDateRange,
+    currentChartDateRange,
+    filterDataByDateRange,
   } = useCryptoOracle();
   const {
     activeUser,
     addPosition,
+    removePositionFromFirebase,
     addTicker,
+    tickerList,
+    createPortfolio,
+    updatePosition,
+    fetchAllUsers,
   } = useFirestore();
 
   const symbolRef = useRef();
@@ -33,6 +52,8 @@ export default function AddPosition({
   const avgCostRef = useRef();
   const searchRef = useRef();
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(true);
+  const [useCurrentPrice, setUseCurrentPrice] = useState(false); // State to determine if current price should be used
   const cancelButtonRef = useRef(null);
 
   const debouncedChangeHandler = useCallback(
@@ -46,18 +67,24 @@ export default function AddPosition({
 
   function autofillAddPosition(value) {
     symbolRef.current.value = value;
+    if (useCurrentPrice) {
+      avgCostRef.current.value = getCurrentPrice(value); // Autofill with current price if option is selected
+    }
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
 
+    // setLoading(true);
     let positionToAdd = Position(
       symbolRef.current.value,
       quantityRef.current.value,
       typeRef.current.value,
-      avgCostRef.current.value === ""
-        ? avgCostRef.current.value
-        : parseFloat(avgCostRef.current.value).toFixed(2)
+      useCurrentPrice
+        ? getCurrentPrice(symbolRef.current.value) // Use current price if option is selected
+        : avgCostRef.current.value === ""
+          ? avgCostRef.current.value
+          : parseFloat(avgCostRef.current.value).toFixed(2)
     );
     portfolioPositions.push(positionToAdd);
     await addPosition(positionToAdd, activeUser.portfolioID).catch((err) =>
@@ -66,7 +93,9 @@ export default function AddPosition({
     setSuccessMessage(
       `Successfully added ${positionToAdd.symbol} to your positions`
     );
+    refreshOraclePrices();
     setEditPositions(false);
+    // setLoading(false);
   }
 
   return (
@@ -76,7 +105,7 @@ export default function AddPosition({
           as="div"
           className="relative z-10"
           initialFocus={cancelButtonRef}
-          onClose={() => setEditPositions(false)}
+          onClose={setOpen}
         >
           <Transition.Child
             as={Fragment}
@@ -136,6 +165,7 @@ export default function AddPosition({
                                     addTicker(
                                       Ticker(result.name, result.api_symbol)
                                     );
+                                    // setShowForm("block");
                                   }}
                                   key={result.id}
                                   className="pt-2"
@@ -228,6 +258,10 @@ export default function AddPosition({
                         <div className="pt-4">
                           <button
                             type="submit"
+                            onClick={() => {
+                              // setShowForm("invisible");
+                              // searchResults = [];
+                            }}
                             className="bg-sky-500 hover:bg-sky-700 text-black font-bold py-2 px-4 rounded"
                             disabled={loading}
                           >
@@ -237,7 +271,7 @@ export default function AddPosition({
 
                         <div className="pt-4">
                           <button
-                            type="button"
+                            type="cancel"
                             onClick={() => {
                               setEditPositions(false);
                             }}
