@@ -90,6 +90,7 @@ export default function CryptoPortfolio() {
   useEffect(() => {
     getPortfolioData();
     fetchAllUsers();
+    setIsIframeLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -105,17 +106,6 @@ export default function CryptoPortfolio() {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      refreshOraclePrices();
-    }, 1200000);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timer);
-    };
-  }, [refreshOraclePrices]);
-
-  useEffect(() => {
     filterDataByDateRange(portfolioValueHistory, currentChartDateRange, true);
   }, [currentChartDateRange]);
 
@@ -126,7 +116,7 @@ export default function CryptoPortfolio() {
 
       timer = setTimeout(() => {
         setRefreshAvailable(true);
-      }, 10000);
+      }, 60000);
     }
   };
 
@@ -223,6 +213,16 @@ export default function CryptoPortfolio() {
     return (
       <div className="h-full bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900"></div>
     );
+  }
+
+  if(!isIframeLoaded){
+    return(
+      <>
+        <div className="flex justify-center items-center h-screen">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+        </div>
+      </>
+    )
   }
 
   return (
