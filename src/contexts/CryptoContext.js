@@ -29,6 +29,7 @@ export function CryptoProvider({ children }) {
   const [nomicsTickers, setNomicsTickers] = useState({});
   const [searchResults, setSearchResults] = useState([]);
   const [refreshAvailable, setRefreshAvailable] = useState(true);
+  const [rateLimitError, setRateLimitError] = useState(null); // State to handle rate limit error
   const [portfolioPositions, setPortfolioPositions] = useState([]);
   const [currentPortfolio, setCurrentPortfolio] = useState();
   const [portfolioValueHistory, setPortfolioValueHistory] = useState([]);
@@ -38,10 +39,14 @@ export function CryptoProvider({ children }) {
   const [error, setError] = useState("");
   const [positionTickerPnLLists, setPositionTickerPnLLists] = useState([]);
   const [symbolChartData, setSymbolChartData] = useState([]);
+  
+  //SWITCH TO "dev" WHEN TESTING LOCAL SERVER CHANGES
+  const env = "prod";
+  const serverURL = env === "dev" ? "http://localhost:225" : "https://parallax-analytics.onrender.com";
+
 
   useEffect(() => {
     refreshOraclePrices();
-    // getPortfolioData();
   }, []);
 
   const refreshOraclePrices = useCallback(async () => {
@@ -49,17 +54,30 @@ export function CryptoProvider({ children }) {
     tickerList = Object.keys(tickerList);
     setNomicsTickers([]);
     setLoading(true);
+    
     fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${tickerList.join(
-        ","
-      )}&vs_currencies=usd&include_last_updated_at=true`
+      `${serverURL}/prices?symbols=${tickerList}`
     )
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status === 429) {
+          // Handle rate limit error
+          return response.json().then((data) => {
+            setRateLimitError(data);
+            setLoading(false);
+            return Promise.reject('Rate limit exceeded');
+          });
+        }
+        return response.json();
+      })
       .then((tickers) => {
         setNomicsTickers(tickers);
         setLoading(false);
+        setRateLimitError(null); // Clear any existing rate limit error
+      })
+      .catch((error) => {
+        console.error('Error fetching prices:', error);
       });
-  }, [setNomicsTickers, setLoading]);
+  }, [setNomicsTickers, setLoading, setRateLimitError]);
 
   function getAllTickerDailyPnLs(positions) {
     const positionSymbolList = [];
@@ -68,9 +86,7 @@ export function CryptoProvider({ children }) {
     });
 
     fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${positionSymbolList.join(
-        ","
-      )}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d%2C14d%2C30d%2C200d%2C1y`
+      `${serverURL}/symbolData?symbols=${positionSymbolList}`
     )
       .then((response) => response.json())
       .then((searchResponse) => {
@@ -100,7 +116,7 @@ export function CryptoProvider({ children }) {
 
     // If the data is not in the cache or has expired, fetch it from the API
     return fetch(
-      `https://api.coingecko.com/api/v3/coins/${symbol}/market_chart?vs_currency=usd&days=max`,
+      `${serverURL}/chartData?symbol=${symbol}`,
       {
         method: "GET",
         headers: headers,
@@ -132,7 +148,7 @@ export function CryptoProvider({ children }) {
   }
 
   async function searchCoinGeckoAPI(ticker) {
-    fetch(`https://api.coingecko.com/api/v3/search?query=${ticker}`)
+    fetch(`${serverURL}/search?symbol=${ticker}`)
       .then((response) => response.json())
       .then((searchResponse) => {
         setSearchResults(searchResponse.coins);
@@ -284,6 +300,7 @@ export function CryptoProvider({ children }) {
     searchResults,
     refreshAvailable,
     setRefreshAvailable,
+    rateLimitError, // Expose rateLimitError in the context
     portfolioValue,
     setPortfolioValue,
     setCurrentPortfolio,

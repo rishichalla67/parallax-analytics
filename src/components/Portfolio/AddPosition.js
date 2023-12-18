@@ -1,6 +1,5 @@
 import React, {
   useState,
-  useEffect,
   useRef,
   useCallback,
   Fragment,
@@ -18,31 +17,14 @@ export default function AddPosition({
   setEditPositions,
 }) {
   const {
-    nomicsTickers,
-    refreshOraclePrices,
     searchCoinGeckoAPI,
     searchResults,
-    setRefreshAvailable,
-    refreshAvailable,
-    portfolioValue,
-    setPortfolioValue,
-    getPortfolioData,
-    portfolioValueHistory,
     portfolioPositions,
-    filteredPortfolioValueHistory,
-    setCurrentChartDateRange,
-    currentChartDateRange,
-    filterDataByDateRange,
   } = useCryptoOracle();
   const {
     activeUser,
     addPosition,
-    removePositionFromFirebase,
     addTicker,
-    tickerList,
-    createPortfolio,
-    updatePosition,
-    fetchAllUsers,
   } = useFirestore();
 
   const symbolRef = useRef();
@@ -51,7 +33,6 @@ export default function AddPosition({
   const avgCostRef = useRef();
   const searchRef = useRef();
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(true);
   const cancelButtonRef = useRef(null);
 
   const debouncedChangeHandler = useCallback(
@@ -70,7 +51,6 @@ export default function AddPosition({
   async function handleSubmit(e) {
     e.preventDefault();
 
-    // setLoading(true);
     let positionToAdd = Position(
       symbolRef.current.value,
       quantityRef.current.value,
@@ -86,9 +66,7 @@ export default function AddPosition({
     setSuccessMessage(
       `Successfully added ${positionToAdd.symbol} to your positions`
     );
-    refreshOraclePrices();
     setEditPositions(false);
-    // setLoading(false);
   }
 
   return (
@@ -98,7 +76,7 @@ export default function AddPosition({
           as="div"
           className="relative z-10"
           initialFocus={cancelButtonRef}
-          onClose={setOpen}
+          onClose={() => setEditPositions(false)}
         >
           <Transition.Child
             as={Fragment}
@@ -158,7 +136,6 @@ export default function AddPosition({
                                     addTicker(
                                       Ticker(result.name, result.api_symbol)
                                     );
-                                    // setShowForm("block");
                                   }}
                                   key={result.id}
                                   className="pt-2"
@@ -251,10 +228,6 @@ export default function AddPosition({
                         <div className="pt-4">
                           <button
                             type="submit"
-                            onClick={() => {
-                              // setShowForm("invisible");
-                              // searchResults = [];
-                            }}
                             className="bg-sky-500 hover:bg-sky-700 text-black font-bold py-2 px-4 rounded"
                             disabled={loading}
                           >
@@ -264,7 +237,7 @@ export default function AddPosition({
 
                         <div className="pt-4">
                           <button
-                            type="cancel"
+                            type="button"
                             onClick={() => {
                               setEditPositions(false);
                             }}
