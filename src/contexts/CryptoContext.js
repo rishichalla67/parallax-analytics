@@ -41,7 +41,7 @@ export function CryptoProvider({ children }) {
   const [symbolChartData, setSymbolChartData] = useState([]);
 
   //SWITCH TO "dev" WHEN TESTING LOCAL SERVER CHANGES
-  const env = "dev";
+  const env = "prod";
   const serverURL = env === "dev" ? "http://localhost:225" : "https://parallax-analytics.onrender.com";
 
 
