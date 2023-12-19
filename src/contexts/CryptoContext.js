@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useContext, useState, useCallback } from "react";
+import { useEffect, useContext, useState, useCallback, useRef } from "react";
 import { useFirestore } from "../contexts/FirestoreContext";
 import { PricePoint } from "../Classes/PricePoint";
 import moment from "moment";
@@ -40,6 +40,9 @@ export function CryptoProvider({ children }) {
   const [positionTickerPnLLists, setPositionTickerPnLLists] = useState([]);
   const [symbolChartData, setSymbolChartData] = useState([]);
 
+  let useSymbolDataServerURL = useRef(true);
+  let usePriceServerURL = useRef(true);
+
   //SWITCH TO "dev" WHEN TESTING LOCAL SERVER CHANGES
   const env = "prod";
   const serverURL = env === "dev" ? "http://localhost:225" : "https://parallax-analytics.onrender.com";
@@ -54,46 +57,56 @@ export function CryptoProvider({ children }) {
     tickerList = Object.keys(tickerList);
     setNomicsTickers([]);
     setLoading(true);
-    
-    fetch(
-      // `${serverURL}/prices?symbols=${tickerList}`
-      `https://api.coingecko.com/api/v3/simple/price?ids=${tickerList.join(
-        ","
-      )}&vs_currencies=usd&include_last_updated_at=true`
-    )
-      .then((response) => {
-        if (response.status === 429) {
-          // Handle rate limit error
-          return response.json().then((data) => {
-            setRateLimitError(data);
-            setLoading(false);
-            return Promise.reject('Rate limit exceeded');
-          });
+
+    const url = usePriceServerURL.current ? `${serverURL}/prices?symbols=${tickerList}`:
+    `https://api.coingecko.com/api/v3/simple/price?ids=${tickerList.join(
+      ","
+    )}&vs_currencies=usd&include_last_updated_at=true`
+    console.log(url);
+    fetch(url)
+    .then((response) => {
+      if (response.status === 429) {
+        // Handle rate limit error
+        if(usePriceServerURL.current){
+          usePriceServerURL.current = false;
+          // Recursively call refreshOraclePrices to retry with the other API URL
+          return refreshOraclePrices();
         }
-        return response.json();
-      })
-      .then((tickers) => {
-        setNomicsTickers(tickers);
-        setLoading(false);
-        setRateLimitError(null); // Clear any existing rate limit error
-      })
-      .catch((error) => {
-        console.error('Error fetching prices:', error);
-      });
+        return response.json().then((data) => {
+          setRateLimitError(data);
+          setLoading(false);
+          return Promise.reject('Rate limit exceeded');
+        });
+      }else{
+        usePriceServerURL.current = !usePriceServerURL.current;
+      }
+      return response.json();
+    })
+    .then((tickers) => {
+      setNomicsTickers(tickers);
+      setLoading(false);
+      setRateLimitError(null); // Clear any existing rate limit error
+    })
+    .catch((error) => {
+      console.error('Error fetching prices:', error);
+    });
+    
   }, [setNomicsTickers, setLoading, setRateLimitError]);
+
 
   function getAllTickerDailyPnLs(positions) {
     const positionSymbolList = [];
-    positions.map((position) => {
+    positions.forEach((position) => {
       positionSymbolList.push(position.symbol);
     });
 
-    fetch(
-      // `${serverURL}/symbolData?symbols=${positionSymbolList}`
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${positionSymbolList.join(
-        ","
-      )}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d%2C14d%2C30d%2C200d%2C1y`
-    )
+    const url = useSymbolDataServerURL.current
+      ? `${serverURL}/symbolData?symbols=${positionSymbolList.join(",")}`
+      : `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${positionSymbolList.join(
+          ","
+        )}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d%2C14d%2C30d%2C200d%2C1y`;
+
+    fetch(url)
       .then((response) => response.json())
       .then((searchResponse) => {
         const positionTickerPnLLists = searchResponse.map(
@@ -103,6 +116,9 @@ export function CryptoProvider({ children }) {
         );
         setPositionTickerPnLLists(positionTickerPnLLists);
       });
+
+    // Toggle the URL for the next call
+    useSymbolDataServerURL.current = !useSymbolDataServerURL.current;
   }
 
   const cache = new Map();

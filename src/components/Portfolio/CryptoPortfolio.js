@@ -69,6 +69,7 @@ export default function CryptoPortfolio() {
   const [sortAscending, setSortAscending] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [chatLog, setChatLog] = useState([]);
+  const [isSwapLoaded, setIsSwapLoaded] = useState(false);
 
   const {
     nomicsTickers,
@@ -88,19 +89,18 @@ export default function CryptoPortfolio() {
   const { activeUser, tickerList, fetchAllUsers } = useFirestore();
 
   useEffect(() => {
+    setIsIframeLoaded(false);
     getPortfolioData();
-    fetchAllUsers();
-  }, []);
-
-  useEffect(() => {
+    fetchAllUsers().then().finally(() => {setIsIframeLoaded(true);});
+    
     const script = document.createElement("script");
     script.src =
       "https://widgets.coingecko.com/coingecko-coin-price-marquee-widget.js";
     script.async = true;
     document.body.appendChild(script);
-
     return () => {
       document.body.removeChild(script);
+      
     };
   }, []);
 
@@ -110,8 +110,9 @@ export default function CryptoPortfolio() {
 
   const refreshAll = () => {
     if (refreshAvailable) {
+      setIsIframeLoaded(false)
       setRefreshAvailable(false);
-      refreshOraclePrices().then(getPortfolioData());
+      refreshOraclePrices().then(getPortfolioData()).finally(() => {setIsIframeLoaded(true)});
 
       timer = setTimeout(() => {
         setRefreshAvailable(true);
@@ -120,7 +121,7 @@ export default function CryptoPortfolio() {
   };
 
   useEffect(() => {
-    if (!isIframeLoaded) {
+    if (!isSwapLoaded) {
       const progressInterval = setInterval(() => {
         setProgress((prevProgress) =>
           prevProgress >= 100 ? 0 : prevProgress + 10
@@ -128,7 +129,7 @@ export default function CryptoPortfolio() {
       }, 200);
       return () => clearInterval(progressInterval);
     }
-  }, [isIframeLoaded]);
+  }, [isSwapLoaded]);
 
   const toggleSettings = () => {
     console.log("showSettings");
@@ -209,6 +210,14 @@ export default function CryptoPortfolio() {
   }
 
   if (!activeUser.id) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+        </div>
+    );
+  }
+
+  if (!isIframeLoaded) {
     return (
       <div className="flex justify-center items-center h-screen">
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
@@ -629,7 +638,7 @@ export default function CryptoPortfolio() {
                   )}
                   {tabIndex === 3 && (
                     <>
-                      {!isIframeLoaded && (
+                      {!isSwapLoaded && (
                         <div className="inset-3 flex items-center justify-center">
                           <div className="w-full max-w-md mx-auto p-4">
                             <div className="bg-gray-200 h-4 rounded-full">
@@ -643,7 +652,7 @@ export default function CryptoPortfolio() {
                       )}
                       <div
                         className={`flex justify-center w-full py-2 ${
-                          !isIframeLoaded ? "opacity-0" : "opacity-100"
+                          !isSwapLoaded ? "opacity-0" : "opacity-100"
                         }`}
                       >
                         <iframe
@@ -653,7 +662,7 @@ export default function CryptoPortfolio() {
                           height="400rem"
                           src="https://simpleswap.io/widget/a676253b-7475-4ff2-948c-5347c2ab4689"
                           frameborder="0"
-                          onLoad={() => setIsIframeLoaded(true)}
+                          onLoad={() => setIsSwapLoaded(true)}
                         ></iframe>
                       </div>
                     </>
