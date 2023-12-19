@@ -40,8 +40,8 @@ export function CryptoProvider({ children }) {
   const [positionTickerPnLLists, setPositionTickerPnLLists] = useState([]);
   const [symbolChartData, setSymbolChartData] = useState([]);
 
-  let useSymbolDataServerURL = useRef(true);
-  let usePriceServerURL = useRef(true);
+  let useSymbolDataServerURL = useRef(false);
+  let usePriceServerURL = useRef(false);
 
   //SWITCH TO "dev" WHEN TESTING LOCAL SERVER CHANGES
   const env = "prod";
