@@ -78,7 +78,7 @@ export function CryptoProvider({ children }) {
           return Promise.reject('Rate limit exceeded');
         });
       }else{
-        usePriceServerURL.current = !usePriceServerURL.current;
+        // usePriceServerURL.current = !usePriceServerURL.current;
       }
       return response.json();
     })
@@ -118,7 +118,7 @@ export function CryptoProvider({ children }) {
       });
 
     // Toggle the URL for the next call
-    useSymbolDataServerURL.current = !useSymbolDataServerURL.current;
+    // useSymbolDataServerURL.current = !useSymbolDataServerURL.current;
   }
 
   const cache = new Map();
