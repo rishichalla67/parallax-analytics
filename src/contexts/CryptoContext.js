@@ -100,12 +100,13 @@ export function CryptoProvider({ children }) {
       positionSymbolList.push(position.symbol);
     });
 
-    const url = useSymbolDataServerURL.current
-      ? `${serverURL}/symbolData?symbols=${positionSymbolList.join(",")}`
-      : `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${positionSymbolList.join(
-          ","
-        )}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d%2C14d%2C30d%2C200d%2C1y`;
-
+    // const url = useSymbolDataServerURL.current
+    //   ? `${serverURL}/symbolData?symbols=${positionSymbolList.join(",")}`
+    //   : `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${positionSymbolList.join(
+    //       ","
+    //     )}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d%2C14d%2C30d%2C200d%2C1y`;
+    const url = `${serverURL}/symbols?symbols=${positionSymbolList.join(",")}`;
+    // console.log(urltest)
     fetch(url)
       .then((response) => response.json())
       .then((searchResponse) => {
@@ -114,6 +115,7 @@ export function CryptoProvider({ children }) {
             return searchResponseObject;
           }
         );
+        console.log(positionTickerPnLLists);
         setPositionTickerPnLLists(positionTickerPnLLists);
       });
 
@@ -137,15 +139,8 @@ export function CryptoProvider({ children }) {
     }
 
     // If the data is not in the cache or has expired, fetch it from the API
-    return fetch(
-      `https://api.coingecko.com/api/v3/coins/${symbol}/market_chart?vs_currency=usd&days=max`,
-      {
-        method: "GET",
-        headers: headers,
-        mode: "cors",
-        cache: "default",
-      }
-    )
+    console.log(`${serverURL}/${symbol}`);
+    return fetch(`${serverURL}/${symbol}`)
       .then((response) => response.json())
       .then((searchResponse) => {
         // Convert the response data to the required format
