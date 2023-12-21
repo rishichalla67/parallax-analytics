@@ -58,10 +58,11 @@ export function CryptoProvider({ children }) {
     setNomicsTickers([]);
     setLoading(true);
 
-    const url = usePriceServerURL.current ? `${serverURL}/prices?symbols=${tickerList}`:
-    `https://api.coingecko.com/api/v3/simple/price?ids=${tickerList.join(
-      ","
-    )}&vs_currencies=usd&include_last_updated_at=true`
+    // const url = usePriceServerURL.current ? `${serverURL}/symbols/prices?symbols=${tickerList}`:
+    // `https://api.coingecko.com/api/v3/simple/price?ids=${tickerList.join(
+    //   ","
+    // )}&vs_currencies=usd&include_last_updated_at=true`
+    const url = `${serverURL}/symbols/prices?symbols=${tickerList}`
     console.log(url);
     fetch(url)
     .then((response) => {
@@ -139,8 +140,7 @@ export function CryptoProvider({ children }) {
     }
 
     // If the data is not in the cache or has expired, fetch it from the API
-    console.log(`${serverURL}/${symbol}`);
-    return fetch(`${serverURL}/${symbol}`)
+    return fetch(`${serverURL}/symbols/chartData?symbol=${symbol}`)
       .then((response) => response.json())
       .then((searchResponse) => {
         // Convert the response data to the required format
