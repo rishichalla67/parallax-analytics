@@ -58,12 +58,12 @@ export function CryptoProvider({ children }) {
     setNomicsTickers([]);
     setLoading(true);
 
-    // const url = usePriceServerURL.current ? `${serverURL}/symbols/prices?symbols=${tickerList}`:
-    // `https://api.coingecko.com/api/v3/simple/price?ids=${tickerList.join(
-    //   ","
-    // )}&vs_currencies=usd&include_last_updated_at=true`
-    const url = `${serverURL}/symbols/prices?symbols=${tickerList}`
-    console.log(url);
+    const url = usePriceServerURL.current ? `${serverURL}/symbols/prices?symbols=${tickerList}`:
+    `https://api.coingecko.com/api/v3/simple/price?ids=${tickerList.join(
+      ","
+    )}&vs_currencies=usd&include_last_updated_at=true`
+    // const url = `${serverURL}/symbols/prices?symbols=${tickerList}`
+    // console.log(url);
     fetch(url)
     .then((response) => {
       if (response.status === 429) {
@@ -101,12 +101,12 @@ export function CryptoProvider({ children }) {
       positionSymbolList.push(position.symbol);
     });
   
-    // const url = useSymbolDataServerURL.current
-    //   ? `${serverURL}/symbolData?symbols=${positionSymbolList.join(",")}`
-    //   : `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${positionSymbolList.join(
-    //       ","
-    //     )}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d%2C14d%2C30d%2C200d%2C1y`;
-    const url = `${serverURL}/symbols?symbols=${positionSymbolList.join(",")}`;
+    const url = useSymbolDataServerURL.current
+      ? `${serverURL}/symbolData?symbols=${positionSymbolList.join(",")}`
+      : `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${positionSymbolList.join(
+          ","
+        )}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d%2C14d%2C30d%2C200d%2C1y`;
+    // const url = `${serverURL}/symbols?symbols=${positionSymbolList.join(",")}`;
     // console.log(urltest)
     fetch(url)
       .then((response) => {
