@@ -100,7 +100,7 @@ export function CryptoProvider({ children }) {
     positions.forEach((position) => {
       positionSymbolList.push(position.symbol);
     });
-
+  
     // const url = useSymbolDataServerURL.current
     //   ? `${serverURL}/symbolData?symbols=${positionSymbolList.join(",")}`
     //   : `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${positionSymbolList.join(
@@ -109,7 +109,14 @@ export function CryptoProvider({ children }) {
     const url = `${serverURL}/symbols?symbols=${positionSymbolList.join(",")}`;
     // console.log(urltest)
     fetch(url)
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status.toString().startsWith('2')) {
+          return response.json();
+        } else {
+          return fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${positionSymbolList.join(",")}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d%2C14d%2C30d%2C200d%2C1y`)
+            .then((response) => response.json());
+        }
+      })
       .then((searchResponse) => {
         const positionTickerPnLLists = searchResponse.map(
           (searchResponseObject) => {
