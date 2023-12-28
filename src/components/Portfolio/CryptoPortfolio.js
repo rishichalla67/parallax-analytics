@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
+import { Sparklines, SparklinesLine, SparklinesSpots } from 'react-sparklines';
 import OpenAi from "../OpenAI/openai";
 
 import Nav from "../Nav.js";
@@ -49,6 +50,28 @@ export function findSymbolPrice(symbol, positionTickerPnLLists) {
     }
   }
   return null; // Return null if symbol is not found
+}
+
+export function getSymbolSparkline(symbol, positionTickerPnLLists) {
+  for (let i = 0; i < positionTickerPnLLists.length; i++) {
+    const obj = positionTickerPnLLists[i];
+    if (obj.id === symbol) {
+      return obj.sparkline_in_7d?.price || [];
+    }
+  }
+  return [];
+}
+
+export function getSparkLineColor(sparklineData){
+  if(sparklineData){
+    if(sparklineData[sparklineData.length-1] - sparklineData[0] > 0){
+      return "green";
+    }
+    else{
+      return "red";
+    }
+  }
+  return "white";
 }
 
 export default function CryptoPortfolio() {
@@ -541,6 +564,11 @@ export default function CryptoPortfolio() {
                             </th>
                             <th
                               className="px-4 py-2 hover:animate-pulse hover:cursor-pointer"
+                            >
+                              7 Day Price{" "}
+                            </th>
+                            <th
+                              className="px-4 py-2 hover:animate-pulse hover:cursor-pointer"
                               onClick={() => handleSort("quantity")}
                             >
                               Quantity{" "}
@@ -582,10 +610,23 @@ export default function CryptoPortfolio() {
                                         className="w-6 h-6 mr-2"
                                       />
                                     )}
-                                    {formatSymbol(tickerList[position.symbol])}
+                                    <p className="hidden sm:block">{formatSymbol(tickerList[position.symbol])}</p>
                                   </div>
                                 </td>
-
+                                {/* mobile display */}
+                                <td className="sm:px-4 py-2">
+                                  <div className="block lg:hidden">
+                                    <Sparklines data={getSymbolSparkline(position.symbol, positionTickerPnLLists)} style={{ width: "100%", height: "3rem" }}>
+                                      <SparklinesLine color={getSparkLineColor(getSymbolSparkline(position.symbol, positionTickerPnLLists))} style={{ fill: "blue" }} />
+                                    </Sparklines>
+                                  </div>
+                                  {/* lg display */}
+                                  <div className="hidden md:inline md:flex md:items-center md:justify-center">
+                                    <Sparklines data={getSymbolSparkline(position.symbol, positionTickerPnLLists)} style={{ width: "50%", height: "3rem" }}>
+                                      <SparklinesLine color={getSparkLineColor(getSymbolSparkline(position.symbol, positionTickerPnLLists))} style={{ fill: "blue" }} />
+                                    </Sparklines>
+                                  </div>
+                                </td>
                                 <td className="py-1 sm:px-4 sm:py-2">
                                   {position.symbol === "bitcoin"
                                     ? privacyFilter.privacyFilter
