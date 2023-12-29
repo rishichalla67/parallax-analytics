@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useCryptoOracle } from "../../contexts/CryptoContext";
 import { useFirestore } from "../../contexts/FirestoreContext";
-import { Sparklines, SparklinesLine, SparklinesSpots } from 'react-sparklines';
+import { Sparklines, SparklinesLine, SparklinesSpots, SparklinesReferenceLine } from 'react-sparklines';
 import OpenAi from "../OpenAI/openai";
+import Kujira from "../Kujira.js"
 
 import Nav from "../Nav.js";
 import { Analyics, calculateDateBasedPnl, formatSymbol } from "./Analytics";
@@ -242,9 +243,9 @@ export default function CryptoPortfolio() {
 
   // if (!isIframeLoaded) {
   //   return (
-  //     <div className="flex justify-center items-center h-screen">
-  //         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
-  //       </div>
+      // <div className="flex justify-center items-center h-screen">
+      //     <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+      //   </div>
   //   );
   // }
 
@@ -513,7 +514,7 @@ export default function CryptoPortfolio() {
                         Analytics
                       </button>
                     </li>
-                    <li className="mr-2">
+                    {/* <li className="mr-2">
                       <button
                         onClick={() => {
                           setTabIndex(3);
@@ -529,14 +530,14 @@ export default function CryptoPortfolio() {
                       >
                         Swap
                       </button>
-                    </li>
+                    </li> */}
                     <li className="mr-2">
                       <button
                         onClick={() => {
                           setTabIndex(4);
                         }}
                         data-bs-toggle="tooltip"
-                        title="Chat with a powerful AI assistant powered by OpenAI"
+                        title="Look at the top trending coins on coingecko"
                         className={`inline-block p-4 ${
                           tabIndex !== 4
                             ? "rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
@@ -544,6 +545,22 @@ export default function CryptoPortfolio() {
                         }`}
                       >
                         Trending
+                      </button>
+                    </li>
+                    <li className="mr-2">
+                      <button
+                        onClick={() => {
+                          setTabIndex(5);
+                        }}
+                        data-bs-toggle="tooltip"
+                        title="On-Chain profit and loss calculator based on kujira address"
+                        className={`inline-block p-4 ${
+                          tabIndex !== 5
+                            ? "rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                            : "text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500"
+                        }`}
+                      >
+                        Kujira
                       </button>
                     </li>
                   </ul>
@@ -618,12 +635,14 @@ export default function CryptoPortfolio() {
                                   <div className="block lg:hidden">
                                     <Sparklines data={getSymbolSparkline(position.symbol, positionTickerPnLLists)} style={{ width: "100%", height: "3rem" }}>
                                       <SparklinesLine color={getSparkLineColor(getSymbolSparkline(position.symbol, positionTickerPnLLists))} style={{ fill: "blue" }} />
+                                      <SparklinesReferenceLine />
                                     </Sparklines>
                                   </div>
                                   {/* lg display */}
                                   <div className="hidden md:inline md:flex md:items-center md:justify-center">
                                     <Sparklines data={getSymbolSparkline(position.symbol, positionTickerPnLLists)} style={{ width: "50%", height: "3rem" }}>
                                       <SparklinesLine color={getSparkLineColor(getSymbolSparkline(position.symbol, positionTickerPnLLists))} style={{ fill: "blue" }} />
+                                      <SparklinesReferenceLine />
                                     </Sparklines>
                                   </div>
                                 </td>
@@ -682,7 +701,7 @@ export default function CryptoPortfolio() {
                       </div>
                     </>
                   )}
-                  {tabIndex === 3 && (
+                  {/* {tabIndex === 3 && (
                     <>
                       {!isSwapLoaded && (
                         <div className="inset-3 flex items-center justify-center">
@@ -712,10 +731,15 @@ export default function CryptoPortfolio() {
                         ></iframe>
                       </div>
                     </>
-                  )}
+                  )} */}
                   {tabIndex === 4 && (
                     <>
                       <OpenAi chatLog={chatLog} setChatLog={setChatLog} />
+                    </>
+                  )}
+                  {tabIndex === 5 && (
+                    <>
+                      <Kujira />
                     </>
                   )}
                 </div>
