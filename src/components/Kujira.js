@@ -7,7 +7,7 @@ export default function Kujira() {
   const [isLoading, setIsLoading] = useState(false);
   let forceRefresh = false;
 
-  const env = "dev";
+  const env = "prod";
   const serverURL = env === "dev" ? "http://localhost:225" : "https://parallax-analytics.onrender.com";
 
   const fetchKujiraData = async () => {
