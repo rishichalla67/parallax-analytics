@@ -7,7 +7,7 @@ export default function Kujira() {
   const [isLoading, setIsLoading] = useState(false);
   let forceRefresh = false;
 
-  const env = "dev";
+  const env = "prod";
   const serverURL = env === "dev" ? "http://localhost:225" : "https://parallax-analytics.onrender.com";
 
   const fetchKujiraData = async () => {
@@ -49,29 +49,33 @@ export default function Kujira() {
                 </svg>
             </button>
         </div>
-        
+        <hr className="my-4 border-gray-200" />
         {isLoading ? (
-            <div className="flex justify-center items-center h-screen">
+            <div className="flex justify-center items-center h-15%">
                 <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
             </div>
         ) : kujiraData && (
-            <div className="flex flex-col items-center justify-center">
-                <h3 className="text-lg font-semibold mb-4">Ghost</h3>
+            <div className="flex flex-col items-center justify-center shadow-lg rounded-lg overflow-hidden">
+                <h3 className="text-lg font-semibold mb-4 text-white">Ghost Initial Deposits</h3>
                 <div className="overflow-x-auto pb-2">
-                    <table className="table-auto text-left whitespace-no-wrap">
-                        <thead>
-                            <tr className="bg-slate-800 text-white">
-                                <th className="px-4 py-2">xAsset</th>
-                                <th className="px-4 py-2">Value</th>
+                    <table className="min-w-full bg-white divide-y divide-gray-200 rounded-lg">
+                        <thead className="bg-slate-800">
+                            <tr>
+                                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                                    Asset
+                                </th>
+                                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                                    Value
+                                </th>
                             </tr>
                         </thead>
-                        <tbody className="bg-black">
+                        <tbody className="bg-slate-700 divide-y divide-gray-200">
                             {Object.entries(kujiraData).map(([key, value]) => {
                                 const displayKey = key.includes('/u') ? key.substring(key.lastIndexOf('/u') + 2) : key;
                                 return (
-                                    <tr className="hover:bg-slate-600" key={key}>
-                                        <td className="border px-4 py-2">{displayKey}</td>
-                                        <td className="border px-4 py-2">{value}</td>
+                                    <tr className="hover:bg-gray-100" key={key}>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{displayKey}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{value}</td>
                                     </tr>
                                 );
                             })}
