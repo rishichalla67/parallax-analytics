@@ -268,7 +268,7 @@ export default function Kujira() {
                         <div className="overflow-x-auto pb-2">
                             <table className="table-auto text-left whitespace-no-wrap">
                                 <thead>
-                                    <tr className="bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 text-white text-xs sm:text-sm">
+                                    <tr className="bg-indigo-800 text-white text-xs sm:text-sm">
                                         <th className="px-4 py-2">Asset</th>
                                         <th className="px-4 py-2">Initial Deposit</th>
                                         <th className="px-4 py-2">Current Deposit</th>
@@ -310,7 +310,7 @@ export default function Kujira() {
                         <div className="overflow-x-auto pb-2">
                             <table className="table-auto text-left whitespace-no-wrap">
                                 <thead>
-                                    <tr className="bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 text-white text-xs sm:text-sm">
+                                    <tr className="bg-indigo-800 text-white text-xs sm:text-sm">
                                         <th className="px-4 py-2">Symbol</th>
                                         <th className="px-4 py-2">Amount</th>
                                         <th className="px-4 py-2">Value</th>
@@ -333,7 +333,7 @@ export default function Kujira() {
                                       .map(({ symbol, formattedAmount, value }) => (
                                         <tr className="hover:bg-slate-600 text-xs sm:text-sm">
                                             <td className="border px-4 py-2">{symbol}</td>
-                                            <td className="border px-4 py-2">{formattedAmount}</td>
+                                            <td className="border px-4 py-2">{formattedAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 5})}</td>
                                             <td className="border px-4 py-2">{value !== 0 ? `$${Number(value).toLocaleString()}` : "-"}</td> 
                                         </tr>
                                       ))}
