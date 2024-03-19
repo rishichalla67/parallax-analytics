@@ -268,7 +268,7 @@ export default function Kujira() {
                         <div className="overflow-x-auto pb-2">
                             <table className="table-auto text-left whitespace-no-wrap">
                                 <thead>
-                                    <tr className="bg-slate-800 text-white">
+                                    <tr className="bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 text-white text-xs sm:text-sm">
                                         <th className="px-4 py-2">Asset</th>
                                         <th className="px-4 py-2">Initial Deposit</th>
                                         <th className="px-4 py-2">Current Deposit</th>
@@ -290,7 +290,7 @@ export default function Kujira() {
                                         const currentDepositValue = balance && ghostPrices[displayXKey] ? (balance.amount / Math.pow(10, decimals) * ghostPrices[displayXKey]).toFixed(2) : "-";
                                         // console.log("Current Deposit Value for " + displayXKey + ": ", currentDepositValue);
                                         return (
-                                            <tr className="hover:bg-slate-600" key={key}>
+                                            <tr className="hover:bg-slate-600 text-xs sm:text-sm" key={key}>
                                                 <td className="border px-4 py-2">{displayKey}</td>
                                                 <td className="border px-4 py-2">{Number(value).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                                                 <td className="border px-4 py-2">{Number(currentDepositValue).toLocaleString()}</td>
@@ -310,7 +310,7 @@ export default function Kujira() {
                         <div className="overflow-x-auto pb-2">
                             <table className="table-auto text-left whitespace-no-wrap">
                                 <thead>
-                                    <tr className="bg-slate-800 text-white">
+                                    <tr className="bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 text-white text-xs sm:text-sm">
                                         <th className="px-4 py-2">Symbol</th>
                                         <th className="px-4 py-2">Amount</th>
                                         <th className="px-4 py-2">Value</th>
@@ -331,7 +331,7 @@ export default function Kujira() {
                                       .filter(({ value, formattedAmount }) => value >= 0.005 || formattedAmount > 0.01)
                                       .sort((a, b) => b.value - a.value) // Sort by value, treating "-" as 0
                                       .map(({ symbol, formattedAmount, value }) => (
-                                        <tr className="hover:bg-slate-600">
+                                        <tr className="hover:bg-slate-600 text-xs sm:text-sm">
                                             <td className="border px-4 py-2">{symbol}</td>
                                             <td className="border px-4 py-2">{formattedAmount}</td>
                                             <td className="border px-4 py-2">{value !== 0 ? `$${Number(value).toLocaleString()}` : "-"}</td> 
