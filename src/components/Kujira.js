@@ -36,7 +36,7 @@ const kujiraTokenMappings = {
     'ibc/8318B7E036E50C0CF799848F23ED84778AAA8749D9C0BCD4FF3F4AF73C53387F': { symbol: 'loop', decimals: 6 },
     'ibc/DA59C009A0B3B95E0549E6BF7B075C8239285989FF457A8EDDBB56F10B2A6986': { symbol: 'luna', decimals: 6 },
     'ibc/DBF6ABDB5F3D4267C039967515594453F4A31007FD838A566F563A01D2C2FB80': { symbol: 'mars', decimals: 6 },
-    'ibc/5F5BB5A442F82738439F52F89706B0F74372B9BD80F87DCB148128C8C07CA095': { symbol: 'ngm', decimals: 0 },
+    'ibc/5F5BB5A442F82738439F52F89706B0F74372B9BD80F87DCB148128C8C07CA095': { symbol: 'ngm', decimals: 6 },
     'ibc/2F1447818CF99498AE62D9FB4D5E0C9FD48C68FC118C34D2ECFFFED0AD082196': { symbol: 'old-grav', decimals: 6 },
     'ibc/47BD209179859CDE4A2806763D7189B6E6FE13A17880FE2B42DE1E6C1E329E23': { symbol: 'osmo', decimals: 6 },
     'ibc/0447761C090DB521DAC0268E8CB4EBF567E519B937DE6FECD2472AA6A1EDE658': { symbol: 'pepe', decimals: 18 },
@@ -45,10 +45,10 @@ const kujiraTokenMappings = {
     'ibc/A358D7F19237777AF6D8AD0E0F53268F8B18AE8A53ED318095C14D6D7F3B2DB5': { symbol: 'scrt', decimals: 6 },
     'ibc/21038E447A2D4A1183628C0EC366FE79C2E0B0BD91F9A85E6C906CD911FD676E': { symbol: 'shd', decimals: 8 },
     'ibc/4F393C3FCA4190C0A6756CE7F6D897D5D1BE57D6CCB80D0BC87393566A7B6602': { symbol: 'stars', decimals: 6 },
-    'ibc/0306D6B66EAA2EDBB7EAD23C0EC9DDFC69BB43E80B398035E90FBCFEF3FD1A87': { symbol: 'statom', decimals: 0 },
+    'ibc/0306D6B66EAA2EDBB7EAD23C0EC9DDFC69BB43E80B398035E90FBCFEF3FD1A87': { symbol: 'statom', decimals: 6 },
     'ibc/C19813F6D22F91CC64D2EEDF8702904DD61E0D022972EDFE0039F70C8A6EAD24': { symbol: 'stinj', decimals: 18 },
-    'ibc/C905C540D8BEE0589D9442156F58D8BAA97CB549F44CFF68CB51AD0AEDD0B4EC': { symbol: 'stjuno', decimals: 0 },
-    'ibc/F97BDCE220CCB52139C73066E36C45EC7EDCEEF1DAFF891A34F4FBA195A2E6E8': { symbol: 'stosmo', decimals: 0 },
+    'ibc/C905C540D8BEE0589D9442156F58D8BAA97CB549F44CFF68CB51AD0AEDD0B4EC': { symbol: 'stjuno', decimals: 6 },
+    'ibc/F97BDCE220CCB52139C73066E36C45EC7EDCEEF1DAFF891A34F4FBA195A2E6E8': { symbol: 'stosmo', decimals: 6 },
     'ibc/239BFF83852F67DF5243DB89F339FF7FDBF858437F961CAB6DA5B5ADEFB2BC07': { symbol: 'strd', decimals: 6 },
     'ibc/FFA3D0E9C3CDE729559FB71A09E9E6CFA5A85AFABAC9F3CB5DD3942BFF935F9C': { symbol: 'swth', decimals: 8 },
     'ibc/BF603AD88AA4C36FC8CA99F6D703CA1D7D437A1EA97023A73A8BA4437A05ABDF': { symbol: 'cnto', decimals: 18 },
@@ -262,7 +262,7 @@ export default function Kujira() {
         ) : (
             <>
                 
-                {kujiraData && (
+                {kujiraData && kujiraBalances && ghostPrices && prices && (
                     <div className="flex flex-col items-center justify-center">
                         <h3 className="text-lg font-semibold mb-4">Ghost</h3>
                         <div className="overflow-x-auto pb-2">
@@ -273,7 +273,7 @@ export default function Kujira() {
                                         <th className="px-4 py-2">Initial Deposit</th>
                                         <th className="px-4 py-2">Current Deposit</th>
                                         <th className="px-4 py-2">Interest Earned</th>
-                                        <th className="px-4 py-2">Profit ($)</th>
+                                        <th className="px-4 py-2">Profit</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-black">
@@ -295,7 +295,7 @@ export default function Kujira() {
                                                 <td className="border px-4 py-2">{Number(value).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                                                 <td className="border px-4 py-2">{Number(currentDepositValue).toLocaleString()}</td>
                                                 <td className="border px-4 py-2">{(Number(currentDepositValue) - Number(value)).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                                <td className="border px-4 py-2">{((Number(currentDepositValue) - Number(value))*prices[key.toLowerCase()]).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                                <td className="border px-4 py-2">${((Number(currentDepositValue) - Number(value))*prices[key.toLowerCase()]).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                                             </tr>
                                         );
                                     })}
@@ -317,7 +317,7 @@ export default function Kujira() {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-black">
-                                {kujiraBalances
+                                    {kujiraBalances
                                       .map(({ denom, amount }) => {
                                         const tokenInfo = kujiraTokenMappings[denom];
                                         const symbol = tokenInfo ? tokenInfo.symbol : denom;
@@ -326,14 +326,15 @@ export default function Kujira() {
                                         // Check in ghostPrices first, if not found then check in prices
                                         const price = ghostPrices[symbol] || prices[symbol.toLowerCase()] || 0;
                                         const value = price ? (formattedAmount * price).toFixed(2) : "-";
-                                        return { symbol, formattedAmount, value };
+                                        return { symbol, formattedAmount, value: value !== "-" ? parseFloat(value) : 0 }; // Convert value to number or 0 if "-"
                                       })
-                                      .sort((a, b) => b.formattedAmount - a.formattedAmount)
+                                      .filter(({ value, formattedAmount }) => value >= 0.005 || formattedAmount > 0.01)
+                                      .sort((a, b) => b.value - a.value) // Sort by value, treating "-" as 0
                                       .map(({ symbol, formattedAmount, value }) => (
                                         <tr className="hover:bg-slate-600">
                                             <td className="border px-4 py-2">{symbol}</td>
-                                            <td className="border px-4 py-2">{formattedAmount.toLocaleString()}</td>
-                                            <td className="border px-4 py-2">{value !== "-" ? `$${Number(value).toLocaleString()}` : value}</td>
+                                            <td className="border px-4 py-2">{formattedAmount}</td>
+                                            <td className="border px-4 py-2">{value !== 0 ? `$${Number(value).toLocaleString()}` : "-"}</td> 
                                         </tr>
                                       ))}
                                 </tbody>
