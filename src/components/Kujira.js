@@ -156,7 +156,8 @@ const kujiraGhostContracts = {
     'kujira143fwcudwy0exd6zd3xyvqt2kae68ud6n8jqchufu7wdg5sryd4lqtlvvep': {contract: "xkuji"},
     'kujira1jelmu9tdmr6hqg0d6qw4g6c9mwrexrzuryh50fwcavcpthp5m0uq20853h': {contract: 'xusdc'},
     'kujira1w4yaama77v53fp0f9343t9w2f932z526vj970n2jv5055a7gt92sxgwypf': {contract: 'xusk'},
-    'kujira1xhxefc8v3tt0n75wpzfqcrukzyfneyttdppqst84zzdxnf223m2qm4g5at': {contract: 'xwbtc'}
+    'kujira1xhxefc8v3tt0n75wpzfqcrukzyfneyttdppqst84zzdxnf223m2qm4g5at': {contract: 'xwbtc'},
+    'kujira1e224c8ry0nuun5expxm00hmssl8qnsjkd02ft94p3m2a33xked2qypgys3': {contract: 'xaxlusdc'}
 }
 
 export default function Kujira() {
