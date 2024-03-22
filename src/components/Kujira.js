@@ -148,7 +148,8 @@ const kujiraTokenMappings = {
     'ibc/193C32A9BB54632C383CF2D2BA1A47F73624446D8554762F934B7A61EF26B191': { symbol: 'mntl', decimals: 6 },
     'factory/kujira1t6anuwgxf22av6kna33tyyfapetca243zydvkahmv252f03gvapqsjv2ln/urcpt': { symbol: 'xwhsol', decimals: 8 },
     'ibc/2618165FB15523140C34365941366CBD2124D161A07B70E7B86071BD12A0E4AE': { symbol: 'bad', decimals: 6 },
-    'factory/kujira1xhxefc8v3tt0n75wpzfqcrukzyfneyttdppqst84zzdxnf223m2qm4g5at/urcpt': { symbol: 'xwbtc', decimals: 8 }
+    'factory/kujira1xhxefc8v3tt0n75wpzfqcrukzyfneyttdppqst84zzdxnf223m2qm4g5at/urcpt': { symbol: 'xwbtc', decimals: 8 },
+    'ibc/8B2745EE933D5CD1DB592701FD4A1F0E534BD9A6B2F369DB86FAE0342A2857A6': { symbol: 'stevmos', decimals: 6 }
 
 };
 
