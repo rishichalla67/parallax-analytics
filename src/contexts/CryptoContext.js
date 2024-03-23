@@ -63,7 +63,6 @@ export function CryptoProvider({ children }) {
       ","
     )}&vs_currencies=usd&include_last_updated_at=true`
     // const url = `${serverURL}/symbols/prices?symbols=${tickerList}`
-    console.log(url);
     fetch(url)
     .then((response) => {
       if (response.status === 429) {

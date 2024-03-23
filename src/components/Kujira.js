@@ -229,6 +229,46 @@ export default function Kujira() {
 //     fetchKujiraBalances();
 //   }, [kujiAddress]);
 
+function showTemporaryMessage(message) {
+  const existingMessage = document.getElementById('copy-message');
+  if (existingMessage) {
+    existingMessage.remove(); // Ensure only one message is displayed at a time
+  }
+  
+  const messageDiv = document.createElement('div');
+  messageDiv.id = 'copy-message';
+  messageDiv.style.position = 'fixed';
+  messageDiv.style.bottom = '20px';
+  messageDiv.style.right = '20px';
+  messageDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+  messageDiv.style.color = 'white';
+  messageDiv.style.padding = '10px';
+  messageDiv.style.borderRadius = '5px';
+  messageDiv.style.zIndex = '1000';
+  messageDiv.innerText = message;
+
+  // Adjusting the position based on viewport dimensions
+  if (window.innerWidth < 768) { // For smaller devices like phones
+    messageDiv.style.bottom = '10px';
+    messageDiv.style.right = '10px';
+    messageDiv.style.fontSize = '14px'; // Smaller font size for smaller devices
+  } else if (window.innerWidth < 1024) { // For medium devices like tablets
+    messageDiv.style.bottom = '15px';
+    messageDiv.style.right = '15px';
+    messageDiv.style.fontSize = '16px'; // Slightly larger font size for medium devices
+  } else { // For larger devices like desktops
+    messageDiv.style.bottom = '20px';
+    messageDiv.style.right = '20px';
+    messageDiv.style.fontSize = '18px'; // Larger font size for better readability on larger screens
+  }
+
+  document.body.appendChild(messageDiv);
+
+  setTimeout(() => {
+    messageDiv.remove();
+  }, 2000); // Message will disappear after 2 seconds
+}
+
   useEffect(() => {
     fetchGhostPrices();
     fetchPrices();
@@ -350,8 +390,8 @@ export default function Kujira() {
                                       .map(({ symbol, formattedAmount, value }) => (
                                         <tr className="hover:bg-slate-600 text-xs sm:text-sm">
                                             <td className="border px-4 py-2">{symbol}</td>
-                                            <td className="border px-4 py-2">{formattedAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 5})}</td>
-                                            <td className="border px-4 py-2">{value !== 0 ? `$${Number(value).toLocaleString()}` : "-"}</td> 
+                                            <td className="border px-4 py-2 cursor-pointer" onClick={() => { navigator.clipboard.writeText(formattedAmount.toFixed(2)); showTemporaryMessage('Copied: ' + formattedAmount.toFixed(2)); }}>{formattedAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 5})}</td>
+<td className="border px-4 py-2 cursor-pointer" onClick={() => { const textToCopy = value !== 0 ? `$${Number(value).toLocaleString()}` : "-"; navigator.clipboard.writeText(textToCopy); showTemporaryMessage('Copied: ' + textToCopy); }}>{value !== 0 ? `$${Number(value).toLocaleString()}` : "-"}</td>
                                         </tr>
                                       ))}
                                 </tbody>
