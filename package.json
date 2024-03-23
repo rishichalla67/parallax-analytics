@@ -12,8 +12,8 @@
     "@tailwindcss/forms": "^0.5.2",
     "axios": "^1.2.2",
     "chart.js": "^4.2.1",
-    "crypto-browserify": "^3.12.0",
     "classnames": "^2.3.2",
+    "crypto-browserify": "^3.12.0",
     "d3": "^7.8.2",
     "firebase": "^9.9.1",
     "firebase-tools": "^11.9.0",
@@ -30,14 +30,13 @@
     "react-spring": "^9.6.1",
     "react-table": "^7.8.0",
     "recharts": "^2.1.14",
+    "stream-browserify": "^3.0.0",
     "tailwindcss-gradients": "^3.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -61,6 +60,7 @@
   "devDependencies": {
     "autoprefixer": "^10.4.7",
     "postcss": "^8.4.14",
+    "react-app-rewired": "^2.2.1",
     "react-router-dom": "^6.3.0",
     "tailwindcss": "^3.1.2"
   },

@@ -216,7 +216,12 @@ export default function Kujira() {
   const fetchPrices = async () => {
     let prices = {};
     const response = await fetch(`${serverURL}/ophir/prices`);
-    prices = await response.json();
+    const data = await response.json();
+    // Convert all keys to lowercase
+    prices = Object.keys(data).reduce((acc, key) => {
+      acc[key.toLowerCase()] = data[key];
+      return acc;
+    }, {});
     console.log(prices);
     setPrices(prices);
   };
