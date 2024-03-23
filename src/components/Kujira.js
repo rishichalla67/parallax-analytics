@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+const { StargateClient } = require("@cosmjs/stargate");
+
 
 const kujiraTokenMappings = {
     'ibc/7023F9629A70F8112764D959D04F52EA3115A0AED3CEE59694799FD8C91A97FA': { symbol: 'akt', decimals: 6 },
@@ -149,7 +151,10 @@ const kujiraTokenMappings = {
     'factory/kujira1t6anuwgxf22av6kna33tyyfapetca243zydvkahmv252f03gvapqsjv2ln/urcpt': { symbol: 'xwhsol', decimals: 8 },
     'ibc/2618165FB15523140C34365941366CBD2124D161A07B70E7B86071BD12A0E4AE': { symbol: 'bad', decimals: 6 },
     'factory/kujira1xhxefc8v3tt0n75wpzfqcrukzyfneyttdppqst84zzdxnf223m2qm4g5at/urcpt': { symbol: 'xwbtc', decimals: 8 },
-    'ibc/8B2745EE933D5CD1DB592701FD4A1F0E534BD9A6B2F369DB86FAE0342A2857A6': { symbol: 'stevmos', decimals: 6 }
+    'ibc/8B2745EE933D5CD1DB592701FD4A1F0E534BD9A6B2F369DB86FAE0342A2857A6': { symbol: 'stevmos', decimals: 6 },
+    'factory/kujira1hmk8wy7vk0v0vpqasv6zv7hm3n2vce4m3yzkns6869j8h4u5qk2q0xndku/ursv': { symbol: 'nqckuji', decimals: 6 },
+    'factory/kujira1ql30ep2a4f3cswhrr8sjp54t56l7qz7n7jzcnux2m286k6ev7s8q6m8jnp/ursv': { symbol: 'nqcmnta', decimals: 6 },
+    'factory/kujira1t2nmpazlpacazde340k5rmmx6dpa49067fdqu3pzskgh9x3lj78qelrvv4/ursv': { symbol: 'nqcfuzn', decimals: 6}
 
 };
 
@@ -161,6 +166,8 @@ const kujiraGhostContracts = {
     'kujira1e224c8ry0nuun5expxm00hmssl8qnsjkd02ft94p3m2a33xked2qypgys3': {contract: 'xaxlusdc'}
 }
 
+
+
 export default function Kujira() {
   const [kujiAddress, setKujiAddress] = useState("kujira17ephyl7pxx7hrauhu6guf62z7nrtszj2dj90nr")
   const [kujiraData, setKujiraData] = useState(null);
@@ -168,6 +175,7 @@ export default function Kujira() {
   const [isLoading, setIsLoading] = useState(false);
   let forceRefresh = false;
 
+  const kujiraRPC = "https://rpc-kujira.mintthemoon.xyz";
   const env = "prod";
   const serverURL = env === "dev" ? "http://localhost:225" : "https://parallax-analytics.onrender.com";
 
@@ -180,15 +188,17 @@ export default function Kujira() {
   const fetchKujiraBalances = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`https://lcd-kujira.mintthemoon.xyz/cosmos/bank/v1beta1/balances/${kujiAddress}`);
-      const { balances } = await response.json();
-      setKujiraBalances(balances);
+
+      const client = await StargateClient.connect(kujiraRPC);
+      const response = await client.getAllBalances(kujiAddress);
+      setKujiraBalances(response);
     } catch (error) {
       console.error("Error fetching Kujira balances:", error);
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   const fetchGhostPrices = async () => {
     let pricesObj = {};
