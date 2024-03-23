@@ -290,7 +290,7 @@ export default function Kujira() {
                                         <th className="px-4 py-2">Initial Deposit</th>
                                         <th className="px-4 py-2">Current Deposit</th>
                                         <th className="px-4 py-2">Interest Earned</th>
-                                        <th className="px-4 py-2">Profit</th>
+                                        {prices && <th className="px-4 py-2">Profit</th>}
                                     </tr>
                                 </thead>
                                 <tbody className="bg-black">
@@ -312,7 +312,7 @@ export default function Kujira() {
                                                 <td className="border px-4 py-2">{Number(value).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                                                 <td className="border px-4 py-2">{Number(currentDepositValue).toLocaleString()}</td>
                                                 <td className="border px-4 py-2">{(Number(currentDepositValue) - Number(value)).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                                <td className="border px-4 py-2">${((Number(currentDepositValue) - Number(value))*prices[key.toLowerCase()]).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                                {prices && <td className="border px-4 py-2">${((Number(currentDepositValue) - Number(value)) * prices[key.toLowerCase()]).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>}
                                             </tr>
                                         );
                                     })}
