@@ -381,7 +381,10 @@ function showTemporaryMessage(message) {
                                         const decimals = tokenInfo ? tokenInfo.decimals : 0;
                                         const formattedAmount = amount / Math.pow(10, decimals);
                                         // Check in ghostPrices first, if not found then check in prices
-                                        const price = ghostPrices[symbol] || prices[symbol.toLowerCase()] || 0;
+                                        let price = ghostPrices[symbol] || prices[symbol.toLowerCase()] || 0;
+                                        if (symbol === 'xkuji') {
+                                            price = ghostPrices[symbol] * (prices['kuji'] || 0);
+                                        }
                                         const value = price ? (formattedAmount * price).toFixed(2) : "-";
                                         return { symbol, formattedAmount, value: value !== "-" ? parseFloat(value) : 0 }; // Convert value to number or 0 if "-"
                                       })
