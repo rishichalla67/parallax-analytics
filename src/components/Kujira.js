@@ -156,7 +156,8 @@ const kujiraTokenMappings = {
     'factory/kujira1ql30ep2a4f3cswhrr8sjp54t56l7qz7n7jzcnux2m286k6ev7s8q6m8jnp/ursv': { symbol: 'nqcmnta', decimals: 6 },
     'factory/kujira1t2nmpazlpacazde340k5rmmx6dpa49067fdqu3pzskgh9x3lj78qelrvv4/ursv': { symbol: 'nqcfuzn', decimals: 6},
     'factory/kujira195zfkf8uzufmwhc4zzclythlh43m2rme2rd3rlstt6c7yzw386xqskc02y/urcpt': {symbol: 'xlunc', decimals: 6},
-    'factory/kujira1ya42knfcsvy6eztegsn3hz7zpjvhzn05ge85xa2dy2zrjeul9hnspp3c06/urcpt': {symbol: 'xmnta', decimals: 6}
+    'factory/kujira1ya42knfcsvy6eztegsn3hz7zpjvhzn05ge85xa2dy2zrjeul9hnspp3c06/urcpt': {symbol: 'xmnta', decimals: 6},
+    'ibc/FE98AAD68F02F03565E9FA39A5E627946699B2B07115889ED812D8BA639576A9': {symbol: 'usdc', decimal: 6}
 
 };
 
@@ -349,7 +350,7 @@ function showTemporaryMessage(message) {
                                         // console.log(originalDenom, decimals)
 
                                         // Find the corresponding balance from kujiraBalances
-                                        const balance = kujiraBalances.find(({ denom }) => denom === originalDenom);
+                                        const balance = kujiraBalances.find(({ denom }) => denom === originalDenom) || { amount: 0 };
                                         const currentDepositValue = balance && ghostPrices[displayXKey] ? (balance.amount / Math.pow(10, decimals) * ghostPrices[displayXKey]).toFixed(2) : "-";
                                         // console.log("Current Deposit Value for " + displayXKey + ": ", currentDepositValue);
                                         const interestEarned = Math.max(0, (Number(currentDepositValue) - Number(value)));
