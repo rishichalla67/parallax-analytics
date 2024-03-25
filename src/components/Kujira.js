@@ -155,7 +155,8 @@ const kujiraTokenMappings = {
     'factory/kujira1hmk8wy7vk0v0vpqasv6zv7hm3n2vce4m3yzkns6869j8h4u5qk2q0xndku/ursv': { symbol: 'nqckuji', decimals: 6 },
     'factory/kujira1ql30ep2a4f3cswhrr8sjp54t56l7qz7n7jzcnux2m286k6ev7s8q6m8jnp/ursv': { symbol: 'nqcmnta', decimals: 6 },
     'factory/kujira1t2nmpazlpacazde340k5rmmx6dpa49067fdqu3pzskgh9x3lj78qelrvv4/ursv': { symbol: 'nqcfuzn', decimals: 6},
-    'factory/kujira195zfkf8uzufmwhc4zzclythlh43m2rme2rd3rlstt6c7yzw386xqskc02y/urcpt': {symbol: 'xlunc', decimals: 6}
+    'factory/kujira195zfkf8uzufmwhc4zzclythlh43m2rme2rd3rlstt6c7yzw386xqskc02y/urcpt': {symbol: 'xlunc', decimals: 6},
+    'factory/kujira1ya42knfcsvy6eztegsn3hz7zpjvhzn05ge85xa2dy2zrjeul9hnspp3c06/urcpt': {symbol: 'xmnta', decimals: 6}
 
 };
 
@@ -165,7 +166,9 @@ const kujiraGhostContracts = {
     'kujira1w4yaama77v53fp0f9343t9w2f932z526vj970n2jv5055a7gt92sxgwypf': {contract: 'xusk'},
     'kujira1xhxefc8v3tt0n75wpzfqcrukzyfneyttdppqst84zzdxnf223m2qm4g5at': {contract: 'xwbtc'},
     'kujira1e224c8ry0nuun5expxm00hmssl8qnsjkd02ft94p3m2a33xked2qypgys3': {contract: 'xaxlusdc'},
-    'kujira195zfkf8uzufmwhc4zzclythlh43m2rme2rd3rlstt6c7yzw386xqskc02y': {contract: 'xlunc'}
+    'kujira195zfkf8uzufmwhc4zzclythlh43m2rme2rd3rlstt6c7yzw386xqskc02y': {contract: 'xlunc'},
+    'kujira1ya42knfcsvy6eztegsn3hz7zpjvhzn05ge85xa2dy2zrjeul9hnspp3c06': {contract: 'xmnta'},
+    'kujira1e6kvcdpxtu30t8x9sx0k692tln9z636gyu8sqf6w5fm5z3jrvjjqc8qfkr': {contract: 'xatom'}
 }
 
 
@@ -389,6 +392,12 @@ function showTemporaryMessage(message) {
                                         }
                                         if (symbol === 'xlunc') {
                                           price = ghostPrices[symbol] * (prices['lunc'] || 0);
+                                        }
+                                        if (symbol === 'xatom') {
+                                          price = ghostPrices[symbol] * (prices['atom'] || 0);
+                                        }
+                                        if (symbol === 'xmnta') {
+                                          price = ghostPrices[symbol] * (prices['mnta'] || 0);
                                         }
                                         const value = price ? (formattedAmount * price).toFixed(2) : "-";
                                         return { symbol, formattedAmount, value: value !== "-" ? parseFloat(value) : 0 }; // Convert value to number or 0 if "-"
