@@ -336,6 +336,7 @@ function showTemporaryMessage(message) {
                                         <th className="px-4 py-2">Current Deposit</th>
                                         <th className="px-4 py-2">Interest Earned</th>
                                         {prices && <th className="px-4 py-2">Profit</th>}
+                                        <th className="px-4 py-2">% Gained</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-black">
@@ -351,13 +352,17 @@ function showTemporaryMessage(message) {
                                         const balance = kujiraBalances.find(({ denom }) => denom === originalDenom);
                                         const currentDepositValue = balance && ghostPrices[displayXKey] ? (balance.amount / Math.pow(10, decimals) * ghostPrices[displayXKey]).toFixed(2) : "-";
                                         // console.log("Current Deposit Value for " + displayXKey + ": ", currentDepositValue);
+                                        const interestEarned = Math.max(0, (Number(currentDepositValue) - Number(value)));
+                                        const profitEarned = (interestEarned * prices[key.toLowerCase()]);
+                                        const percentGained = (profitEarned/(Number(value)*prices[key.toLowerCase()]))*100
                                         return (
                                             <tr className="hover:bg-slate-600 text-xs sm:text-sm" key={key}>
                                                 <td className="border px-4 py-2">{displayKey}</td>
-                                                <td className="border px-4 py-2">{Number(value).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                                <td className="border px-4 py-2">{Number(value).toLocaleString(0, {minimumFractionDigits: 2, maximumFractionDigits: 4})}</td>
                                                 <td className="border px-4 py-2">{Number(currentDepositValue).toLocaleString()}</td>
-                                                <td className="border px-4 py-2">{(Number(currentDepositValue) - Number(value)).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                                {prices && <td className="border px-4 py-2">${((Number(currentDepositValue) - Number(value)) * prices[key.toLowerCase()]).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>}
+                                                <td className="border px-4 py-2">{interestEarned.toLocaleString(0, {minimumFractionDigits: 2, maximumFractionDigits: 3})}</td>
+                                                {prices && <td className="border px-4 py-2">${profitEarned.toLocaleString(0, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>}
+                                                {prices && <td className="border px-4 py-2">{percentGained.toLocaleString(0, {minimumFractionDigits: 0, maximumFractionDigits: 5})}%</td>}
                                             </tr>
                                         );
                                     })}
