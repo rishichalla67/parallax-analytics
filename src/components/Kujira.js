@@ -192,44 +192,49 @@ export default function Kujira() {
   
   
   const fetchKujiraBalances = async () => {
-    setIsLoading(true);
     try {
-
       const client = await StargateClient.connect(kujiraRPC);
       const response = await client.getAllBalances(kujiAddress);
       setKujiraBalances(response);
     } catch (error) {
       console.error("Error fetching Kujira balances:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
   
 
   const fetchGhostPrices = async () => {
-    let pricesObj = {};
-    for (const key in kujiraGhostContracts) {
-      const contract = kujiraGhostContracts[key].contract;
-      const response = await fetch(`${serverURL}/fetchGhostPrices?contract=${key}`);
+    try {
+      const contractsList = Object.keys(kujiraGhostContracts).join(',');
+      const response = await fetch(`${serverURL}/fetchGhostPrices?contracts=${contractsList}`);
       const data = await response.json();
-      if (data.price) {
-        pricesObj[contract] = data.price;
+      let pricesObj = {};
+      for (const key in data) {
+        const contractSymbol = kujiraGhostContracts[key]?.contract;
+        if (contractSymbol) {
+          pricesObj[contractSymbol] = data[key];
+        }
       }
+      setGhostPrices(pricesObj);
+    } catch (error) {
+      console.error("Error fetching ghost prices:", error);
     }
-    setGhostPrices(pricesObj);
   };
 
   const fetchPrices = async () => {
-    let prices = {};
-    const response = await fetch(`${serverURL}/ophir/prices`);
-    const data = await response.json();
-    // Convert all keys to lowercase
-    prices = Object.keys(data).reduce((acc, key) => {
-      acc[key.toLowerCase()] = data[key];
-      return acc;
-    }, {});
-    console.log(prices);
-    setPrices(prices);
+    try {
+      let prices = {};
+      const response = await fetch(`${serverURL}/ophir/prices`);
+      const data = await response.json();
+      // Convert all keys to lowercase
+      prices = Object.keys(data).reduce((acc, key) => {
+        acc[key.toLowerCase()] = data[key];
+        return acc;
+      }, {});
+      console.log(prices);
+      setPrices(prices);
+    } catch (error) {
+      console.error("Error fetching prices:", error);
+    }
   };
 //   useEffect(() => {
 //     fetchKujiraBalances();
@@ -275,21 +280,19 @@ function showTemporaryMessage(message) {
   }, 2000); // Message will disappear after 2 seconds
 }
 
-  useEffect(() => {
-    fetchGhostPrices();
-    fetchPrices();
-  }, []);
 
   const fetchKujiraData = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`${serverURL}/kujiraGhostBalance?address=${kujiAddress}&forceRefresh=${forceRefresh}`);
       const data = await response.json();
+      fetchGhostPrices();
+      fetchPrices();
       setKujiraData(data);
       fetchKujiraBalances();
-      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching Kujira data:", error);
+    }finally{
       setIsLoading(false);
     }
   };
@@ -335,13 +338,13 @@ function showTemporaryMessage(message) {
                                         <th className="px-4 py-2">Asset</th>
                                         <th className="px-4 py-2">Initial Deposit</th>
                                         <th className="px-4 py-2">Current Deposit</th>
-                                        <th className="px-4 py-2">Interest Earned</th>
+                                        {/* <th className="px-4 py-2">Interest Earned</th> */}
                                         {prices && <th className="px-4 py-2">Profit</th>}
                                         <th className="px-4 py-2">% Gained</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-black">
-                                    {Object.entries(kujiraData).map(([key, value]) => {
+                                    {Object.entries(kujiraData).sort((a, b) => Number(b[1]) - Number(a[1])).map(([key, value]) => {
                                         const displayKey = key.includes('/u') ? key.substring(key.lastIndexOf('/u') + 2) : key;
                                         const displayXKey = `x${displayKey.toLowerCase()}`;
                                         const mapping = Object.entries(kujiraTokenMappings).find(([key, value]) => value.symbol.toLowerCase() === displayXKey);
@@ -360,10 +363,10 @@ function showTemporaryMessage(message) {
                                             <tr className="hover:bg-slate-600 text-xs sm:text-sm" key={key}>
                                                 <td className="border px-4 py-2">{displayKey}</td>
                                                 <td className="border px-4 py-2">{Number(value).toLocaleString(0, {minimumFractionDigits: 2, maximumFractionDigits: 4})}</td>
-                                                <td className="border px-4 py-2">{Number(currentDepositValue).toLocaleString()}</td>
-                                                <td className="border px-4 py-2">{interestEarned.toLocaleString(0, {minimumFractionDigits: 2, maximumFractionDigits: 3})}</td>
+                                                <td className="border px-4 py-2 hover:cursor-pointer" onClick={() => { const textToCopy = currentDepositValue !== 0 ? `${Number(currentDepositValue)}` : "-"; navigator.clipboard.writeText(textToCopy); showTemporaryMessage('Copied: ' + textToCopy); }}>{Number(currentDepositValue).toLocaleString()}</td>
+                                                {/* <td className="border px-4 py-2">{interestEarned.toLocaleString(0, {minimumFractionDigits: 2, maximumFractionDigits: 3})}</td> */}
                                                 {prices && <td className="border px-4 py-2">${profitEarned.toLocaleString(0, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>}
-                                                {prices && <td className="border px-4 py-2">{percentGained.toLocaleString(0, {minimumFractionDigits: 0, maximumFractionDigits: 5})}%</td>}
+                                                {prices && <td className="border px-4 py-2">{percentGained.toLocaleString(0, {minimumFractionDigits: 0, maximumFractionDigits: 2})}%</td>}
                                             </tr>
                                         );
                                     })}
