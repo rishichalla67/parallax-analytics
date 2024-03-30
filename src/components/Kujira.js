@@ -72,7 +72,7 @@ const kujiraTokenMappings = {
     'factory/kujira1sx99fxy4lqx0nv3ys86tkdrch82qygxyec5c8dxsk9raz4at5zpq72gypx/ulp': { symbol: 'bow: kuji-axlusdc', decimals: 6 },
     'factory/kujira1hfj06505jjk2ut5a0j6f5wx04pj2s05qk8nydng7kznkuzpe8w2se24jqx/ulp': { symbol: 'bow: kuji-luna', decimals: 0 },
     'factory/kujira1g9xcvvh48jlckgzw8ajl6dkvhsuqgsx2g8u3v0a6fx69h7f8hffqaqu36t/ulp': { symbol: 'bow: kuji-usk', decimals: 6 },
-    'factory/kujira1n648rfqqvjxm6c7zgfnfqay85rkapgg0z7da9pnmjazz5m5d7l0qxdtq90/ulp': { symbol: 'bow: lp stars-usk', decimals: 6 },
+    'factory/kujira1n648rfqqvjxm6c7zgfnfqay85rkapgg0z7da9pnmjazz5m5d7l0qxdtq90/ulp': { symbol: 'bow: stars-usk', decimals: 6 },
     'factory/kujira1y0v5znl0ucc6nsdalr9xeg0r3zyw44yn0uyd8tsgc8gl4j8stjcs9vmmr7/ulp': { symbol: 'bow: luna-usk', decimals: 0 },
     'factory/kujira10sx8wxzev270zrmpq6z3asgpurdjfh9f6rwtgt55mar9m6gtw40s9nfxcy/ulp': { symbol: 'bow: scrt-usk', decimals: 0 },
     'factory/kujira1ngqlypl5h0mkgxmk4why878eq4y5yh6yhdtrw8hdxfz202xluzrs097qn5/ulp': { symbol: 'bow: weth-axlusdc', decimals: 6 },
@@ -157,7 +157,8 @@ const kujiraTokenMappings = {
     'factory/kujira1t2nmpazlpacazde340k5rmmx6dpa49067fdqu3pzskgh9x3lj78qelrvv4/ursv': { symbol: 'nqcfuzn', decimals: 6},
     'factory/kujira195zfkf8uzufmwhc4zzclythlh43m2rme2rd3rlstt6c7yzw386xqskc02y/urcpt': {symbol: 'xlunc', decimals: 6},
     'factory/kujira1ya42knfcsvy6eztegsn3hz7zpjvhzn05ge85xa2dy2zrjeul9hnspp3c06/urcpt': {symbol: 'xmnta', decimals: 6},
-    'ibc/FE98AAD68F02F03565E9FA39A5E627946699B2B07115889ED812D8BA639576A9': {symbol: 'usdc', decimal: 6}
+    'ibc/FE98AAD68F02F03565E9FA39A5E627946699B2B07115889ED812D8BA639576A9': {symbol: 'usdc', decimal: 6},
+    'factory/kujira1ldsj2f7t7tw0g52f0gmfpm3jjm92nut30829jjypt3p7cegurzfq9frmt4/ulp': {symbol: 'bow: whale-usk', decimal: 6}
 
 };
 
