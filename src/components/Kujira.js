@@ -158,8 +158,18 @@ const kujiraTokenMappings = {
     'factory/kujira195zfkf8uzufmwhc4zzclythlh43m2rme2rd3rlstt6c7yzw386xqskc02y/urcpt': {symbol: 'xlunc', decimals: 6},
     'factory/kujira1ya42knfcsvy6eztegsn3hz7zpjvhzn05ge85xa2dy2zrjeul9hnspp3c06/urcpt': {symbol: 'xmnta', decimals: 6},
     'ibc/FE98AAD68F02F03565E9FA39A5E627946699B2B07115889ED812D8BA639576A9': {symbol: 'usdc', decimal: 6},
-    'factory/kujira1ldsj2f7t7tw0g52f0gmfpm3jjm92nut30829jjypt3p7cegurzfq9frmt4/ulp': {symbol: 'bow: whale-usk', decimal: 6}
-
+    'factory/kujira1ldsj2f7t7tw0g52f0gmfpm3jjm92nut30829jjypt3p7cegurzfq9frmt4/ulp': {symbol: 'bow: whale-usk', decimal: 6},
+    'factory/kujira16rujrka8vk3c7l7raa37km8eqcxv9z583p3c6e288q879rwp23ksy6efce/bMNTA03': {symbol: 'bMNTA03', decimal: 6},
+    'factory/kujira16rujrka8vk3c7l7raa37km8eqcxv9z583p3c6e288q879rwp23ksy6efce/bMNTA07': {symbol: 'bMNTA07', decimal: 6},
+    'factory/kujira16rujrka8vk3c7l7raa37km8eqcxv9z583p3c6e288q879rwp23ksy6efce/bampMNTA01': {symbol: 'bampMNTA01', decimal: 6},
+    'factory/kujira16rujrka8vk3c7l7raa37km8eqcxv9z583p3c6e288q879rwp23ksy6efce/bqcMNTA02': {symbol: 'bqcMNTA02', decimal: 6},
+    'factory/kujira1fkstg6fspy2e2c0j28fampext5raesgc9np639sth8myrwglrfpqujrdfl/urcpt': {symbol: 'xfuzn', decimal: 6},
+    'factory/kujira1xe0awk5planmtsmjel5xtx2hzhqdw5p8z66yqd/uaqla': {symbol: 'aqla', decimal: 6},
+    'factory/kujira1xmvydax6s976h23duypllzluc96e87mpxsx06zex8kutx4yzshyqsnqr3z/ulp': {symbol: 'lp rio-usk', decimal: 6},
+    'factory/kujira1yntegc5v3tvl0xfrde0rupnt9kfnx0sy9lytge9g2mryjknudk6qg4zyw9/urcpt': {symbol: 'xinj', decimal: 6},
+    'ibc/15FF6DF1FA1790C9199EDB6F6DAAE0EEE93BA22B3B4E9326282C389074098B8A': {symbol: 'flix', decimal: 6},
+    'ibc/3458D4A2653918EAE5926A6F7CB6DCE91C13DAECDB05AA40F050F8867A6649FE': {symbol: 'usdc-grv', decimal: 18},
+    'ibc/6500A6358F49FAB811A75E689D1B7C3B50AE6921F800569BF83929822EE7A828': {symbol: 'silk', decimal: 6}
 };
 
 const kujiraGhostContracts = {
